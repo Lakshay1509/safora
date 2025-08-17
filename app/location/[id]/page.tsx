@@ -1,20 +1,29 @@
 "use client"
 
-import { useGetLocation } from "@/features/location/use-get-location"
-import { useParams } from "next/navigation";
+
+import { AreaCard } from "./components/area-card";
+import { MapCard } from "./components/map-card";
+import { ReviewsCard } from "./components/reviews-card";
+import { CommentsCard } from "./components/comments-card";
 
 const page = () => {
-    const params = useParams();
-    const id = params.id as string
-
-    const {
-        data,
-        isLoading,
-        isError
-    } = useGetLocation(id);
+    
   return (
-    <div>
-        {data?.location.city}
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black p-4 md:p-6 lg:p-8">
+      
+      <div className="max-w-7xl mx-auto space-y-6">
+        {/* Top Area Card - Full Width */}
+        <AreaCard />
+
+        {/* Middle Row - Map and Reviews Cards */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <MapCard />
+          <ReviewsCard />
+        </div>
+
+        {/* Bottom Comments Card - Full Width */}
+        <CommentsCard />
+      </div>
     </div>
   )
 }
