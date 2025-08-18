@@ -3,7 +3,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { useGetLocationPrecautions } from "@/features/location/use-get-location-precaution";
 import { useParams } from "next/navigation";
-import { AlertTriangle, Loader2 } from "lucide-react";
+import { AlertTriangle, Loader2  } from "lucide-react";
 
 // Define the expected precaution type
 interface Precaution {
@@ -35,14 +35,14 @@ export function PrecautionCard() {
 
   return (
     <Card
-      className="w-full text-white bg-white/5 backdrop-blur-md border border-white/10 h-80 lg:h-96 transition-colors duration-200 hover:shadow-lg"
+      className="w-full text-white bg-white/5 backdrop-blur-md border border-white/10 h-80 lg:h-110 transition-colors duration-200 hover:shadow-lg"
     >
       <CardHeader>
         <CardTitle className="text-lg font-bold" style={{ color: "#EAEAEA" }}>
-          Precautions and Safety Concerns <span className="text-sm text text-gray-400">(AI Generated)</span>
+          <span></span>Precautions and Safety Concerns <span className="text-sm text text-gray-400">(AI Generated)</span>
         </CardTitle>
       </CardHeader>
-      <CardContent className="flex-1 overflow-auto">
+      <CardContent className="flex-1 overflow-auto ">
         {isLoading && (
           <div className="flex items-center justify-center h-full">
             <Loader2 className="w-8 h-8 animate-spin text-gray-400" />

@@ -3,6 +3,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { useGetLocationReview } from "@/features/location/use-get-location-review";
 import { useParams } from "next/navigation";
+import {ThumbsUp,ThumbsDown} from "lucide-react"
 
 export function ReviewsCard() {
   const params = useParams();
@@ -62,7 +63,7 @@ export function ReviewsCard() {
 
   return (
     <Card
-      className="w-full text-white bg-white/5 backdrop-blur-md border border-white/10 h-80 lg:h-96 transition-colors duration-200 hover:shadow-lg"
+      className="w-full text-white bg-white/5 backdrop-blur-md border border-white/10 h-80 lg:h-110 transition-colors duration-200 hover:shadow-lg"
 
     >
       <CardHeader>
@@ -95,10 +96,17 @@ export function ReviewsCard() {
           </div>
           <div className="space-y-3">
             <span className="text-base font-medium" style={{ color: "#EAEAEA" }}>
-              Neighbourhood Safety Score
+              Neighbourhood Safety Score 
             </span>
             {!ratings.neighbourhood && <p>No reviews</p>}
             {ratings.neighbourhood && <BarRating rating={Number(ratings.neighbourhood)} />}
+          </div>
+          <div className="w-full mt-10 flex justify-between items-center">
+            <p>Did you feel safe here ?</p>
+            <div className="space-x-3 flex">
+            <ThumbsUp className="w-6 h-6 text-green-500"/>
+            <ThumbsDown className="w-6 h-6 text-red-500"/>
+            </div>
           </div>
         </div>
       </CardContent>
