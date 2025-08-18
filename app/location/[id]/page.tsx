@@ -2,11 +2,12 @@
 
 
 import { AreaCard } from "./components/area-card";
-import { MapCard } from "./components/map-card";
+import { PrecautionCard } from "./components/map-card";
 import { ReviewsCard } from "./components/reviews-card";
 import { CommentsCard } from "./components/comments-card";
 
 const page = () => {
+  
     
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black p-4 md:p-6 lg:p-8">
@@ -17,7 +18,7 @@ const page = () => {
 
         {/* Middle Row - Map and Reviews Cards */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <MapCard />
+          <PrecautionCard />
           <ReviewsCard />
         </div>
 

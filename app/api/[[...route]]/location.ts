@@ -50,6 +50,27 @@ const app = new Hono()
         }
         return ctx.json({locationReview},200);
     })
+    .get("/precautions/:id",async(ctx)=>{
+        const id = ctx.req.param("id");
+        const supabase = await createClient()
+    const { data: { user }, error } = await supabase.auth.getUser()
+        
+        if(error || !user){
+            return ctx.json({error:"Unauthorized"},401);
+        }
+
+
+        const locationPrecautions = await db.precautions.findUnique({
+            where : {location_id:id}
+        })
+
+        
+
+        if(!locationPrecautions){
+            return ctx.json({error:"Location not found"},404);
+        }
+        return ctx.json({locationPrecautions},200);
+    })
 
      
 

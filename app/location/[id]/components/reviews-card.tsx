@@ -22,25 +22,43 @@ export function ReviewsCard() {
   }
 
   const BarRating = ({ rating, isWomenScore = false }: { rating: number; isWomenScore?: boolean }) => {
-    const percentage = (rating / 5) * 100
+  const percentage = (rating / 5) * 100;
 
-    return (
-      <div className="flex items-center justify-between">
-        <div className="flex-1 h-2 rounded-full mr-4" style={{ backgroundColor: "#2A2A2A" }}>
-          <div
-            className="h-full rounded-full transition-all duration-300"
-            style={{
-              backgroundColor: isWomenScore ? "#3B82F6" : "#10B981",
-              width: `${percentage}%`,
-            }}
-          />
-        </div>
-        <span className="text-lg font-semibold min-w-[2.5rem] text-right" style={{ color: "#EAEAEA" }}>
-          {rating.toFixed(1)}
-        </span>
-      </div>
-    )
+  // Pick color dynamically
+  let barColor = "";
+  if (rating >= 4) {
+    barColor = "#10B981"; // green
+  } else if (rating >= 3) {
+    barColor = "#FACC15"; // yellow
+  } else {
+    barColor = "#EF4444"; // red
   }
+
+  return (
+    <div className="flex items-center justify-between">
+      <div
+        className="flex-1 h-2 rounded-full mr-4"
+        style={{ backgroundColor: "#2A2A2A" }}
+      >
+        <div
+          className="h-full rounded-full transition-all duration-300"
+          style={{
+            backgroundColor:barColor,
+            width: `${percentage}%`,
+          }}
+        />
+      </div>
+      <span
+        className="text-lg font-semibold min-w-[2.5rem] text-right"
+        style={{ color: "#EAEAEA" }}
+      >
+        {rating.toFixed(1)}
+      </span>
+    </div>
+  );
+};
+
+
 
   return (
     <Card

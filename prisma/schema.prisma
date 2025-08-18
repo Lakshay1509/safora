@@ -332,13 +332,16 @@ model auth_users {
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model locations {
-  id         String                   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  state      String
-  city       String
-  area       String
-  geog       Unsupported("geography")
-  created_at DateTime                 @default(now()) @db.Timestamptz(6)
-  reviews    reviews[]
+  id              String                   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  state           String
+  city            String
+  area            String
+  geog            Unsupported("geography")
+  created_at      DateTime                 @default(now()) @db.Timestamptz(6)
+  comments        comments[]
+  location_scores location_scores?
+  precautions     precautions?
+  reviews         reviews[]
 
   @@unique([city, area])
   @@index([city, area], map: "idx_locations_city_area")
@@ -360,6 +363,7 @@ model reviews {
   locations           locations    @relation(fields: [location_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
   users               public_users @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
+  @@unique([user_id, location_id])
   @@index([location_id, created_at(sort: Desc)], map: "idx_reviews_location_time")
   @@index([user_id], map: "idx_reviews_user")
   @@schema("public")
@@ -383,6 +387,7 @@ model public_users {
   email      String     @unique
   gender     gender_t?
   created_at DateTime   @default(now()) @db.Timestamptz(6)
+  comments   comments[]
   reviews    reviews[]
   users      auth_users @relation(fields: [id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
@@ -390,14 +395,36 @@ model public_users {
   @@schema("public")
 }
 
-view location_scores {
-  location_id       String    @unique @db.Uuid
-  review_count      Int
+model location_scores {
+  location_id       String    @id(map: "pk_location_scores") @db.Uuid
+  review_count      Int?
   avg_general       Decimal?  @db.Decimal
   avg_transit       Decimal?  @db.Decimal
   avg_neighbourhood Decimal?  @db.Decimal
   avg_women_safety  Decimal?  @db.Decimal
   last_review_at    DateTime? @db.Timestamptz(6)
+  locations         locations @relation(fields: [location_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_location_scores_location_id")
+
+  @@index([review_count(sort: Desc)], map: "idx_location_scores_review_count")
+  @@schema("public")
+}
+
+model precautions {
+  location_id          String    @id @db.Uuid
+  approved_precautions Json?
+  locations            locations @relation(fields: [location_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@schema("public")
+}
+
+model comments {
+  comment_id  String       @id @db.Uuid
+  user_id     String       @db.Uuid
+  location_id String       @db.Uuid
+  text        String
+  created_at  DateTime?    @default(now()) @db.Timestamp(6)
+  locations   locations    @relation(fields: [location_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  users       public_users @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
   @@schema("public")
 }
