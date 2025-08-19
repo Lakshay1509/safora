@@ -3,9 +3,13 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { useGetLocationReview } from "@/features/location/use-get-location-review";
 import { useParams } from "next/navigation";
-import {ThumbsUp,ThumbsDown} from "lucide-react"
+import {ThumbsUp,ThumbsDown, Plus} from "lucide-react"
+import { AddReviewPopup } from "./add-review-popup";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
 
 export function ReviewsCard() {
+  const [isPopupOpen, setIsPopupOpen] = useState(false)
   const params = useParams();
   const id = params.id as string
 
@@ -62,14 +66,27 @@ export function ReviewsCard() {
 
 
   return (
+    <>
     <Card
       className="w-full text-white bg-white/5 backdrop-blur-md border border-white/10 h-80 lg:h-110 transition-colors duration-200 hover:shadow-lg"
 
     >
-      <CardHeader>
+      <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle className="text-xl font-bold" style={{ color: "#EAEAEA" }}>
           Reviews ({data?.locationReview.review_count})
         </CardTitle>
+        <Button
+            size="sm"
+            onClick={() => setIsPopupOpen(true)}
+            className="flex items-center gap-2"
+            style={{
+              backgroundColor: "#3B82F6",
+              color: "white",
+            }}
+          >
+            <Plus className="h-4 w-4" />
+            Add Review
+          </Button>
       </CardHeader>
       <CardContent className="space-y-6">
         <div className="space-y-4">
@@ -111,5 +128,7 @@ export function ReviewsCard() {
         </div>
       </CardContent>
     </Card>
+     <AddReviewPopup isOpen={isPopupOpen} onClose={() => setIsPopupOpen(false)} locationId={id} />
+    </>
   )
 }

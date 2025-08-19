@@ -1,8 +1,5 @@
 import { Hono } from "hono";
 import { db } from "@/lib/prisma";
-import { zValidator } from "@hono/zod-validator";
-import { z } from "zod";
-import { randomUUID } from 'crypto';
 import { createClient } from "@/utils/supabase/server";
 
 const app = new Hono()
