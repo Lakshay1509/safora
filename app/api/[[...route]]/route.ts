@@ -1,12 +1,14 @@
 import { Hono } from "hono";
 import { handle } from "hono/vercel";
 import location from "./location"
+import comment from "./comment"
 
 export const runtime = "nodejs";
 const app = new Hono().basePath("/api");
 
 const routes = app
-    .route("/location",location);
+    .route("/location",location)
+    .route("/comment",comment);
 
 
 

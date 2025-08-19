@@ -92,7 +92,9 @@ const app = new Hono()
             name: true, 
           },
         },
+        
       },
+    
     });
 
     if (!locationComments || locationComments.length === 0) {
@@ -104,44 +106,6 @@ const app = new Hono()
 
   
 
-  .post("/addComment",zValidator(
-    "json",
-    z.object({
-        id : z.string(),
-        text:z.string(),
-    })
-  )
-    ,async(ctx)=>{
-
-   
-    const supabase = await createClient();
-    const {
-      data: { user },
-      error,
-    } = await supabase.auth.getUser();
-
-    if (error || !user) {
-      return ctx.json({ error: "Unauthorized" }, 401);
-    }
-
-    const values = ctx.req.valid("json");
-
-    const comment = await db.comments.create({
-      data:{
-        user_id:user.id,
-        location_id:values.id,
-        text:values.text,
-        comment_id:randomUUID()
-
-      }
-    })
-
-    if(comment){
-      return ctx.json({comment});
-    }
-
-    return ctx.json({error:"Error creating comment"},500)
-
-  })
+  
 
 export default app;
