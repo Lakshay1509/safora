@@ -5,9 +5,14 @@ import { MapPin } from "lucide-react"
 import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts"
 
 export function AreaCard() {
-  const safetyData = [
-    { name: "Safe", value: 79, color: "#10B981" },
-    { name: "Unsafe", value: 21, color: "#374151" },
+  const daySafetyData = [
+    { name: "Safe", value: 85, color: "#10B981" },
+    { name: "Unsafe", value: 15, color: "#374151" },
+  ]
+
+  const nightSafetyData = [
+    { name: "Safe", value: 62, color: "#10B981" },
+    { name: "Unsafe", value: 38, color: "#374151" },
   ]
 
   const params = useParams();
@@ -32,32 +37,68 @@ export function AreaCard() {
             <span>{data?.location.state}, {data?.location.city}</span>
           </div>
         </div>
-        <div className="flex items-center gap-4">
-            <div className="text-right">
-              <p className="text-sm font-medium" style={{ color: "#EAEAEA" }}>
-                79% people felt safe here
-              </p>
-              
+
+        <div className="flex items-center gap-6">
+            <div className="flex items-center gap-3">
+              <div className="text-center">
+                <p className="text-sm font-medium" style={{ color: "#EAEAEA" }}>
+                  Day
+                </p>
+                <p className="text-xs" style={{ color: "#9CA3AF" }}>
+                  85% safe
+                </p>
+              </div>
+              <div className="w-12 h-12">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={daySafetyData}
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={16}
+                      outerRadius={24}
+                      startAngle={90}
+                      endAngle={450}
+                      dataKey="value"
+                    >
+                      {daySafetyData.map((entry, index) => (
+                        <Cell key={`day-cell-${index}`} fill={entry.color} />
+                      ))}
+                    </Pie>
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
             </div>
-            <div className="w-16 h-16">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={safetyData}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={20}
-                    outerRadius={32}
-                    startAngle={90}
-                    endAngle={450}
-                    dataKey="value"
-                  >
-                    {safetyData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
-                    ))}
-                  </Pie>
-                </PieChart>
-              </ResponsiveContainer>
+
+            <div className="flex items-center gap-3">
+              <div className="text-center">
+                <p className="text-sm font-medium" style={{ color: "#EAEAEA" }}>
+                  Night
+                </p>
+                <p className="text-xs" style={{ color: "#9CA3AF" }}>
+                  62% safe
+                </p>
+              </div>
+              <div className="w-12 h-12">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={nightSafetyData}
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={16}
+                      outerRadius={24}
+                      startAngle={90}
+                      endAngle={450}
+                      dataKey="value"
+                    >
+                      {nightSafetyData.map((entry, index) => (
+                        <Cell key={`night-cell-${index}`} fill={entry.color} />
+                      ))}
+                    </Pie>
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
             </div>
           </div>
       </CardContent>

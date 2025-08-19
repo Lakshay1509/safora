@@ -88,7 +88,7 @@ export function ReviewsCard() {
             Add Review
           </Button>
       </CardHeader>
-      <CardContent className="space-y-6">
+      <CardContent className="space-y-6 mt-10">
         <div className="space-y-4">
           <div className="space-y-3">
             <span className="text-xl font-medium" style={{ color: "#EAEAEA" }}>
@@ -117,13 +117,6 @@ export function ReviewsCard() {
             </span>
             {!ratings.neighbourhood && <p>No reviews</p>}
             {ratings.neighbourhood && <BarRating rating={Number(ratings.neighbourhood)} />}
-          </div>
-          <div className="w-full mt-10 flex justify-between items-center">
-            <p>Did you feel safe here ?</p>
-            <div className="space-x-3 flex">
-            <ThumbsUp className="w-6 h-6 text-green-500"/>
-            <ThumbsDown className="w-6 h-6 text-red-500"/>
-            </div>
           </div>
         </div>
       </CardContent>

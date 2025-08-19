@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { X, Star } from "lucide-react"
+import { X, Star, Sun, Moon } from "lucide-react"
 import { useGetDefaultUser } from "@/features/user/use-get-default"
 import { addReview } from "@/features/reviews/use-add-review"
 import { Textarea } from "@/components/ui/textarea"
@@ -14,6 +14,7 @@ interface AddReviewPopupProps {
   locationId: string
 }
 type RatingValue = number | null;
+type TimeOfDay = "DAY" | "NIGHT" | null;
 
 interface Ratings {
   overall: RatingValue;
@@ -29,6 +30,7 @@ export function AddReviewPopup({ isOpen, onClose, locationId }: AddReviewPopupPr
     transit: null,
     neighbourhood: null
   })
+  const [timeOfDay, setTimeOfDay] = useState<TimeOfDay>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
@@ -50,13 +52,14 @@ export function AddReviewPopup({ isOpen, onClose, locationId }: AddReviewPopupPr
       setErrorMessage(null)
       
       
-      console.log(ratings);
-      if(ratings.overall!==null){
+      
+      if(ratings.overall !== null && timeOfDay !== null){
         const reviewData = {
             general_score: ratings.overall,
             transit_score: ratings.transit,
             neighbourhood_score: ratings.neighbourhood,
             women_score: ratings.women,
+            time_of_day: timeOfDay
       }
 
       await reviewMutation.mutateAsync(reviewData)
@@ -65,6 +68,7 @@ export function AddReviewPopup({ isOpen, onClose, locationId }: AddReviewPopupPr
       console.log("Review submitted successfully")
       
       setRatings({ overall: null, women: null, transit: null, neighbourhood: null })
+      setTimeOfDay(null)
       
       onClose()
     } catch (error) {
@@ -115,6 +119,44 @@ export function AddReviewPopup({ isOpen, onClose, locationId }: AddReviewPopupPr
     </div>
   )
 
+  const TimeOfDaySelector = () => (
+    <div className="space-y-3">
+      <div className="flex justify-between items-center">
+        <span className="text-base font-medium" style={{ color: "#EAEAEA" }}>
+          Time of Day
+        </span>
+      </div>
+      <div className="flex gap-4">
+        <Button
+          type="button"
+          variant='ghost'
+          onClick={() => setTimeOfDay("DAY")}
+          className={`flex items-center gap-2 px-4 py-2 transition-colors ${
+            timeOfDay === "DAY" 
+              ? "bg-amber-500 text-black" 
+              : "bg-transparent border border-gray-700 text-gray-400 hover:bg-gray-700 hover:text-white"
+          }`}
+        >
+          <Sun className="h-5 w-5" />
+          <span>Day</span>
+        </Button>
+        <Button
+          type="button"
+          variant="ghost"
+          onClick={() => setTimeOfDay("NIGHT")}
+          className={`flex items-center gap-2 px-4 py-2 transition-colors ${
+            timeOfDay === "NIGHT" 
+              ? "bg-indigo-600 text-white" 
+              : "bg-transparent border border-gray-700 text-gray-400 hover:bg-gray-700 hover:text-white"
+          }`}
+        >
+          <Moon className="h-5 w-5" />
+          <span>Night</span>
+        </Button>
+      </div>
+    </div>
+  )
+
   if (!isOpen) return null
 
   return (
@@ -140,6 +182,8 @@ export function AddReviewPopup({ isOpen, onClose, locationId }: AddReviewPopupPr
               {errorMessage}
             </div>
           )}
+          
+          <TimeOfDaySelector />
           
           <StarRating
             label="Overall Score"
@@ -184,7 +228,7 @@ export function AddReviewPopup({ isOpen, onClose, locationId }: AddReviewPopupPr
                 backgroundColor: "#3B82F6",
                 color: "white",
               }}
-              disabled={isSubmitting || ratings.overall === null}
+              disabled={isSubmitting || ratings.overall === null || timeOfDay === null}
             >
               {isSubmitting ? "Submitting..." : "Submit Review"}
             </Button>

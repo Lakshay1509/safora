@@ -5,6 +5,12 @@ import { z } from "zod";
 import { randomUUID } from 'crypto';
 import { createClient } from "@/utils/supabase/server";
 
+// Define the TimeOfDay enum to match your database schema
+// You might need to import this from your Prisma client if already defined there
+enum TimeOfDay {
+  DAY = "DAY",
+  NIGHT = "NIGHT"
+}
 
 const app = new Hono()
 
@@ -15,6 +21,7 @@ const app = new Hono()
     transit_score: z.number().nullable().default(null),
     neighbourhood_score: z.number().nullable().default(null),
     women_score: z.number().nullable().default(null),
+    time_of_day: z.string()
 })
 
   )
@@ -41,6 +48,15 @@ const app = new Hono()
       return ctx.json({ error: "User not found" }, 404);
     }
     const values = ctx.req.valid("json");
+    
+    
+    let time_of_day: TimeOfDay | null = null;
+    if(values.time_of_day === "DAY"){
+      time_of_day = TimeOfDay.DAY;
+    }
+    else if(values.time_of_day === "NIGHT"){
+      time_of_day = TimeOfDay.NIGHT;
+    }
 
 
     if(userData.gender==='female'){
@@ -54,6 +70,8 @@ const app = new Hono()
           women_safety_score:values.women_score,
           neighbourhood_score:values.neighbourhood_score,
           transit_score:values.transit_score,
+          time_of_day : time_of_day
+          
         }
         
       })
@@ -76,6 +94,7 @@ const app = new Hono()
           women_safety_score:null,
           neighbourhood_score:values.neighbourhood_score,
           transit_score:values.transit_score,
+          time_of_day:time_of_day
         }
         
       })
@@ -89,9 +108,5 @@ const app = new Hono()
     }
 
     })
-
-
-
-
 
 export default app;
