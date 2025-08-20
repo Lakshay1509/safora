@@ -14,23 +14,10 @@ enum TimeOfDay {
 
 const app = new Hono()
 
-    .post("/add/:location_id",zValidator(
-    "json",
-   z.object({
-    general_score: z.number(),
-    transit_score: z.number().nullable().default(null),
-    neighbourhood_score: z.number().nullable().default(null),
-    women_score: z.number().nullable().default(null),
-    time_of_day: z.string()
-})
-
-  )
-    ,async(ctx)=>{
-
-    const location_id = ctx.req.param("location_id");
-
-    const supabase = await createClient();
-    const {
+    .get("/byUser/:location_id",async(ctx)=>{
+      const location_id = ctx.req.param("location_id");
+      const supabase = await createClient();
+      const {
       data: { user },
       error,
     } = await supabase.auth.getUser();
@@ -40,73 +27,117 @@ const app = new Hono()
       return ctx.json({ error: "Unauthorized" }, 401);
     }
 
-     const userData = await db.public_users.findUnique({
-      where: {id:user.id},
+    const review = await db.reviews.findFirst({
+      where:{
+        location_id:location_id,
+        user_id:user.id,
+      }
+    })
+
+    if (!review) {
+      return ctx.json({review:null}, 200);
+    }
+    return ctx.json({ review }, 200);
+    
+    })
+
+    .post("/add/:location_id", zValidator(
+    "json",
+    z.object({
+        general_score: z.number(),
+        transit_score: z.number().nullable().default(null),
+        neighbourhood_score: z.number().nullable().default(null),
+        women_score: z.number().nullable().default(null),
+        time_of_day: z.enum(["DAY", "NIGHT"])
+    })
+), async (ctx) => {
+    try {
+        const location_id = ctx.req.param("location_id");
+        const values = ctx.req.valid("json");
+
+        // Authentication
+        const supabase = await createClient();
+        const { data: { user }, error: authError } = await supabase.auth.getUser();
+
+        if (authError || !user) {
+            return ctx.json({ error: "Unauthorized" }, 401);
+        }
+
+        // Get user data
+        const userData = await db.public_users.findUnique({
+            where: { id: user.id },
+        });
+
+        if (!userData) {
+            return ctx.json({ error: "User not found" }, 404);
+        }
+
+        // Convert string to enum
+        const time_of_day = TimeOfDay[values.time_of_day as keyof typeof TimeOfDay];
+
+        // Prepare review data
+        const reviewData = {
+            id: randomUUID(),
+            user_id: user.id,
+            location_id,
+            general_score: values.general_score,
+            neighbourhood_score: values.neighbourhood_score,
+            transit_score: values.transit_score,
+            time_of_day,
+            women_safety_score: userData.gender === 'female' ? values.women_score : null
+        };
+
+        // Create review
+        const review = await db.reviews.create({
+            data: reviewData
+        });
+
+        return ctx.json({ review },200);
+
+    } catch (error) {
+        console.error("Error creating review:", error);
+        return ctx.json({ error: "Error creating review" }, 500);
+    }
+})
+
+  .delete("/delete/:location_id",async(ctx)=>{
+
+    const supabase = await createClient();
+    const location_id = ctx.req.param("location_id");
+        const { data: { user }, error: authError } = await supabase.auth.getUser();
+
+        if (authError || !user) {
+            return ctx.json({ error: "Unauthorized" }, 401);
+        }
+
+      const review = await db.reviews.findFirst({
+      where:{
+        location_id:location_id,
+        user_id:user.id,
+      }
+    })
+
+    if (!review) {
+      return ctx.json({ error: "Review not found for this location by the current user" }, 404);
+    }
+
+    const deleteReview = await db.reviews.delete({
+      where:{id:review.id},
     });
 
-    if (!userData) {
-      return ctx.json({ error: "User not found" }, 404);
-    }
-    const values = ctx.req.valid("json");
-    
-    
-    let time_of_day: TimeOfDay | null = null;
-    if(values.time_of_day === "DAY"){
-      time_of_day = TimeOfDay.DAY;
-    }
-    else if(values.time_of_day === "NIGHT"){
-      time_of_day = TimeOfDay.NIGHT;
+
+    if(!deleteReview){
+      return ctx.json({error:"Error deleting review"},500);
     }
 
+    return ctx.json({deleteReview},200);
 
-    if(userData.gender==='female'){
 
-      const review = await db.reviews.create({
-        data:{
-          id:randomUUID(),
-          user_id:user.id,
-          location_id: location_id,
-          general_score:values.general_score,
-          women_safety_score:values.women_score,
-          neighbourhood_score:values.neighbourhood_score,
-          transit_score:values.transit_score,
-          time_of_day : time_of_day
-          
-        }
-        
-      })
 
-      if(review){
-      return ctx.json({review});
-    }
 
-    return ctx.json({error:"Error creating review"},500)
-      
-    }
-    else{
+  })
 
-      const review = await db.reviews.create({
-        data:{
-          id:randomUUID(),
-          user_id:user.id,
-          location_id: location_id,
-          general_score:values.general_score,
-          women_safety_score:null,
-          neighbourhood_score:values.neighbourhood_score,
-          transit_score:values.transit_score,
-          time_of_day:time_of_day
-        }
-        
-      })
 
-      if(review){
-      return ctx.json({review});
-    }
 
-    return ctx.json({error:"Error creating review"},500)
-
-    }
-
-    })
 
 export default app;

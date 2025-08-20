@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { X, Star, Sun, Moon } from "lucide-react"
@@ -12,6 +12,8 @@ interface AddReviewPopupProps {
   isOpen: boolean
   onClose: () => void
   locationId: string
+  existingReview?: any | null
+  isEdit?: boolean
 }
 type RatingValue = number | null;
 type TimeOfDay = "DAY" | "NIGHT" | null;
@@ -23,7 +25,13 @@ interface Ratings {
   neighbourhood: RatingValue;
 }
 
-export function AddReviewPopup({ isOpen, onClose, locationId }: AddReviewPopupProps) {
+export function AddReviewPopup({ 
+  isOpen, 
+  onClose, 
+  locationId, 
+  existingReview = null, 
+  isEdit = false 
+}: AddReviewPopupProps) {
   const [ratings, setRatings] = useState<Ratings>({
     overall: null,
     women: null,
@@ -42,6 +50,19 @@ export function AddReviewPopup({ isOpen, onClose, locationId }: AddReviewPopupPr
     
   const reviewMutation = addReview(locationId)
 
+  // Populate form with existing review data when in edit mode
+  useEffect(() => {
+    if (existingReview && isEdit) {
+      setRatings({
+        overall: existingReview.general_score || null,
+        women: existingReview.women_score || null,
+        transit: existingReview.transit_score || null,
+        neighbourhood: existingReview.neighbourhood_score || null
+      });
+      setTimeOfDay(existingReview.time_of_day || null);
+    }
+  }, [existingReview, isEdit]);
+
   const handleRatingChange = (category: keyof typeof ratings, value: number) => {
     setRatings((prev) => ({ ...prev, [category]: value }))
   }
@@ -51,8 +72,6 @@ export function AddReviewPopup({ isOpen, onClose, locationId }: AddReviewPopupPr
       setIsSubmitting(true)
       setErrorMessage(null)
       
-      
-      
       if(ratings.overall !== null && timeOfDay !== null){
         const reviewData = {
             general_score: ratings.overall,
@@ -60,20 +79,19 @@ export function AddReviewPopup({ isOpen, onClose, locationId }: AddReviewPopupPr
             neighbourhood_score: ratings.neighbourhood,
             women_score: ratings.women,
             time_of_day: timeOfDay
-      }
+        }
 
-      await reviewMutation.mutateAsync(reviewData)
-
+        await reviewMutation.mutateAsync(reviewData)
       }
-      console.log("Review submitted successfully")
+      console.log(`Review ${isEdit ? 'updated' : 'submitted'} successfully`)
       
       setRatings({ overall: null, women: null, transit: null, neighbourhood: null })
       setTimeOfDay(null)
       
       onClose()
     } catch (error) {
-      setErrorMessage("Failed to submit review. Please try again later.")
-      console.error("Error submitting review:", error)
+      setErrorMessage(`Failed to ${isEdit ? 'update' : 'submit'} review. Please try again later.`)
+      console.error(`Error ${isEdit ? 'updating' : 'submitting'} review:`, error)
     } finally {
       setIsSubmitting(false)
     }
@@ -170,7 +188,7 @@ export function AddReviewPopup({ isOpen, onClose, locationId }: AddReviewPopupPr
       >
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="text-xl font-bold" style={{ color: "#EAEAEA" }}>
-            Add Review
+            {isEdit ? 'Edit Review' : 'Add Review'}
           </CardTitle>
           <Button variant="ghost" size="sm" onClick={onClose} className="h-8 w-8 p-0 hover:bg-gray-700">
             <X className="h-4 w-4" style={{ color: "#9CA3AF" }} />
@@ -230,7 +248,7 @@ export function AddReviewPopup({ isOpen, onClose, locationId }: AddReviewPopupPr
               }}
               disabled={isSubmitting || ratings.overall === null || timeOfDay === null}
             >
-              {isSubmitting ? "Submitting..." : "Submit Review"}
+              {isSubmitting ? "Submitting..." : (isEdit ? "Update Review" : "Submit Review")}
             </Button>
           </div>
         </CardContent>

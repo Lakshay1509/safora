@@ -19,8 +19,9 @@ export const addReview = (location_id:string)=>{
 
             return response.json();
         },
-        onSuccess:()=>{
-            queryClient.invalidateQueries({queryKey:["locationReview"]});
+        onSuccess:async()=>{
+            await queryClient.invalidateQueries({queryKey:["locationReview"]});
+            await queryClient.invalidateQueries({ queryKey: ["userReview"] }); 
         },
         onError:(error)=>{
             console.log(error);

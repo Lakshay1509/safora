@@ -3,13 +3,26 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { useGetLocationReview } from "@/features/location/use-get-location-review";
 import { useParams } from "next/navigation";
-import {ThumbsUp,ThumbsDown, Plus} from "lucide-react"
+import {Plus, Edit, Trash2} from "lucide-react"
 import { AddReviewPopup } from "./add-review-popup";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { useGetReviewByUser } from "@/features/reviews/use-get-byUser-byLocation";
+import { useDeleteReview } from "@/features/reviews/use-delete-review";
+import { 
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle
+} from "@/components/ui/alert-dialog";
 
 export function ReviewsCard() {
-  const [isPopupOpen, setIsPopupOpen] = useState(false)
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const params = useParams();
   const id = params.id as string
 
@@ -18,6 +31,29 @@ export function ReviewsCard() {
     isLoading,
     isError
   } = useGetLocationReview(id);
+  
+  // Get the user's review for this location
+  const {
+    data: userReviewData,
+    isLoading: isUserReviewLoading,
+    isError: isUserReviewError,
+    error: userReviewError
+  } = useGetReviewByUser(id);
+
+  const deleteReviewMutation = useDeleteReview(id);
+
+  
+  const hasUserReview = !!userReviewData?.review && !isUserReviewError;
+
+  const handleDeleteReview = () => {
+    deleteReviewMutation.mutate(undefined, {
+      onSuccess: () => {
+        setIsDeleteDialogOpen(false);
+        
+        
+      }
+    });
+  };
 
   const ratings = {
     overall: data?.locationReview.avg_general,
@@ -69,13 +105,24 @@ export function ReviewsCard() {
     <>
     <Card
       className="w-full text-white bg-white/5 backdrop-blur-md border border-white/10 h-80 lg:h-110 transition-colors duration-200 hover:shadow-lg"
-
     >
       <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle className="text-xl font-bold" style={{ color: "#EAEAEA" }}>
           Reviews ({data?.locationReview.review_count})
         </CardTitle>
-        <Button
+        <div className="flex gap-2">
+          {hasUserReview && (
+            <Button
+              size="sm"
+              onClick={() => setIsDeleteDialogOpen(true)}
+              variant="destructive"
+              className="flex items-center gap-2"
+            >
+              <Trash2 className="h-4 w-4" />
+              Delete
+            </Button>
+          )}
+          <Button
             size="sm"
             onClick={() => setIsPopupOpen(true)}
             className="flex items-center gap-2"
@@ -84,9 +131,19 @@ export function ReviewsCard() {
               color: "white",
             }}
           >
-            <Plus className="h-4 w-4" />
-            Add Review
+            {hasUserReview ? (
+              <>
+                <Edit className="h-4 w-4" />
+                Edit Review
+              </>
+            ) : (
+              <>
+                <Plus className="h-4 w-4" />
+                Add Review
+              </>
+            )}
           </Button>
+        </div>
       </CardHeader>
       <CardContent className="space-y-6 mt-10">
         <div className="space-y-4">
@@ -121,7 +178,34 @@ export function ReviewsCard() {
         </div>
       </CardContent>
     </Card>
-     <AddReviewPopup isOpen={isPopupOpen} onClose={() => setIsPopupOpen(false)} locationId={id} />
+     <AddReviewPopup 
+        isOpen={isPopupOpen} 
+        onClose={() => setIsPopupOpen(false)} 
+        locationId={id} 
+        existingReview={userReviewData?.review || null} 
+        isEdit={hasUserReview}
+     />
+
+     {/* Delete Confirmation Dialog */}
+     <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <AlertDialogContent className="bg-gray-800 border border-white/10 text-white">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogDescription className="text-gray-300">
+              This will permanently delete your review. This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="bg-gray-700 hover:bg-gray-600 text-white border-none">Cancel</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={handleDeleteReview}
+              className="bg-red-600 hover:bg-red-700 text-white"
+            >
+              {deleteReviewMutation.isPending ? "Deleting..." : "Delete"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   )
 }
