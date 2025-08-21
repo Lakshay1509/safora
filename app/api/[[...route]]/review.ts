@@ -2,142 +2,152 @@ import { Hono } from "hono";
 import { db } from "@/lib/prisma";
 import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
-import { randomUUID } from 'crypto';
+import { randomUUID } from "crypto";
 import { createClient } from "@/utils/supabase/server";
 
 // Define the TimeOfDay enum to match your database schema
 // You might need to import this from your Prisma client if already defined there
 enum TimeOfDay {
   DAY = "DAY",
-  NIGHT = "NIGHT"
+  NIGHT = "NIGHT",
 }
 
 const app = new Hono()
 
-    .get("/byUser/:location_id",async(ctx)=>{
-      const location_id = ctx.req.param("location_id");
-      const supabase = await createClient();
-      const {
+  .get("/byUser/:location_id/:time_of_day", async (ctx) => {
+    const location_id = ctx.req.param("location_id");
+    const time_of_day_param = ctx.req.param("time_of_day");
+    if (!Object.values(TimeOfDay).includes(time_of_day_param as TimeOfDay)) {
+      return ctx.json({ error: "Invalid time_of_day parameter" }, 400);
+    }
+
+    const time_of_day = time_of_day_param as TimeOfDay;
+    const supabase = await createClient();
+    const {
       data: { user },
       error,
     } = await supabase.auth.getUser();
-
 
     if (error || !user) {
       return ctx.json({ error: "Unauthorized" }, 401);
     }
 
     const review = await db.reviews.findFirst({
-      where:{
-        location_id:location_id,
-        user_id:user.id,
-      }
-    })
+      where: {
+        location_id: location_id,
+        user_id: user.id,
+        time_of_day: time_of_day,
+      },
+    });
 
     if (!review) {
-      return ctx.json({review:null}, 200);
+      return ctx.json({ review: null }, 200);
     }
     return ctx.json({ review }, 200);
-    
-    })
+  })
 
-    .post("/add/:location_id", zValidator(
-    "json",
-    z.object({
+  .post(
+    "/add/:location_id",
+    zValidator(
+      "json",
+      z.object({
         general_score: z.number(),
         transit_score: z.number().nullable().default(null),
         neighbourhood_score: z.number().nullable().default(null),
         women_score: z.number().nullable().default(null),
-        time_of_day: z.enum(["DAY", "NIGHT"])
-    })
-), async (ctx) => {
-    try {
+        time_of_day: z.enum(["DAY", "NIGHT"]),
+      })
+    ),
+    async (ctx) => {
+      try {
         const location_id = ctx.req.param("location_id");
         const values = ctx.req.valid("json");
 
         // Authentication
         const supabase = await createClient();
-        const { data: { user }, error: authError } = await supabase.auth.getUser();
+        const {
+          data: { user },
+          error: authError,
+        } = await supabase.auth.getUser();
 
         if (authError || !user) {
-            return ctx.json({ error: "Unauthorized" }, 401);
+          return ctx.json({ error: "Unauthorized" }, 401);
         }
 
         // Get user data
         const userData = await db.public_users.findUnique({
-            where: { id: user.id },
+          where: { id: user.id },
         });
 
         if (!userData) {
-            return ctx.json({ error: "User not found" }, 404);
+          return ctx.json({ error: "User not found" }, 404);
         }
 
         // Convert string to enum
-        const time_of_day = TimeOfDay[values.time_of_day as keyof typeof TimeOfDay];
+        const time_of_day =
+          TimeOfDay[values.time_of_day as keyof typeof TimeOfDay];
 
         // Prepare review data
         const reviewData = {
-            id: randomUUID(),
-            user_id: user.id,
-            location_id,
-            general_score: values.general_score,
-            neighbourhood_score: values.neighbourhood_score,
-            transit_score: values.transit_score,
-            time_of_day,
-            women_safety_score: userData.gender === 'female' ? values.women_score : null
+          id: randomUUID(),
+          user_id: user.id,
+          location_id,
+          general_score: values.general_score,
+          neighbourhood_score: values.neighbourhood_score,
+          transit_score: values.transit_score,
+          time_of_day,
+          women_safety_score:
+            userData.gender === "female" ? values.women_score : null,
         };
 
         // Create review
         const review = await db.reviews.create({
-            data: reviewData
+          data: reviewData,
         });
 
-        return ctx.json({ review },200);
-
-    } catch (error) {
+        return ctx.json({ review }, 200);
+      } catch (error) {
         console.error("Error creating review:", error);
         return ctx.json({ error: "Error creating review" }, 500);
+      }
     }
-})
+  )
 
-  .delete("/delete/:location_id",async(ctx)=>{
-
+  .delete("/delete/:location_id", async (ctx) => {
     const supabase = await createClient();
     const location_id = ctx.req.param("location_id");
-        const { data: { user }, error: authError } = await supabase.auth.getUser();
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
 
-        if (authError || !user) {
-            return ctx.json({ error: "Unauthorized" }, 401);
-        }
+    if (authError || !user) {
+      return ctx.json({ error: "Unauthorized" }, 401);
+    }
 
-      const review = await db.reviews.findFirst({
-      where:{
-        location_id:location_id,
-        user_id:user.id,
-      }
-    })
+    const review = await db.reviews.findFirst({
+      where: {
+        location_id: location_id,
+        user_id: user.id,
+      },
+    });
 
     if (!review) {
-      return ctx.json({ error: "Review not found for this location by the current user" }, 404);
+      return ctx.json(
+        { error: "Review not found for this location by the current user" },
+        404
+      );
     }
 
     const deleteReview = await db.reviews.delete({
-      where:{id:review.id},
+      where: { id: review.id },
     });
 
-
-    if(!deleteReview){
-      return ctx.json({error:"Error deleting review"},500);
+    if (!deleteReview) {
+      return ctx.json({ error: "Error deleting review" }, 500);
     }
 
-    return ctx.json({deleteReview},200);
-
-
-
-
-  })
-
-
-
+    return ctx.json({ deleteReview }, 200);
+  });
 
 export default app;
