@@ -2,18 +2,18 @@ import { InferRequestType,InferResponseType } from "hono";
 import { useMutation,useQueryClient } from "@tanstack/react-query";
 import {client} from "@/lib/hono"
 
-type ResponseType = InferResponseType<(typeof client.api.review.add)[":location_id"]["$post"]>
-type RequestType = InferRequestType<(typeof client.api.review.add)[":location_id"]["$post"]>["json"]
+type ResponseType = InferResponseType<(typeof client.api.review.add)[":location_id"][":time_of_day"]["$post"]>
+type RequestType = InferRequestType<(typeof client.api.review.add)[":location_id"][":time_of_day"]["$post"]>["json"]
 
-export const addReview = (location_id:string)=>{
+export const addReview = (location_id:string,time_of_day:string)=>{
 
     const queryClient = useQueryClient();
 
     return useMutation<ResponseType,Error,RequestType>({
 
         mutationFn : async(json)=>{
-            const response = await client.api.review.add[":location_id"]["$post"]({
-                param:{location_id},
+            const response = await client.api.review.add[":location_id"][":time_of_day"]["$post"]({
+                param:{location_id,time_of_day},
                 json
             });
 

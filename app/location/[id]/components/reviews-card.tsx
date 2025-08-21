@@ -196,21 +196,21 @@ export function ReviewsCard() {
               {timeMode === "DAY" ? "Daytime" : "Nighttime"} Women Safety Score
             </span>
             {!ratings.women && <p className="text-black">No reviews</p>}
-            {ratings.women && <BarRating rating={Number(ratings.women)} isWomenScore={true} />}
+            {ratings.women!==null && ratings.women!==undefined && <BarRating rating={Number(ratings.women)} isWomenScore={true} />}
           </div>
           <div className="space-y-3">
             <span className="text-base font-medium" style={{ color: "#000000" }}>
               {timeMode === "DAY" ? "Daytime" : "Nighttime"} Transit Safety Score
             </span>
             {!ratings.transit && <p className="text-black">No reviews</p>}
-            {ratings.transit && <BarRating rating={Number(ratings.transit)} />}
+            {ratings.transit!==null && ratings.transit!==undefined && <BarRating rating={Number(ratings.transit)} />}
           </div>
           <div className="space-y-3">
             <span className="text-base font-medium" style={{ color: "#000000" }}>
               {timeMode === "DAY" ? "Daytime" : "Nighttime"} Neighbourhood Safety Score 
             </span>
             {!ratings.neighbourhood && <p className="text-black">No reviews</p>}
-            {ratings.neighbourhood && <BarRating rating={Number(ratings.neighbourhood)} />}
+            {ratings.neighbourhood!==null && ratings.neighbourhood!==undefined && <BarRating rating={Number(ratings.neighbourhood)} />}
           </div>
         </div>
       </CardContent>

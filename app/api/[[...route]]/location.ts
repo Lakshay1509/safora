@@ -44,34 +44,41 @@ const app = new Hono()
       return ctx.json({ error: "Unauthorized" }, 401);
     }
 
-    const locationReview = await db.location_scores.findUnique({
-      where: { location_id: id },
-    });
+    // Query reviews table directly
+    const { data: reviewData} = await supabase
+      .from('reviews')
+      .select('general_score, women_safety_score, transit_score, neighbourhood_score')
+      .eq('location_id', id)
+      .eq('time_of_day', time_of_day);
 
-    if (!locationReview) {
-      return ctx.json({ error: "Location not found" }, 404);
-    }
+   
 
-    if(time_of_day==='DAY'){
+   if (!reviewData || reviewData.length === 0) {
       return ctx.json({
-        review_count:locationReview.day_review_count,
-        avg_general:locationReview.day_avg_general,
-        avg_women_safety:locationReview.day_avg_women_safety,
-        avg_transit : locationReview.day_avg_transit,
-        avg_neighbourhood:locationReview.day_avg_neighbourhood,
-      },200)
+        review_count: 0,
+        avg_general: null,
+        avg_women_safety: null,
+        avg_transit: null,
+        avg_neighbourhood: null,
+      }, 200);
     }
+
+    // Calculate averages
+    const review_count = reviewData.length;
+    const avg_general = reviewData.reduce((sum, r) => sum + r.general_score, 0) / review_count;
+    const avg_women_safety = reviewData.reduce((sum, r) => sum + r.women_safety_score, 0) / review_count;
+    const avg_transit = reviewData.reduce((sum, r) => sum + r.transit_score, 0) / review_count;
+    const avg_neighbourhood = reviewData.reduce((sum, r) => sum + r.neighbourhood_score, 0) / review_count;
 
     return ctx.json({
-        review_count:locationReview.night_review_count,
-        avg_general:locationReview.night_avg_general,
-        avg_women_safety:locationReview.night_avg_women_safety,
-        avg_transit : locationReview.night_avg_transit,
-        avg_neighbourhood:locationReview.night_avg_neighbourhood,
-      },200)
+        review_count,
+        avg_general: Math.round(avg_general * 100) / 100,
+        avg_women_safety: Math.round(avg_women_safety * 100) / 100,
+        avg_transit: Math.round(avg_transit * 100) / 100,
+        avg_neighbourhood: Math.round(avg_neighbourhood * 100) / 100,
+    }, 200);
+})
 
-    
-  })
   .get("/precautions/:id", async (ctx) => {
     const id = ctx.req.param("id");
     const supabase = await createClient();

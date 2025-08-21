@@ -48,7 +48,7 @@ export function AddReviewPopup({
       isError
     } = useGetDefaultUser();
     
-  const reviewMutation = addReview(locationId)
+  const reviewMutation = addReview(locationId,timeMode)
 
   // Populate form with existing review data when in edit mode
   useEffect(() => {
@@ -77,7 +77,7 @@ export function AddReviewPopup({
             transit_score: ratings.transit,
             neighbourhood_score: ratings.neighbourhood,
             women_score: ratings.women,
-            time_of_day: timeMode.toUpperCase() as "DAY" | "NIGHT"  
+              
         }
 
         console.log(reviewData)

@@ -47,7 +47,7 @@ const app = new Hono()
   })
 
   .post(
-    "/add/:location_id",
+    "/add/:location_id/:time_of_day",
     zValidator(
       "json",
       z.object({
@@ -55,7 +55,6 @@ const app = new Hono()
         transit_score: z.number().nullable().default(null),
         neighbourhood_score: z.number().nullable().default(null),
         women_score: z.number().nullable().default(null),
-        time_of_day: z.enum(["DAY", "NIGHT"]),
       })
     ),
     async (ctx) => {
@@ -83,9 +82,9 @@ const app = new Hono()
           return ctx.json({ error: "User not found" }, 404);
         }
 
-        // Convert string to enum
-        const time_of_day =
-          TimeOfDay[values.time_of_day as keyof typeof TimeOfDay];
+        // Direct assignment instead of using TimeOfDay[values.time_of_day]
+       const time_of_day_param = ctx.req.param("time_of_day");
+       const time_of_day = time_of_day_param as TimeOfDay
 
         // Prepare review data
         const reviewData = {
@@ -99,11 +98,12 @@ const app = new Hono()
           women_safety_score:
             userData.gender === "female" ? values.women_score : null,
         };
-
         // Create review
         const review = await db.reviews.create({
           data: reviewData,
         });
+
+        
 
         if(review){
           return ctx.json({ review }, 200);
