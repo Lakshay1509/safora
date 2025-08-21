@@ -6,7 +6,7 @@ import {client} from "@/lib/hono"
 export const useGetReviewByUser = (location_id:string,time_of_day:string)=>{
     const query = useQuery({
         enabled : !!location_id,
-        queryKey: ["userReview", location_id, time_of_day], // Include time_of_day in query key
+        queryKey: ["userReview", location_id, time_of_day], 
         queryFn: async ()=>{
             const response = await client.api.review.byUser[":location_id"][":time_of_day"].$get({
                 param:{location_id,time_of_day},

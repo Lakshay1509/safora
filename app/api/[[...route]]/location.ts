@@ -1,6 +1,10 @@
 import { Hono } from "hono";
 import { db } from "@/lib/prisma";
 import { createClient } from "@/utils/supabase/server";
+enum TimeOfDay {
+  DAY = "DAY",
+  NIGHT = "NIGHT",
+}
 
 const app = new Hono()
 
@@ -25,8 +29,10 @@ const app = new Hono()
     }
     return ctx.json({ location }, 200);
   })
-  .get("/reviews/:id", async (ctx) => {
+  .get("/reviews/:id/:time_of_day", async (ctx) => {
     const id = ctx.req.param("id");
+    const time_of_day_param = ctx.req.param("time_of_day")
+    const time_of_day = time_of_day_param as TimeOfDay;
     const supabase = await createClient();
     const {
       data: { user },

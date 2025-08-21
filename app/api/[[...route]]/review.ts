@@ -113,9 +113,10 @@ const app = new Hono()
     }
   )
 
-  .delete("/delete/:location_id", async (ctx) => {
+  .delete("/delete/:location_id/:time_of_day", async (ctx) => {
     const supabase = await createClient();
     const location_id = ctx.req.param("location_id");
+    const time_of_day_param = ctx.req.param("time_of_day");
     const {
       data: { user },
       error: authError,
@@ -124,11 +125,13 @@ const app = new Hono()
     if (authError || !user) {
       return ctx.json({ error: "Unauthorized" }, 401);
     }
+    const time_of_day = time_of_day_param as TimeOfDay;
 
     const review = await db.reviews.findFirst({
       where: {
         location_id: location_id,
         user_id: user.id,
+        time_of_day : time_of_day
       },
     });
 

@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { X, Star, Sun, Moon } from "lucide-react"
+import { X, Star } from "lucide-react"
 import { useGetDefaultUser } from "@/features/user/use-get-default"
 import { addReview } from "@/features/reviews/use-add-review"
 import { Textarea } from "@/components/ui/textarea"
@@ -14,9 +14,9 @@ interface AddReviewPopupProps {
   locationId: string
   existingReview?: any | null
   isEdit?: boolean
+  timeMode: "DAY" | "NIGHT"  // Change from string to literal union type
 }
 type RatingValue = number | null;
-type TimeOfDay = "DAY" | "NIGHT" | null;
 
 interface Ratings {
   overall: RatingValue;
@@ -30,7 +30,8 @@ export function AddReviewPopup({
   onClose, 
   locationId, 
   existingReview = null, 
-  isEdit = false 
+  isEdit = false,
+  timeMode
 }: AddReviewPopupProps) {
   const [ratings, setRatings] = useState<Ratings>({
     overall: null,
@@ -38,7 +39,6 @@ export function AddReviewPopup({
     transit: null,
     neighbourhood: null
   })
-  const [timeOfDay, setTimeOfDay] = useState<TimeOfDay>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
@@ -59,7 +59,6 @@ export function AddReviewPopup({
         transit: existingReview.transit_score || null,
         neighbourhood: existingReview.neighbourhood_score || null
       });
-      setTimeOfDay(existingReview.time_of_day || null);
     }
   }, [existingReview, isEdit]);
 
@@ -72,13 +71,13 @@ export function AddReviewPopup({
       setIsSubmitting(true)
       setErrorMessage(null)
       
-      if(ratings.overall !== null && timeOfDay !== null){
+      if(ratings.overall !== null){
         const reviewData = {
             general_score: ratings.overall,
             transit_score: ratings.transit,
             neighbourhood_score: ratings.neighbourhood,
             women_score: ratings.women,
-            time_of_day: timeOfDay
+            time_of_day: timeMode as "DAY" | "NIGHT"  // Explicitly cast to the expected type
         }
 
         await reviewMutation.mutateAsync(reviewData)
@@ -86,7 +85,6 @@ export function AddReviewPopup({
       console.log(`Review ${isEdit ? 'updated' : 'submitted'} successfully`)
       
       setRatings({ overall: null, women: null, transit: null, neighbourhood: null })
-      setTimeOfDay(null)
       
       onClose()
     } catch (error) {
@@ -137,44 +135,6 @@ export function AddReviewPopup({
     </div>
   )
 
-  const TimeOfDaySelector = () => (
-    <div className="space-y-3">
-      <div className="flex justify-between items-center">
-        <span className="text-base font-medium" style={{ color: "#EAEAEA" }}>
-          Time of Day
-        </span>
-      </div>
-      <div className="flex gap-4">
-        <Button
-          type="button"
-          variant='ghost'
-          onClick={() => setTimeOfDay("DAY")}
-          className={`flex items-center gap-2 px-4 py-2 transition-colors ${
-            timeOfDay === "DAY" 
-              ? "bg-amber-500 text-black" 
-              : "bg-transparent border border-gray-700 text-gray-400 hover:bg-gray-700 hover:text-white"
-          }`}
-        >
-          <Sun className="h-5 w-5" />
-          <span>Day</span>
-        </Button>
-        <Button
-          type="button"
-          variant="ghost"
-          onClick={() => setTimeOfDay("NIGHT")}
-          className={`flex items-center gap-2 px-4 py-2 transition-colors ${
-            timeOfDay === "NIGHT" 
-              ? "bg-indigo-600 text-white" 
-              : "bg-transparent border border-gray-700 text-gray-400 hover:bg-gray-700 hover:text-white"
-          }`}
-        >
-          <Moon className="h-5 w-5" />
-          <span>Night</span>
-        </Button>
-      </div>
-    </div>
-  )
-
   if (!isOpen) return null
 
   return (
@@ -188,7 +148,7 @@ export function AddReviewPopup({
       >
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="text-xl font-bold" style={{ color: "#EAEAEA" }}>
-            {isEdit ? 'Edit Review' : 'Add Review'}
+            {isEdit ? 'Edit Review' : 'Add Review'} ({timeMode === "DAY" ? "Daytime" : "Nighttime"})
           </CardTitle>
           <Button variant="ghost" size="sm" onClick={onClose} className="h-8 w-8 p-0 hover:bg-gray-700">
             <X className="h-4 w-4" style={{ color: "#9CA3AF" }} />
@@ -200,8 +160,6 @@ export function AddReviewPopup({
               {errorMessage}
             </div>
           )}
-          
-          <TimeOfDaySelector />
           
           <StarRating
             label="Overall Score"
@@ -246,7 +204,7 @@ export function AddReviewPopup({
                 backgroundColor: "#3B82F6",
                 color: "white",
               }}
-              disabled={isSubmitting || ratings.overall === null || timeOfDay === null}
+              disabled={isSubmitting || ratings.overall === null}
             >
               {isSubmitting ? "Submitting..." : (isEdit ? "Update Review" : "Submit Review")}
             </Button>
