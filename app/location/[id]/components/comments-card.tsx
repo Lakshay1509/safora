@@ -199,9 +199,9 @@ export function CommentsCard() {
                     />
                     <div className="flex justify-end gap-2">
                       <Button
-                        variant="outline"
+                        variant="ghost"
                         size="sm"
-                        className="text-gray-300 border-gray-600 hover:bg-gray-800"
+                        className="text-white bg-gray-500"
                         onClick={handleCancelEdit}
                       >
                         <X size={14} className="mr-1" /> Cancel

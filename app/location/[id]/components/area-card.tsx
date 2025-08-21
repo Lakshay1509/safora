@@ -23,6 +23,7 @@ export function AreaCard() {
     isLoading,
     isError
   } = useGetLocation(id);
+  
   return (
     <Card className="w-full bg-white border border-white/10" >
 

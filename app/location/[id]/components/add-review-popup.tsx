@@ -14,7 +14,7 @@ interface AddReviewPopupProps {
   locationId: string
   existingReview?: any | null
   isEdit?: boolean
-  timeMode: "DAY" | "NIGHT"  // Change from string to literal union type
+  timeMode: "DAY" | "NIGHT"
 }
 type RatingValue = number | null;
 
@@ -77,8 +77,10 @@ export function AddReviewPopup({
             transit_score: ratings.transit,
             neighbourhood_score: ratings.neighbourhood,
             women_score: ratings.women,
-            time_of_day: timeMode as "DAY" | "NIGHT"  // Explicitly cast to the expected type
+            time_of_day: timeMode.toUpperCase() as "DAY" | "NIGHT"  
         }
+
+        console.log(reviewData)
 
         await reviewMutation.mutateAsync(reviewData)
       }

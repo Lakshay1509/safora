@@ -29,8 +29,10 @@ const app = new Hono()
     }
     return ctx.json({ location }, 200);
   })
-  .get("/reviews/:id", async (ctx) => {
+  .get("/reviews/:id/:time_of_day", async (ctx) => {
     const id = ctx.req.param("id");
+    const time_of_day_param = ctx.req.param("time_of_day");
+    const time_of_day = time_of_day_param as TimeOfDay
   
     const supabase = await createClient();
     const {
@@ -49,7 +51,26 @@ const app = new Hono()
     if (!locationReview) {
       return ctx.json({ error: "Location not found" }, 404);
     }
-    return ctx.json({ locationReview }, 200);
+
+    if(time_of_day==='DAY'){
+      return ctx.json({
+        review_count:locationReview.day_review_count,
+        avg_general:locationReview.day_avg_general,
+        avg_women_safety:locationReview.day_avg_women_safety,
+        avg_transit : locationReview.day_avg_transit,
+        avg_neighbourhood:locationReview.day_avg_neighbourhood,
+      },200)
+    }
+
+    return ctx.json({
+        review_count:locationReview.night_review_count,
+        avg_general:locationReview.night_avg_general,
+        avg_women_safety:locationReview.night_avg_women_safety,
+        avg_transit : locationReview.night_avg_transit,
+        avg_neighbourhood:locationReview.night_avg_neighbourhood,
+      },200)
+
+    
   })
   .get("/precautions/:id", async (ctx) => {
     const id = ctx.req.param("id");

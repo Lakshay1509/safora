@@ -59,7 +59,7 @@ const app = new Hono()
       })
     ),
     async (ctx) => {
-      try {
+      
         const location_id = ctx.req.param("location_id");
         const values = ctx.req.valid("json");
 
@@ -105,11 +105,11 @@ const app = new Hono()
           data: reviewData,
         });
 
-        return ctx.json({ review }, 200);
-      } catch (error) {
-        console.error("Error creating review:", error);
+        if(review){
+          return ctx.json({ review }, 200);
+        }
         return ctx.json({ error: "Error creating review" }, 500);
-      }
+      
     }
   )
 

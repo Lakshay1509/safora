@@ -2,13 +2,13 @@ import {useQuery} from "@tanstack/react-query";
 import {client} from "@/lib/hono"
 
 
-export const useGetLocationReview = (id:string)=>{
+export const useGetLocationReview = (id:string,time_of_day:string)=>{
     const query = useQuery({
         enabled :!!id,
-        queryKey: ["locationReview"],
+        queryKey: ["locationReview",id,time_of_day],
         queryFn: async ()=>{
-            const response = await client.api.location.reviews[":id"].$get({
-                param:{id},
+            const response = await client.api.location.reviews[":id"][":time_of_day"].$get({
+                param:{id,time_of_day},
             });
 
             if(!response.ok) throw new Error("failed to get location");

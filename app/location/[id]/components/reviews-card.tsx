@@ -31,7 +31,7 @@ export function ReviewsCard() {
     data,
     isLoading,
     isError
-  } = useGetLocationReview(id);
+  } = useGetLocationReview(id,timeMode);
   
   // Get the user's review for this location
   const {
@@ -65,10 +65,10 @@ export function ReviewsCard() {
   };
 
   const ratings = {
-    overall: data?.locationReview.avg_general,
-    women: data?.locationReview.avg_women_safety,
-    transit: data?.locationReview.avg_transit,
-    neighbourhood: data?.locationReview.avg_neighbourhood,
+    overall: data?.avg_general,
+    women: data?.avg_women_safety,
+    transit: data?.avg_transit,
+    neighbourhood: data?.avg_neighbourhood,
   }
 
   // Toggle function for day/night mode
@@ -123,7 +123,7 @@ export function ReviewsCard() {
       <CardHeader className="flex flex-row items-center justify-between">
         <div className="flex items-center gap-4">
           <CardTitle className="text-xl font-bold" style={{ color: "#000000" }}>
-            Reviews ({data?.locationReview.review_count})
+            Reviews ({data?.review_count})
           </CardTitle>
           
           {/* Day/Night Toggle */}
