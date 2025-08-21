@@ -10,7 +10,7 @@ const page = () => {
   
     
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black p-4 md:p-6 lg:p-8">
+    <div className="min-h-screen bg-[#F8F4EF]  p-4 md:p-6 lg:p-8">
       
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Top Area Card - Full Width */}

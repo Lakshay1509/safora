@@ -29,10 +29,9 @@ const app = new Hono()
     }
     return ctx.json({ location }, 200);
   })
-  .get("/reviews/:id/:time_of_day", async (ctx) => {
+  .get("/reviews/:id", async (ctx) => {
     const id = ctx.req.param("id");
-    const time_of_day_param = ctx.req.param("time_of_day")
-    const time_of_day = time_of_day_param as TimeOfDay;
+  
     const supabase = await createClient();
     const {
       data: { user },

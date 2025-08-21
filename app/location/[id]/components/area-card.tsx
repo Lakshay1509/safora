@@ -24,7 +24,7 @@ export function AreaCard() {
     isError
   } = useGetLocation(id);
   return (
-    <Card className="w-full  text-white bg-white/5 backdrop-blur-md border border-white/10" >
+    <Card className="w-full bg-white border border-white/10" >
 
       <CardContent className="pt-0 flex w-full justify-between ">
         <div className="space-y-4">
@@ -33,7 +33,7 @@ export function AreaCard() {
             {data?.location.area}
           </h2>
 
-          <div className="text-gray-200 ml-12">
+          <div className="text-black ml-12">
             <span>{data?.location.state}, {data?.location.city}</span>
           </div>
         </div>
@@ -41,10 +41,10 @@ export function AreaCard() {
         <div className="flex items-center gap-6">
             <div className="flex items-center gap-3">
               <div className="text-center">
-                <p className="text-sm font-medium" style={{ color: "#EAEAEA" }}>
+                <p className="text-sm font-medium" style={{ color: "#000000" }}>
                   Day
                 </p>
-                <p className="text-xs" style={{ color: "#9CA3AF" }}>
+                <p className="text-xs" style={{ color: "#000000" }}>
                   85% safe
                 </p>
               </div>
@@ -72,10 +72,10 @@ export function AreaCard() {
 
             <div className="flex items-center gap-3">
               <div className="text-center">
-                <p className="text-sm font-medium" style={{ color: "#EAEAEA" }}>
+                <p className="text-sm font-medium" style={{ color: "#000000" }}>
                   Night
                 </p>
-                <p className="text-xs" style={{ color: "#9CA3AF" }}>
+                <p className="text-xs" style={{ color: "#000000" }}>
                   62% safe
                 </p>
               </div>

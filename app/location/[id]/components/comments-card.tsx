@@ -98,10 +98,10 @@ export function CommentsCard() {
 
   return (
     <Card
-      className="w-full text-white bg-white/5 backdrop-blur-md border border-white/10 min-h-64 transition-colors duration-200 hover:shadow-lg"
+      className="w-full  bg-white border border-white/10 min-h-64 transition-colors duration-200 hover:shadow-lg"
     >
       <CardHeader>
-        <CardTitle className="text-lg font-bold" style={{ color: "#EAEAEA" }}>
+        <CardTitle className="text-lg font-bold" style={{ color: "#000000" }}>
           Comments ({data?.locationComments.length})
         </CardTitle>
       </CardHeader>
@@ -113,7 +113,7 @@ export function CommentsCard() {
               placeholder="Add a comment..."
               value={commentText}
               onChange={(e) => setCommentText(e.target.value)}
-              className="w-full bg-white/10 border-white/20 text-white placeholder:text-gray-400 resize-none"
+              className="w-full bg-white/10 border-white/20 text-black placeholder:text-gray-400 resize-none"
               rows={3}
             />
             <div className="flex justify-end">
@@ -138,29 +138,29 @@ export function CommentsCard() {
         {/* Comments List */}
         {isLoading ? (
           <div className="flex items-center justify-center h-full">
-            <p style={{ color: "#9CA3AF" }}>Loading comments...</p>
+            <p style={{ color: "#000000" }}>Loading comments...</p>
           </div>
         ) : isError ? (
           <div className="flex items-center justify-center h-full">
-            <p style={{ color: "#9CA3AF" }}>Failed to load comments</p>
+            <p style={{ color: "#000000" }}>Failed to load comments</p>
           </div>
         ) : data?.locationComments.length === 0 ? (
           <div className="flex items-center justify-center h-full">
-            <p style={{ color: "#9CA3AF" }}>No comments yet</p>
+            <p style={{ color: "#000000" }}>No comments yet</p>
           </div>
         ) : (
           <div className="space-y-4">
             {data?.locationComments.map((comment) => (
               <div 
                 key={comment.comment_id} 
-                className="p-3 rounded-lg bg-white/10 border border-white/5"
+                className="p-3 rounded-lg bg-[#F8F4EF] border border-white/5"
               >
                 <div className="flex items-center justify-between mb-2">
-                  <p className="font-medium text-sm" style={{ color: "#EAEAEA" }}>
+                  <p className="font-medium text-sm" style={{ color: "#000000" }}>
                     {comment.users?.name || "Anonymous"}
                   </p>
                   <div className="flex items-center gap-2">
-                    <p className="text-xs opacity-70" style={{ color: "#9CA3AF" }}>
+                    <p className="text-xs opacity-70" style={{ color: "#000000" }}>
                       {comment.created_at && formatDistanceToNow(new Date(comment.created_at), { addSuffix: true })}
                     </p>
                     {userId && comment.user_id === userId && (
@@ -194,7 +194,7 @@ export function CommentsCard() {
                     <Textarea
                       value={editCommentText}
                       onChange={(e) => setEditCommentText(e.target.value)}
-                      className="w-full bg-white/10 border-white/20 text-white placeholder:text-gray-400 resize-none"
+                      className="w-full bg-white/10 border-white/20 text-black placeholder:text-gray-400 resize-none"
                       rows={2}
                     />
                     <div className="flex justify-end gap-2">
@@ -220,7 +220,7 @@ export function CommentsCard() {
                     )}
                   </div>
                 ) : (
-                  <p className="text-sm" style={{ color: "#D1D5DB" }}>
+                  <p className="text-sm" style={{ color: "#000000" }}>
                     {comment.text}
                   </p>
                 )}

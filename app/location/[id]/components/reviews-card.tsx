@@ -105,7 +105,7 @@ export function ReviewsCard() {
       </div>
       <span
         className="text-lg font-semibold min-w-[2.5rem] text-right"
-        style={{ color: "#EAEAEA" }}
+        style={{ color: "#000000" }}
       >
         {rating.toFixed(1)}
       </span>
@@ -118,11 +118,11 @@ export function ReviewsCard() {
   return (
     <>
     <Card
-      className="w-full text-white bg-white/5 backdrop-blur-md border border-white/10 h-80 lg:h-110 transition-colors duration-200 hover:shadow-lg"
+      className="w-full text-black bg-white border border-white/10 h-80 lg:h-110 transition-colors duration-200 hover:shadow-lg"
     >
       <CardHeader className="flex flex-row items-center justify-between">
         <div className="flex items-center gap-4">
-          <CardTitle className="text-xl font-bold" style={{ color: "#EAEAEA" }}>
+          <CardTitle className="text-xl font-bold" style={{ color: "#000000" }}>
             Reviews ({data?.locationReview.review_count})
           </CardTitle>
           
@@ -131,7 +131,7 @@ export function ReviewsCard() {
             onClick={toggleDayNightMode} 
             variant="outline" 
             size="sm"
-            className="flex items-center gap-2 border border-white/20 bg-white/10"
+            className="flex items-center gap-2 border bg-[#F8F4EF] border-white/20 text-black"
           >
             {timeMode === "DAY" ? (
               <>
@@ -162,10 +162,10 @@ export function ReviewsCard() {
           <Button
             size="sm"
             onClick={() => setIsPopupOpen(true)}
-            className="flex items-center gap-2"
+            className="flex items-center gap-2 text-white"
             style={{
               backgroundColor: "#3B82F6",
-              color: "white",
+              
             }}
           >
             {hasUserReview ? (
@@ -185,31 +185,31 @@ export function ReviewsCard() {
       <CardContent className="space-y-6 mt-10">
         <div className="space-y-4">
           <div className="space-y-3">
-            <span className="text-xl font-medium" style={{ color: "#EAEAEA" }}>
+            <span className="text-xl font-medium" style={{ color: "#000000" }}>
               {timeMode === "DAY" ? "Daytime" : "Nighttime"} Overall Safety Score
             </span>
-            {!ratings.overall && <p>No reviews</p>}
+            {!ratings.overall && <p className="text-black">No reviews</p>}
             {ratings.overall && <BarRating rating={Number(ratings.overall)} />}
           </div>
           <div className="space-y-3">
-            <span className="text-xl font-medium" style={{ color: "#EAEAEA" }}>
+            <span className="text-xl font-medium" style={{ color: "#000000" }}>
               {timeMode === "DAY" ? "Daytime" : "Nighttime"} Women Safety Score
             </span>
-            {!ratings.women && <p>No reviews</p>}
+            {!ratings.women && <p className="text-black">No reviews</p>}
             {ratings.women && <BarRating rating={Number(ratings.women)} isWomenScore={true} />}
           </div>
           <div className="space-y-3">
-            <span className="text-base font-medium" style={{ color: "#EAEAEA" }}>
+            <span className="text-base font-medium" style={{ color: "#000000" }}>
               {timeMode === "DAY" ? "Daytime" : "Nighttime"} Transit Safety Score
             </span>
-            {!ratings.transit && <p>No reviews</p>}
+            {!ratings.transit && <p className="text-black">No reviews</p>}
             {ratings.transit && <BarRating rating={Number(ratings.transit)} />}
           </div>
           <div className="space-y-3">
-            <span className="text-base font-medium" style={{ color: "#EAEAEA" }}>
+            <span className="text-base font-medium" style={{ color: "#000000" }}>
               {timeMode === "DAY" ? "Daytime" : "Nighttime"} Neighbourhood Safety Score 
             </span>
-            {!ratings.neighbourhood && <p>No reviews</p>}
+            {!ratings.neighbourhood && <p className="text-black">No reviews</p>}
             {ratings.neighbourhood && <BarRating rating={Number(ratings.neighbourhood)} />}
           </div>
         </div>
@@ -227,18 +227,18 @@ export function ReviewsCard() {
 
      {/* Delete Confirmation Dialog */}
      <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-        <AlertDialogContent className="bg-gray-800 border border-white/10 text-white">
+        <AlertDialogContent className="bg-white border border-gray-200 text-gray-900">
           <AlertDialogHeader>
-            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-            <AlertDialogDescription className="text-gray-300">
+            <AlertDialogTitle className="text-gray-900 font-semibold">Are you sure?</AlertDialogTitle>
+            <AlertDialogDescription className="text-gray-600">
               This will permanently delete your review. This action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="bg-gray-700 hover:bg-gray-600 text-white border-none">Cancel</AlertDialogCancel>
+            <AlertDialogCancel className="bg-gray-100 hover:bg-gray-200 text-gray-700 border border-gray-200">Cancel</AlertDialogCancel>
             <AlertDialogAction 
               onClick={handleDeleteReview}
-              className="bg-red-600 hover:bg-red-700 text-white"
+              className="bg-red-500 hover:bg-red-600 text-white"
             >
               {deleteReviewMutation.isPending ? "Deleting..." : "Delete"}
             </AlertDialogAction>

@@ -108,10 +108,10 @@ export function AddReviewPopup({
   }) => (
     <div className="space-y-3">
       <div className="flex justify-between items-center">
-        <span className="text-base font-medium" style={{ color: "#EAEAEA" }}>
+        <span className="text-base font-medium" style={{ color: "#374151" }}>
           {label}
         </span>
-        <span className="text-lg font-semibold" style={{ color: "#EAEAEA" }}>
+        <span className="text-lg font-semibold" style={{ color: "#111827" }}>
           {value || ''}
         </span>
       </div>
@@ -126,7 +126,7 @@ export function AddReviewPopup({
             <Star
               className="h-8 w-8"
               fill={value && star <= value ? (isWomenScore ? "#3B82F6" : "#10B981") : "transparent"}
-              stroke={value && star <= value ? (isWomenScore ? "#3B82F6" : "#10B981") : "#2A2A2A"}
+              stroke={value && star <= value ? (isWomenScore ? "#3B82F6" : "#10B981") : "#D1D5DB"}
               strokeWidth={2}
             />
           </button>
@@ -138,25 +138,25 @@ export function AddReviewPopup({
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0  bg-white/5 backdrop-blur-md flex items-center justify-center z-50 p-4">
+    <div className="fixed inset-0 bg-black/5 backdrop-blur-sm flex items-center justify-center z-50 p-4">
       <Card
-        className="w-full max-w-md text-white"
+        className="w-full max-w-md text-gray-800"
         style={{
-          backgroundColor: "#1A1A1A",
-          borderColor: "#2A2A2A",
+          backgroundColor: "#FFFFFF",
+          borderColor: "#E5E7EB",
         }}
       >
         <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle className="text-xl font-bold" style={{ color: "#EAEAEA" }}>
+          <CardTitle className="text-xl font-bold" style={{ color: "#111827" }}>
             {isEdit ? 'Edit Review' : 'Add Review'} ({timeMode === "DAY" ? "Daytime" : "Nighttime"})
           </CardTitle>
-          <Button variant="ghost" size="sm" onClick={onClose} className="h-8 w-8 p-0 hover:bg-gray-700">
-            <X className="h-4 w-4" style={{ color: "#9CA3AF" }} />
+          <Button variant="ghost" size="sm" onClick={onClose} className="h-8 w-8 p-0 hover:bg-gray-100">
+            <X className="h-4 w-4" style={{ color: "#6B7280" }} />
           </Button>
         </CardHeader>
         <CardContent className="space-y-6">
           {errorMessage && (
-            <div className="p-3 bg-red-900/30 border border-red-800 rounded-md text-red-200 text-sm">
+            <div className="p-3 bg-red-100 border border-red-300 rounded-md text-red-800 text-sm">
               {errorMessage}
             </div>
           )}
@@ -189,8 +189,8 @@ export function AddReviewPopup({
               onClick={onClose}
               className="flex-1 bg-transparent"
               style={{
-                borderColor: "#2A2A2A",
-                color: "#9CA3AF",
+                borderColor: "#E5E7EB",
+                color: "#6B7280",
                 backgroundColor: "transparent",
               }}
               disabled={isSubmitting}
