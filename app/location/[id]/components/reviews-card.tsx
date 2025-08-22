@@ -44,7 +44,7 @@ export function ReviewsCard() {
   const deleteReviewMutation = useDeleteReview(id,timeMode);
 
   
-  const hasUserReview = !!userReviewData?.review && !isUserReviewError;
+  const hasUserReview = !!userReviewData?.review;
 
   // Reset popup when changing time mode
   useEffect(() => {
@@ -118,11 +118,11 @@ export function ReviewsCard() {
   return (
     <>
     <Card
-      className="w-full text-black bg-white border border-white/10 h-80 lg:h-110 transition-colors duration-200 hover:shadow-lg"
+      className="w-full text-black bg-white border border-white/10 min-h-[20rem] transition-colors duration-200 hover:shadow-lg"
     >
-      <CardHeader className="flex flex-row items-center justify-between">
-        <div className="flex items-center gap-4">
-          <CardTitle className="text-xl font-bold" style={{ color: "#000000" }}>
+      <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-4 w-full sm:w-auto">
+          <CardTitle className="text-lg sm:text-xl font-bold" style={{ color: "#000000" }}>
             Reviews ({data?.review_count})
           </CardTitle>
           
@@ -131,7 +131,7 @@ export function ReviewsCard() {
             onClick={toggleDayNightMode} 
             variant="outline" 
             size="sm"
-            className="flex items-center gap-2 border bg-[#F8F4EF] border-white/20 text-black"
+            className="flex items-center gap-2 border bg-[#F8F4EF] border-white/20 text-black w-fit"
           >
             {timeMode === "DAY" ? (
               <>
@@ -147,7 +147,7 @@ export function ReviewsCard() {
           </Button>
         </div>
         
-        <div className="flex gap-2">
+        <div className="flex gap-2 w-full sm:w-auto justify-end">
           {hasUserReview && (
             <Button
               size="sm"
@@ -156,7 +156,7 @@ export function ReviewsCard() {
               className="flex items-center gap-2"
             >
               <Trash2 className="h-4 w-4" />
-              Delete
+              <span className="hidden sm:inline">Delete</span>
             </Button>
           )}
           <Button
@@ -165,51 +165,50 @@ export function ReviewsCard() {
             className="flex items-center gap-2 text-white"
             style={{
               backgroundColor: "#3B82F6",
-              
             }}
           >
             {hasUserReview ? (
               <>
                 <Edit className="h-4 w-4" />
-                Edit Review
+                <span className="hidden sm:inline">Edit</span> Review
               </>
             ) : (
               <>
                 <Plus className="h-4 w-4" />
-                Add Review
+                <span className="hidden sm:inline">Add</span> Review
               </>
             )}
           </Button>
         </div>
       </CardHeader>
-      <CardContent className="space-y-6 mt-10">
-        <div className="space-y-4">
-          <div className="space-y-3">
-            <span className="text-xl font-medium" style={{ color: "#000000" }}>
+      <CardContent className="space-y-4 sm:space-y-6 pb-6">
+        <div className="space-y-3 sm:space-y-4">
+          <div className="space-y-2 sm:space-y-3">
+            <span className="text-base sm:text-xl font-medium" style={{ color: "#000000" }}>
               {timeMode === "DAY" ? "Daytime" : "Nighttime"} Overall Safety Score
             </span>
-            {!ratings.overall && <p className="text-black">No reviews</p>}
+            {!ratings.overall && <p className="text-black text-sm sm:text-base">No reviews</p>}
             {ratings.overall && <BarRating rating={Number(ratings.overall)} />}
           </div>
-          <div className="space-y-3">
-            <span className="text-xl font-medium" style={{ color: "#000000" }}>
+          <div className="space-y-2 sm:space-y-3">
+            <span className="text-base sm:text-xl font-medium" style={{ color: "#000000" }}>
               {timeMode === "DAY" ? "Daytime" : "Nighttime"} Women Safety Score
             </span>
-            {!ratings.women && <p className="text-black">No reviews</p>}
+            {!ratings.women && <p className="text-black text-sm sm:text-base">No reviews</p>}
             {ratings.women!==null && ratings.women!==undefined && <BarRating rating={Number(ratings.women)} isWomenScore={true} />}
           </div>
-          <div className="space-y-3">
-            <span className="text-base font-medium" style={{ color: "#000000" }}>
+          <div className="space-y-2 sm:space-y-3">
+            <span className="text-sm sm:text-base font-medium" style={{ color: "#000000" }}>
               {timeMode === "DAY" ? "Daytime" : "Nighttime"} Transit Safety Score
             </span>
-            {!ratings.transit && <p className="text-black">No reviews</p>}
+            {!ratings.transit && <p className="text-black text-sm sm:text-base">No reviews</p>}
             {ratings.transit!==null && ratings.transit!==undefined && <BarRating rating={Number(ratings.transit)} />}
           </div>
-          <div className="space-y-3">
-            <span className="text-base font-medium" style={{ color: "#000000" }}>
+          <div className="space-y-2 sm:space-y-3">
+            <span className="text-sm sm:text-base font-medium" style={{ color: "#000000" }}>
               {timeMode === "DAY" ? "Daytime" : "Nighttime"} Neighbourhood Safety Score 
             </span>
-            {!ratings.neighbourhood && <p className="text-black">No reviews</p>}
+            {!ratings.neighbourhood && <p className="text-black text-sm sm:text-base">No reviews</p>}
             {ratings.neighbourhood!==null && ratings.neighbourhood!==undefined && <BarRating rating={Number(ratings.neighbourhood)} />}
           </div>
         </div>
@@ -221,8 +220,7 @@ export function ReviewsCard() {
         locationId={id} 
         existingReview={userReviewData?.review || null} 
         isEdit={hasUserReview}
-        timeMode={timeMode} 
-        key={`review-popup-${timeMode}`} // Add key to force re-render when timeMode changes
+        timeMode={timeMode}
      />
 
      {/* Delete Confirmation Dialog */}
@@ -247,4 +245,5 @@ export function ReviewsCard() {
       </AlertDialog>
     </>
   )
+
 }

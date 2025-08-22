@@ -35,7 +35,7 @@ export function PrecautionCard() {
 
   return (
     <Card
-      className="w-full bg-white border border-white/10 h-80 lg:h-110 transition-colors duration-200 hover:shadow-lg"
+      className="w-full bg-white border border-white/10 h-110 transition-colors duration-200 hover:shadow-lg"
     >
       <CardHeader>
         <CardTitle className="text-lg font-bold" style={{ color: "#000000" }}>
@@ -64,7 +64,7 @@ export function PrecautionCard() {
         )}
         
         {!isLoading && !isError && precautions.length > 0 && (
-          <ul className="space-y-3 pr-2">
+          <ul className="space-y-3 pr-2 text-sm md:text-base">
             {precautions.map((item, index) => (
               <li key={index} className="bg-[#F8F4EF] p-3 rounded-md border border-white/10 transition-all">
                 <p style={{ color: "#000000" }}>

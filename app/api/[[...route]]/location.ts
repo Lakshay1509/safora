@@ -32,8 +32,8 @@ const app = new Hono()
   .get("/reviews/:id/:time_of_day", async (ctx) => {
     const id = ctx.req.param("id");
     const time_of_day_param = ctx.req.param("time_of_day");
-    const time_of_day = time_of_day_param as TimeOfDay
-  
+    const time_of_day = time_of_day_param as TimeOfDay;
+
     const supabase = await createClient();
     const {
       data: { user },
@@ -45,39 +45,63 @@ const app = new Hono()
     }
 
     // Query reviews table directly
-    const { data: reviewData} = await supabase
-      .from('reviews')
-      .select('general_score, women_safety_score, transit_score, neighbourhood_score')
-      .eq('location_id', id)
-      .eq('time_of_day', time_of_day);
+    const { data: reviewData } = await supabase
+      .from("reviews")
+      .select(
+        "general_score, women_safety_score, transit_score, neighbourhood_score"
+      )
+      .eq("location_id", id)
+      .eq("time_of_day", time_of_day);
 
-   
-
-   if (!reviewData || reviewData.length === 0) {
-      return ctx.json({
-        review_count: 0,
-        avg_general: null,
-        avg_women_safety: null,
-        avg_transit: null,
-        avg_neighbourhood: null,
-      }, 200);
+    if (!reviewData || reviewData.length === 0) {
+      return ctx.json(
+        {
+          review_count: 0,
+          avg_general: null,
+          avg_women_safety: null,
+          avg_transit: null,
+          avg_neighbourhood: null,
+        },
+        200
+      );
     }
 
-    // Calculate averages
+   
     const review_count = reviewData.length;
-    const avg_general = reviewData.reduce((sum, r) => sum + r.general_score, 0) / review_count;
-    const avg_women_safety = reviewData.reduce((sum, r) => sum + r.women_safety_score, 0) / review_count;
-    const avg_transit = reviewData.reduce((sum, r) => sum + r.transit_score, 0) / review_count;
-    const avg_neighbourhood = reviewData.reduce((sum, r) => sum + r.neighbourhood_score, 0) / review_count;
 
-    return ctx.json({
+    // Helper function to calculate average excluding null values
+    const calculateAverage = (values: (number | null)[]): number | null => {
+      const validValues = values.filter((v): v is number => v !== null);
+      if (validValues.length === 0) return null;
+      return validValues.reduce((sum, v) => sum + v, 0) / validValues.length;
+    };
+
+    const avg_general =
+      reviewData.reduce((sum, r) => sum + r.general_score, 0) / review_count;
+
+    const women_safety_scores = reviewData.map((r) => r.women_safety_score);
+    const transit_scores = reviewData.map((r) => r.transit_score);
+    const neighbourhood_scores = reviewData.map((r) => r.neighbourhood_score);
+
+    const avg_women_safety = calculateAverage(women_safety_scores);
+    const avg_transit = calculateAverage(transit_scores);
+    const avg_neighbourhood = calculateAverage(neighbourhood_scores);
+
+    return ctx.json(
+      {
         review_count,
         avg_general: Math.round(avg_general * 100) / 100,
-        avg_women_safety: Math.round(avg_women_safety * 100) / 100,
-        avg_transit: Math.round(avg_transit * 100) / 100,
-        avg_neighbourhood: Math.round(avg_neighbourhood * 100) / 100,
-    }, 200);
-})
+        avg_women_safety: avg_women_safety
+          ? Math.round(avg_women_safety * 100) / 100
+          : null,
+        avg_transit: avg_transit ? Math.round(avg_transit * 100) / 100 : null,
+        avg_neighbourhood: avg_neighbourhood
+          ? Math.round(avg_neighbourhood * 100) / 100
+          : null,
+      },
+      200
+    );
+  })
 
   .get("/precautions/:id", async (ctx) => {
     const id = ctx.req.param("id");
@@ -119,12 +143,10 @@ const app = new Hono()
         users: {
           select: {
             id: true,
-            name: true, 
+            name: true,
           },
         },
-        
       },
-    
     });
 
     if (!locationComments || locationComments.length === 0) {
@@ -132,10 +154,6 @@ const app = new Hono()
     }
 
     return ctx.json({ locationComments }, 200);
-  })
-
-  
-
-  
+  });
 
 export default app;

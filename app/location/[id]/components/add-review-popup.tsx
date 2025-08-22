@@ -6,7 +6,8 @@ import { Button } from "@/components/ui/button"
 import { X, Star } from "lucide-react"
 import { useGetDefaultUser } from "@/features/user/use-get-default"
 import { addReview } from "@/features/reviews/use-add-review"
-import { Textarea } from "@/components/ui/textarea"
+import { EditReview } from "@/features/reviews/use-edit-review" 
+
 
 interface AddReviewPopupProps {
   isOpen: boolean
@@ -48,19 +49,30 @@ export function AddReviewPopup({
       isError
     } = useGetDefaultUser();
     
-  const reviewMutation = addReview(locationId,timeMode)
+  // Use different mutation based on isEdit flag
+  const addReviewMutation = addReview(locationId, timeMode)
+  const editReviewMutation = EditReview(locationId, timeMode)
+  const reviewMutation = isEdit ? editReviewMutation : addReviewMutation
 
   // Populate form with existing review data when in edit mode
   useEffect(() => {
     if (existingReview && isEdit) {
       setRatings({
         overall: existingReview.general_score || null,
-        women: existingReview.women_score || null,
+        women: existingReview.women_safety_score || null,
         transit: existingReview.transit_score || null,
         neighbourhood: existingReview.neighbourhood_score || null
       });
+    } else if (!isEdit) {
+      // Reset ratings when not in edit mode
+      setRatings({
+        overall: null,
+        women: null,
+        transit: null,
+        neighbourhood: null
+      });
     }
-  }, [existingReview, isEdit]);
+  }, [existingReview, isEdit, timeMode]); // Add timeMode as a dependency
 
   const handleRatingChange = (category: keyof typeof ratings, value: number) => {
     setRatings((prev) => ({ ...prev, [category]: value }))
@@ -77,11 +89,8 @@ export function AddReviewPopup({
             transit_score: ratings.transit,
             neighbourhood_score: ratings.neighbourhood,
             women_score: ratings.women,
-              
         }
-
-        console.log(reviewData)
-
+        
         await reviewMutation.mutateAsync(reviewData)
       }
       console.log(`Review ${isEdit ? 'updated' : 'submitted'} successfully`)

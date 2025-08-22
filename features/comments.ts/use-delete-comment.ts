@@ -1,6 +1,7 @@
 import { InferRequestType, InferResponseType } from "hono";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { client } from "@/lib/hono";
+import { toast } from "sonner";
 
 // Correct type inference for DELETE operation
 type ResponseType = InferResponseType<
@@ -28,9 +29,11 @@ export const useDeleteComment = () => {
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["locationComments"] });
+            toast.success("Comment deleted successfully");
         },
         onError: (error) => {
             console.log("Delete comment error:", error);
+            toast.error("Failed to delete comment");
         }
     });
 };
