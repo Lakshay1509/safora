@@ -147,6 +147,7 @@ const app = new Hono()
           },
         },
       },
+      orderBy:{created_at:'desc'}
     });
 
     if (!locationComments || locationComments.length === 0) {

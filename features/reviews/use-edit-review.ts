@@ -22,6 +22,7 @@ export const EditReview = (location_id:string,time_of_day:string)=>{
         },
         onSuccess:()=>{
             queryClient.invalidateQueries({queryKey:["locationReview"]});
+            queryClient.invalidateQueries({queryKey:["userReview"]})
             toast.success("Review edited successfully");
         },
         onError:(error)=>{
