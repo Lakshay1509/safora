@@ -21,8 +21,8 @@ export const addReview = (location_id:string,time_of_day:string)=>{
             return response.json();
         },
         onSuccess:async()=>{
-            await queryClient.invalidateQueries({queryKey:["locationReview"]});
-            await queryClient.invalidateQueries({ queryKey: ["userReview"] }); 
+            await queryClient.invalidateQueries({queryKey:["locationReview",location_id,time_of_day]});
+            await queryClient.invalidateQueries({ queryKey: ["userReview",location_id,time_of_day] }); 
             toast.success("Review created successfully ")
         },
         onError:(error)=>{
