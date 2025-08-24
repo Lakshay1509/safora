@@ -5,7 +5,7 @@ import {client} from "@/lib/hono"
 export const useGetLocationPrecautions = (id:string)=>{
     const query = useQuery({
         enabled :!!id,
-        queryKey: ["locationPreacautions"],
+        queryKey: ["locationPreacautions",id],
         queryFn: async ()=>{
             const response = await client.api.location.precautions[":id"].$get({
                 param:{id},

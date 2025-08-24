@@ -7,27 +7,78 @@ import LoginButton from "./LoginLogoutButton"
 import { useEffect, useRef, useState } from "react"
 import { GeocoderAutocomplete } from "@geoapify/geocoder-autocomplete"
 import type { GeoJSON, Position } from "geojson"
+import { useRouter } from "next/navigation";
 
 // Import the CSS styles for the autocomplete
 import "@geoapify/geocoder-autocomplete/styles/minimal-dark.css"
+import { useGetLocationByCoord } from "@/features/location/use-get-location-coord"
+import { addLocationByCoord } from "@/features/location/use-add-location-coord"
 
 interface LocationResult {
   formatted: string
-  lat: Position|number
-  lon: Position|number
+  lat: number
+  lon: number
   place_id: string
-  address_line1?: string
-  address_line2?: string
+  address_line1: string
+  address_line2: string
   city?: string
-  country?: string
+  country: string
+}
+
+interface LocationFormatted {
+  lat: number 
+  long: number
+  city: string | null
+  country: string
+  name:string
 }
 
 export function Navbar() {
-  const [searchValue, setSearchValue] = useState("")
-  const [showClearButton, setShowClearButton] = useState(false)
+  
+  const [selectedCoords, setSelectedCoords] = useState<{lat: number, lon: number} | null>(null)
+  const [selectedLocation, setSelectedLocation] = useState<LocationFormatted>()
   const autocompleteRef = useRef<HTMLDivElement>(null)
   const geocoderRef = useRef<GeocoderAutocomplete | null>(null)
-  const inputRef = useRef<HTMLInputElement>(null)
+  const router = useRouter();
+  const LocationMutation = addLocationByCoord();
+
+  // Get location data when coordinates change
+  const {data, isError, isSuccess, refetch} = useGetLocationByCoord(
+    selectedCoords?.lon || 0,
+    selectedCoords?.lat || 0,
+    
+  )
+
+  useEffect(() => {
+    if (isSuccess && data?.location?.length) {
+      router.push(`/location/${data.location[0].id}`);
+     
+      setSelectedLocation(undefined);
+      setSelectedCoords(null);
+    } else if (isError && selectedLocation) {
+      const postLocation = async () => {
+       
+        const locationToCreate = { ...selectedLocation };
+        setSelectedLocation(undefined);
+
+        try {
+          const result:any = await LocationMutation.mutateAsync(locationToCreate);
+          if (result?.location?.length) {
+             // After successful creation, navigate to the new page
+            router.push(`/location/${result.location[0].id}`);
+            setSelectedCoords(null); // Clear coords as well
+          }
+        } catch (e) {
+          console.error("Failed to create location:", e);
+          
+        }
+      };
+
+      postLocation();
+    }
+  }, [isSuccess, data, isError, selectedLocation, LocationMutation, router]);
+
+
 
   // Replace with your actual Geoapify API key
   const GEOAPIFY_API_KEY = process.env.NEXT_PUBLIC_GEOAPIFY_API_KEY || "YOUR_API_KEY_HERE"
@@ -40,7 +91,7 @@ export function Navbar() {
         GEOAPIFY_API_KEY,
         {
           placeholder: "Search locations...",
-          debounceDelay: 900, // 300ms debounce delay
+          debounceDelay: 300, // 300ms debounce delay
           limit: 3, // Limit suggestions to 5
           skipIcons: false, // Show location icons
           lang: "en", // Language
@@ -60,7 +111,7 @@ export function Navbar() {
           const locationData: LocationResult = {
             formatted: location.properties.formatted || '',
             lat: location.geometry?.type === 'Point' ? location.geometry.coordinates[1] : 0,
-            lon: location.geometry?.type === 'Point' ? location.geometry.coordinates : 0,
+            lon: location.geometry?.type === 'Point' ? location.geometry.coordinates[0] : 0,
             place_id: location.properties.place_id || '',
             address_line1: location.properties.address_line1,
             address_line2: location.properties.address_line2,
@@ -79,10 +130,7 @@ export function Navbar() {
       })
 
       // Handle input changes
-      geocoderRef.current.on('input', (inputValue: string) => {
-        setSearchValue(inputValue)
-        setShowClearButton(inputValue.length > 0)
-      })
+      
     }
 
     return () => {
@@ -99,8 +147,20 @@ export function Navbar() {
 
   const handleLocationSelect = (location: LocationResult) => {
     console.log('Selected location:', location)
-    setSearchValue(location.formatted)
-    setShowClearButton(true)
+   
+    
+    // Update the coordinates state instead of directly calling the hook
+    setSelectedCoords({
+      lat: location.lat,
+      lon: location.lon
+    })
+    setSelectedLocation({
+      lat:location.lat,
+      long:location.lon,
+      city:location?.city?  location.city : null,
+      country:location.country,
+      name:location.address_line1
+    })
     
     // Here you can:
     // 1. Update global state with selected location
@@ -116,22 +176,7 @@ export function Navbar() {
     // onLocationSelect?.(location)
   }
 
-  const handleClearSearch = () => {
-    if (geocoderRef.current) {
-      geocoderRef.current.setValue("")
-    }
-    setSearchValue("")
-    setShowClearButton(false)
-  }
-
-  const handleManualInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value
-    if (geocoderRef.current) {
-      geocoderRef.current.setValue(value)
-    }
-    setSearchValue(value)
-    setShowClearButton(value.length > 0)
-  }
+ 
 
   return (
     <nav className="w-full border-b" style={{ backgroundColor: "#2C2C2C", borderColor: "#2A2A2A" }}>

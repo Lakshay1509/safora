@@ -1,39 +1,53 @@
 import { Hono } from "hono";
 import { db } from "@/lib/prisma";
 import { createClient } from "@/utils/supabase/server";
+import { zValidator } from "@hono/zod-validator";
+import { z } from "zod";
+import { randomUUID } from "crypto";
 enum TimeOfDay {
   DAY = "DAY",
   NIGHT = "NIGHT",
 }
 
-// interface location{
-//     name: string;
-//     id: string;
-//     created_at: Date;
-//     country: string;
-//     city: string | null;
-// }
+interface location {
+  name: string;
+  id: string;
+  created_at: Date;
+  country: string;
+  city: string | null;
+  lat: number;
+  lon: number;
+}
+
 
 const app = new Hono()
 
   .get("/locationsByCoord", async (ctx) => {
-  const latParam = ctx.req.query("lat");
-  const lonParam = ctx.req.query("lon");
+    const supabase = await createClient();
+    const {
+      data: { user },
+      error,
+    } = await supabase.auth.getUser();
 
-  if (!latParam || !lonParam) {
-    return ctx.json({ error: "Latitude and longitude are required" }, 400);
-  }
+    if (error || !user) {
+      return ctx.json({ error: "Unauthorized" }, 401);
+    }
+    const latParam = ctx.req.query("lat");
+    const lonParam = ctx.req.query("lon");
 
-  const lat = parseFloat(latParam);
-  const lon = parseFloat(lonParam);
+    if (!latParam || !lonParam) {
+      return ctx.json({ error: "Latitude and longitude are required" }, 400);
+    }
 
+    const lat = parseFloat(latParam);
+    const lon = parseFloat(lonParam);
 
-  if (isNaN(lat) || isNaN(lon)) {
-    return ctx.json({ error: "Invalid latitude or longitude format" }, 400);
-  }
+    if (isNaN(lat) || isNaN(lon)) {
+      return ctx.json({ error: "Invalid latitude or longitude format" }, 400);
+    }
 
-  // Use ST_DWithin for coordinate matching with a very small tolerance
-  const location = await db.$queryRaw`
+    // Use ST_DWithin for coordinate matching with a very small tolerance
+    const location = await db.$queryRaw<location[]>`
       SELECT id, country, city, name, created_at, 
              ST_AsText(geog) as geog_text
       FROM locations 
@@ -41,14 +55,14 @@ const app = new Hono()
       LIMIT 1
   `;
 
-  if (!location || (Array.isArray(location) && location.length === 0)) {
-    return ctx.json({ error: "Location not found" }, 404);
-  }
-  
-  return ctx.json({ location }, 200);
-})
+    if (!location || (Array.isArray(location) && location.length === 0)) {
+      return ctx.json({ error: "Location not found" }, 404);
+    }
 
-  .get("/:id", async (ctx) => {
+    return ctx.json({ location }, 200);
+  })
+
+  .get("/locationByID/:id", async (ctx) => {
     const id = ctx.req.param("id");
     const supabase = await createClient();
     const {
@@ -69,8 +83,6 @@ const app = new Hono()
     }
     return ctx.json({ location }, 200);
   })
-
-  
 
   .get("/reviews/:id/:time_of_day", async (ctx) => {
     const id = ctx.req.param("id");
@@ -109,7 +121,6 @@ const app = new Hono()
       );
     }
 
-   
     const review_count = reviewData.length;
 
     // Helper function to calculate average excluding null values
@@ -190,14 +201,62 @@ const app = new Hono()
           },
         },
       },
-      orderBy:{created_at:'desc'}
+      orderBy: { created_at: "desc" },
     });
 
-    if (!locationComments || locationComments.length === 0) {
-      return ctx.json({ error: "No comments found for this location" }, 404);
+    if (locationComments.length === 0) {
+      return ctx.json({ locationComments }, 200);
+    }
+    if (!locationComments) {
+      return ctx.json({ Error: "Error getting comments" }, 500);
     }
 
     return ctx.json({ locationComments }, 200);
-  });
+  })
+
+  .post(
+    "/createLocationByCoord",
+    zValidator(
+      "json",
+      z.object({
+        city: z.string().nullable(),
+        country: z.string(),
+        name: z.string(),
+        long: z.number(),
+        lat: z.number(),
+      })
+    ),
+    async (ctx) => {
+      const supabase = await createClient();
+      const {
+        data: { user },
+        error,
+      } = await supabase.auth.getUser();
+
+      if (error || !user) {
+        return ctx.json({ error: "Unauthorized" }, 401);
+      }
+
+      const values = ctx.req.valid("json");
+      const location = await db.$queryRaw<location[]>`
+  INSERT INTO locations (country, city, name, geog)
+  VALUES (
+    ${values.country},
+    ${values.city},
+    ${values.name},
+    ST_SetSRID(ST_MakePoint(${values.long}, ${values.lat}), 4326)
+  )
+  RETURNING id, country, city, name, created_at, ${values.lat} as lat, ${values.long} as lon;
+`;
+
+
+
+      if (!location || (Array.isArray(location) && location.length === 0)) {
+        return ctx.json({ error: "Error creating location" }, 404);
+      }
+
+      return ctx.json({ location }, 200);
+    }
+  );
 
 export default app;

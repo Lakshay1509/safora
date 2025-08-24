@@ -5,7 +5,7 @@ import {client} from "@/lib/hono"
 export const useGetLocationComments = (id:string)=>{
     const query = useQuery({
         enabled :!!id,
-        queryKey: ["locationComments"],
+        queryKey: ["locationComments",id],
         queryFn: async ()=>{
             const response = await client.api.location.comments[":id"].$get({
                 param:{id},

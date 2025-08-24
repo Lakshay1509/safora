@@ -5,9 +5,9 @@ import {client} from "@/lib/hono"
 export const useGetLocation = (id:string)=>{
     const query = useQuery({
         enabled :!!id,
-        queryKey: ["location"],
+        queryKey: ["location",id],
         queryFn: async ()=>{
-            const response = await client.api.location[":id"].$get({
+            const response = await client.api.location.locationByID[":id"].$get({
                 param:{id},
             });
 
