@@ -41,7 +41,7 @@ export function Navbar() {
         {
           placeholder: "Search locations...",
           debounceDelay: 900, // 300ms debounce delay
-          limit: 5, // Limit suggestions to 5
+          limit: 3, // Limit suggestions to 5
           skipIcons: false, // Show location icons
           lang: "en", // Language
           // Filter options - you can customize these
@@ -82,15 +82,6 @@ export function Navbar() {
       geocoderRef.current.on('input', (inputValue: string) => {
         setSearchValue(inputValue)
         setShowClearButton(inputValue.length > 0)
-      })
-
-      // Handle dropdown open/close events (optional)
-      geocoderRef.current.on('open', () => {
-        console.log('Dropdown opened')
-      })
-
-      geocoderRef.current.on('close', () => {
-        console.log('Dropdown closed')
       })
     }
 

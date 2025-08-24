@@ -333,18 +333,18 @@ model auth_users {
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model locations {
   id          String                   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  state       String
-  city        String
-  area        String
-  geog        Unsupported("geography")
+  country     String
+  city        String?
+  name        String
+  geog        Unsupported("geography") @unique
   created_at  DateTime                 @default(now()) @db.Timestamptz(6)
   comments    comments[]
   precautions precautions?
   reviews     reviews[]
 
-  @@unique([city, area])
-  @@index([city, area], map: "idx_locations_city_area")
+  @@unique([city, name], map: "locations_city_area_key")
   @@index([geog], map: "idx_locations_geog", type: Gist)
+  @@index([city, name], map: "idx_locations_city_area")
   @@schema("public")
 }
 
