@@ -6,7 +6,47 @@ enum TimeOfDay {
   NIGHT = "NIGHT",
 }
 
+// interface location{
+//     name: string;
+//     id: string;
+//     created_at: Date;
+//     country: string;
+//     city: string | null;
+// }
+
 const app = new Hono()
+
+  .get("/locationsByCoord", async (ctx) => {
+  const latParam = ctx.req.query("lat");
+  const lonParam = ctx.req.query("lon");
+
+  if (!latParam || !lonParam) {
+    return ctx.json({ error: "Latitude and longitude are required" }, 400);
+  }
+
+  const lat = parseFloat(latParam);
+  const lon = parseFloat(lonParam);
+
+
+  if (isNaN(lat) || isNaN(lon)) {
+    return ctx.json({ error: "Invalid latitude or longitude format" }, 400);
+  }
+
+  // Use ST_DWithin for coordinate matching with a very small tolerance
+  const location = await db.$queryRaw`
+      SELECT id, country, city, name, created_at, 
+             ST_AsText(geog) as geog_text
+      FROM locations 
+      WHERE ST_DWithin(geog, ST_Point(${lon}, ${lat}, 4326)::geography, 0.1)
+      LIMIT 1
+  `;
+
+  if (!location || (Array.isArray(location) && location.length === 0)) {
+    return ctx.json({ error: "Location not found" }, 404);
+  }
+  
+  return ctx.json({ location }, 200);
+})
 
   .get("/:id", async (ctx) => {
     const id = ctx.req.param("id");
@@ -29,6 +69,9 @@ const app = new Hono()
     }
     return ctx.json({ location }, 200);
   })
+
+  
+
   .get("/reviews/:id/:time_of_day", async (ctx) => {
     const id = ctx.req.param("id");
     const time_of_day_param = ctx.req.param("time_of_day");
