@@ -10,7 +10,7 @@ import type { GeoJSON, Position } from "geojson"
 import { useRouter } from "next/navigation";
 
 // Import the CSS styles for the autocomplete
-import "@geoapify/geocoder-autocomplete/styles/minimal-dark.css"
+import "@geoapify/geocoder-autocomplete/styles/minimal.css"
 import { useGetLocationByCoord } from "@/features/location/use-get-location-coord"
 import { addLocationByCoord } from "@/features/location/use-add-location-coord"
 import { createClient } from "@/utils/supabase/client"
@@ -183,12 +183,14 @@ export function Navbar() {
  
 
   return (
-    <nav className="w-full border-b" style={{ backgroundColor: "#2C2C2C", borderColor: "#2A2A2A" }}>
+    <div className="my-4 mx-10">
+    <nav className="w-full rounded-full shadow-sm" style={{ backgroundColor: "#F9FAFB" }}>
+
       <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <div className="flex-shrink-0">
-            <h1 className="text-xl font-bold" style={{ color: "#EAEAEA" }}>
+            <h1 className="text-xl font-bold text-black" >
               SafeSpot
             </h1>
           </div>
@@ -197,14 +199,14 @@ export function Navbar() {
           <div className={`flex-1 max-w-md mx-8 ${UserData?.userData?.id && !userError ? "block":"hidden"}`}>
             <div className="relative">
               <Search
-                className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 z-10"
-                style={{ color: "#9CA3AF" }}
+                className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 z-10 text-black"
+                
               />
               
               {/* Geoapify Autocomplete Container */}
               <div 
                 ref={autocompleteRef} 
-                className={`relative w-full geoapify-autocomplete-container ml-10 ${UserData?.userData?.id && !userError ? "block":"hidden"}`}
+                className={`relative w-full geoapify-autocomplete-container ml-10 bg-white text-black ${UserData?.userData?.id && !userError ? "block":"hidden"}`}
               >
                 {/* The autocomplete will inject its input here */}
               </div>
@@ -213,13 +215,14 @@ export function Navbar() {
 
           {/* Profile and Logout */}
           <div className="flex items-center space-x-4">
-            <Button variant="ghost" size="sm" className={`p-2 hover:bg-gray-800 ${UserData?.userData?.id && !userError ? "block":"hidden"}`} style={{ color: "#9CA3AF" }}>
-              <User className="w-5 h-5" />
+            <Button variant="ghost" size="sm" className={`p-2 hover:bg-gray-200 ${UserData?.userData?.id && !userError ? "block":"hidden"}`} >
+              <User className="w-5 h-5 text-black" />
             </Button>
             <LoginButton/>
           </div>
         </div>
       </div>
     </nav>
+    </div>
   )
 }
