@@ -13,6 +13,8 @@ import { useRouter } from "next/navigation";
 import "@geoapify/geocoder-autocomplete/styles/minimal-dark.css"
 import { useGetLocationByCoord } from "@/features/location/use-get-location-coord"
 import { addLocationByCoord } from "@/features/location/use-add-location-coord"
+import { createClient } from "@/utils/supabase/client"
+import { useGetDefaultUser } from "@/features/user/use-get-default"
 
 interface LocationResult {
   formatted: string
@@ -41,6 +43,8 @@ export function Navbar() {
   const geocoderRef = useRef<GeocoderAutocomplete | null>(null)
   const router = useRouter();
   const LocationMutation = addLocationByCoord();
+
+   const {data: UserData, isError: userError} = useGetDefaultUser()
 
   // Get location data when coordinates change
   const {data, isError, isSuccess, refetch} = useGetLocationByCoord(
@@ -190,7 +194,7 @@ export function Navbar() {
           </div>
 
           {/* Search Bar with Geoapify Autocomplete */}
-          <div className="flex-1 max-w-md mx-8">
+          <div className={`flex-1 max-w-md mx-8 ${UserData?.userData?.id && !userError ? "block":"hidden"}`}>
             <div className="relative">
               <Search
                 className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 z-10"
@@ -200,7 +204,7 @@ export function Navbar() {
               {/* Geoapify Autocomplete Container */}
               <div 
                 ref={autocompleteRef} 
-                className="relative w-full geoapify-autocomplete-container ml-10"
+                className={`relative w-full geoapify-autocomplete-container ml-10 ${UserData?.userData?.id && !userError ? "block":"hidden"}`}
               >
                 {/* The autocomplete will inject its input here */}
               </div>
@@ -209,7 +213,7 @@ export function Navbar() {
 
           {/* Profile and Logout */}
           <div className="flex items-center space-x-4">
-            <Button variant="ghost" size="sm" className="p-2 hover:bg-gray-800" style={{ color: "#9CA3AF" }}>
+            <Button variant="ghost" size="sm" className={`p-2 hover:bg-gray-800 ${UserData?.userData?.id && !userError ? "block":"hidden"}`} style={{ color: "#9CA3AF" }}>
               <User className="w-5 h-5" />
             </Button>
             <LoginButton/>

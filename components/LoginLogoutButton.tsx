@@ -4,8 +4,10 @@ import { Button } from "./ui/button";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
 import { signout } from "@/lib/auth-action";
+import { useQueryClient } from "@tanstack/react-query";
 
 const LoginButton = () => {
+  const queryClient = useQueryClient();
   const [user, setUser] = useState<any>(null);
   const router = useRouter();
   const supabase = createClient();
@@ -22,9 +24,15 @@ const LoginButton = () => {
     return (
       <Button
       variant="outline"
-        onClick={() => {
-          signout();
+        onClick={async() => {
+          const result = await signout();
           setUser(null);
+          queryClient.invalidateQueries({queryKey:["user"]});
+          
+          // Only redirect after invalidation has been triggered
+          if (result?.success) {
+            router.push("/logout");
+          }
         }}
       >
         Log out

@@ -22,6 +22,7 @@ export async function login(formData: FormData) {
 
   revalidatePath("/", "layout");
   redirect("/");
+  return {success:true}
 }
 
 export async function signup(formData: FormData) {
@@ -61,7 +62,7 @@ export async function signout() {
     redirect("/error");
   }
 
-  redirect("/logout");
+  return { success: true };
 }
 
 export async function signInWithGoogle() {
@@ -82,5 +83,7 @@ export async function signInWithGoogle() {
     redirect("/error");
   }
 
-  redirect(data.url);
+  revalidatePath("/", "layout");
+  redirect(data.url)
+  
 }

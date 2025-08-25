@@ -14,7 +14,8 @@ export const useGetDefaultUser = ()=>{
             const data = await response.json();
 
             return data;
-        }
+        },
+        retry:2
     });
 
     return query;
