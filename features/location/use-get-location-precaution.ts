@@ -16,7 +16,8 @@ export const useGetLocationPrecautions = (id:string)=>{
             const data = await response.json();
 
             return data;
-        }
+        },
+        retry:1
     });
 
     return query;

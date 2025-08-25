@@ -77,23 +77,31 @@ const app = new Hono()
       return ctx.json({ error: "Unauthorized" }, 401);
     }
 
-  
-    const distinctLocations = await db.comments.findMany({
-      where: {
-        user_id: user.id
-      },
-      select: {
-        location_id: true
-      },
-      distinct: ['location_id']
-    });
+    
+      // Get all location IDs from both comments and reviews tables in a single query
+      const result = await db.$queryRaw`
+        SELECT DISTINCT location_id 
+        FROM (
+          SELECT location_id FROM comments WHERE user_id = ${user.id}::uuid
+          UNION
+          SELECT location_id FROM reviews WHERE user_id = ${user.id}::uuid
+        ) AS combined_locations
+      `;
 
-    const count = distinctLocations.length;
+      if(!result){
+        return ctx.json({ error: "Failed to fetch locations count" }, 500);
+      }
+      
+      const count = Array.isArray(result) ? result.length : 0;
 
-    return ctx.json({ 
-      count,
-      message: "Number of locations where user has at least one comment" 
-    }, 200);
+      return ctx.json({ 
+        count,
+        message: "Number of locations where user has at least one comment or review" 
+      }, 200);
+    
+      
+      
+    
   })
 
 
