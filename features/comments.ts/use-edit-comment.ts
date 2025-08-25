@@ -21,6 +21,7 @@ export const EditComment = ()=>{
         },
         onSuccess:()=>{
             queryClient.invalidateQueries({queryKey:["locationComments"]});
+            queryClient.invalidateQueries({queryKey:["userComments"]});
             toast.success("Comment edited successfully");
         },
         onError:(error)=>{

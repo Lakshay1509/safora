@@ -21,6 +21,7 @@ export const addComment = ()=>{
         },
         onSuccess:()=>{
             queryClient.invalidateQueries({queryKey:["locationComments"]});
+            queryClient.invalidateQueries({queryKey:["userComments"]});
             toast.success("Comment added successfully");
         },
         onError:(error)=>{

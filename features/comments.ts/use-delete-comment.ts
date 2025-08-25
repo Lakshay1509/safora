@@ -29,6 +29,7 @@ export const useDeleteComment = () => {
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["locationComments"] });
+             queryClient.invalidateQueries({ queryKey: ["userComments"] });
             toast.success("Comment deleted successfully");
         },
         onError: (error) => {
