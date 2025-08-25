@@ -54,7 +54,7 @@ export default function LandingPage() {
       </div>
       <div className="w-full max-w-7xl mx-auto mt-4 sm:mt-6 md:mt-8 px-2 sm:px-4">
         <div className="aspect-[16/9] sm:aspect-[16/8] md:aspect-[16/7] lg:aspect-[16/6]">
-          {/* <WorldMap
+          <WorldMap
             dots={[
               {
                 start: {
@@ -87,7 +87,7 @@ export default function LandingPage() {
                 end: { lat: -1.2921, lng: 36.8219 }, // Nairobi
               },
             ]}
-          /> */}
+          />
         </div>
       </div>
     </div>
