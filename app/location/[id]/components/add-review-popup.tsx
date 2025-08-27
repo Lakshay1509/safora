@@ -165,7 +165,10 @@ export function AddReviewPopup({
             <X className="h-4 w-4" style={{ color: "#6B7280" }} />
           </Button>
         </CardHeader>
-        <CardContent className="space-y-6">
+        {userData !==undefined && userData.userData.gender===null &&(
+          <div className="text-center">Please complete the profile to continue.</div>
+        )}
+        {userData !==undefined && userData.userData.gender!==null && (<CardContent className="space-y-6">
           {errorMessage && (
             <div className="p-3 bg-red-100 border border-red-300 rounded-md text-red-800 text-sm">
               {errorMessage}
@@ -220,7 +223,7 @@ export function AddReviewPopup({
               {isSubmitting ? "Submitting..." : (isEdit ? "Update Review" : "Submit Review")}
             </Button>
           </div>
-        </CardContent>
+        </CardContent>)}
       </Card>
     </div>
   )

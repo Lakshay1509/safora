@@ -63,7 +63,7 @@ const SelectGender = ({DialogOpen, onClose}:Props) => {
               <AlertDialogHeader>
                 <AlertDialogTitle className="text-gray-900 font-semibold">Please select gender</AlertDialogTitle>
                 <AlertDialogDescription className="text-gray-600">
-                  We need this information to maintain the platform integrity and will not be disclosed anywhere. You can set this only once.
+                  Please select your gender. This helps us maintain platform integrity. Your choice will remain private and cannot be changed later.
                 </AlertDialogDescription>
               </AlertDialogHeader>
               

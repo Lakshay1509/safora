@@ -73,7 +73,7 @@ export function ProfileCard() {
         <Button onClick={() => {
           setIsDialogOpen(true)
         }}>
-          Update Gender
+          Add Gender
         </Button>
 
         <SelectGender 
