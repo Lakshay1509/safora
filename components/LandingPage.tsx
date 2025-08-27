@@ -39,12 +39,13 @@ export default function LandingPage() {
             </Button>
 
           ) : (
-            <Button 
-              className="bg-teal-600 hover:bg-teal-700 text-white font-medium py-2 sm:py-2.5 md:py-3 px-4 sm:px-6 md:px-8 rounded-lg shadow-sm hover:shadow-md transition-colors duration-200 text-sm sm:text-base"
-              size="lg"
-            >
-              Search Locations
-            </Button>
+            // <Button 
+            //   className="bg-teal-600 hover:bg-teal-700 text-white font-medium py-2 sm:py-2.5 md:py-3 px-4 sm:px-6 md:px-8 rounded-lg shadow-sm hover:shadow-md transition-colors duration-200 text-sm sm:text-base"
+            //   size="lg"
+            // >
+            //   Search Locations
+            // </Button>
+            <></>
 
           )}
         </div>

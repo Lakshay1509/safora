@@ -18,8 +18,8 @@ const page = () => {
 
         {/* Middle Row - Map and Reviews Cards */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <PrecautionCard />
           <ReviewsCard />
+          <PrecautionCard />
         </div>
 
         {/* Bottom Comments Card - Full Width */}
