@@ -1,44 +1,43 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Button } from "./ui/button";
 import { useRouter } from "next/navigation";
-import { createClient } from "@/utils/supabase/client";
 import { signout } from "@/lib/auth-action";
-import { useQueryClient } from "@tanstack/react-query";
+import { useAuth } from "@/contexts/AuthContext";
 
 const LoginButton = () => {
-  const queryClient = useQueryClient();
-  const [user, setUser] = useState<any>(null);
+  const { user, loading, setUser } = useAuth(); // Get setUser from context
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
   const router = useRouter();
-  const supabase = createClient();
-  useEffect(() => {
-    const fetchUser = async () => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      setUser(user);
-    };
-    fetchUser();
-  }, []);
+
+  if (loading) {
+    return <Button variant="outline" disabled>Loading...</Button>;
+  }
+
   if (user) {
     return (
       <Button
-      variant="outline"
-        onClick={async() => {
+        variant="outline"
+        disabled={isLoggingOut}
+        onClick={async () => {
+          setIsLoggingOut(true);
           const result = await signout();
-          setUser(null);
-          queryClient.invalidateQueries({queryKey:["user"]});
           
-          // Only redirect after invalidation has been triggered
           if (result?.success) {
-            router.push("/logout");
+            setUser(null); // Manually set user to null on the client
+            router.push("/");
+            router.refresh();
+          } else {
+            // Re-enable the button if logout fails
+            setIsLoggingOut(false);
           }
         }}
       >
-        Log out
+        {isLoggingOut ? "Logging out..." : "Log out"}
       </Button>
     );
   }
+
   return (
     <Button
       variant="outline"

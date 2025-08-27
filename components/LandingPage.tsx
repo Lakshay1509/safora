@@ -4,22 +4,13 @@ import WorldMap from "@/components/ui/world-map";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
 
 
 export default function LandingPage() {
   
-    const [user, setUser] = useState<any>(null);
     const router = useRouter();
-    const supabase =  createClient();
-    useEffect(() => {
-        const fetchUser = async () => {
-          const {
-            data: { user },
-          } = await supabase.auth.getUser();
-          setUser(user);
-        };
-        fetchUser();
-      }, []);
+    const {user, loading} = useAuth();
     
   return (
     <div className="min-h-screen w-full py-10 sm:py-16 md:py-20 dark:bg-black bg-white flex flex-col justify-center items-center overflow-hidden">
