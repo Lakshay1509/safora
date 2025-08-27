@@ -7,6 +7,7 @@ import { createClient } from "@/utils/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useGetDefaultUser } from "@/features/user/use-get-default";
 import SelectGender from "./SelectGender";
+import LoginButton from "./LoginLogoutButton";
 
 
 export default function LandingPage() {
@@ -14,7 +15,7 @@ export default function LandingPage() {
     
   
     const router = useRouter();
-    const {user} = useAuth();
+    const {user,loading} = useAuth();
 
     const {data,isLoading,isError} = useGetDefaultUser();
     
@@ -30,13 +31,14 @@ export default function LandingPage() {
         
         <div className="mt-4 sm:mt-5 md:mt-6">
           {!user ? (
-            <Button
-              className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 sm:py-2.5 px-4 sm:px-6 rounded-lg shadow-sm hover:shadow-md transition-colors duration-200 text-sm sm:text-base"
-              size="lg"
-              onClick={()=>{router.push('/login')}}
-            >
-              Login to Get Started
-            </Button>
+            // <Button
+            //   className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 sm:py-2.5 px-4 sm:px-6 rounded-lg shadow-sm hover:shadow-md transition-colors duration-200 text-sm sm:text-base"
+            //   size="lg"
+            //   onClick={()=>{router.push('/login')}}
+            // >
+            //   Login to Get Started
+            // </Button>
+            <LoginButton/>
 
           ) : (
             // <Button 
