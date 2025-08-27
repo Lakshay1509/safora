@@ -5,12 +5,18 @@ import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { useGetDefaultUser } from "@/features/user/use-get-default";
+import SelectGender from "./SelectGender";
 
 
 export default function LandingPage() {
+
+    
   
     const router = useRouter();
-    const {user, loading} = useAuth();
+    const {user} = useAuth();
+
+    const {data,isLoading,isError} = useGetDefaultUser();
     
   return (
     <div className="min-h-screen w-full py-10 sm:py-16 md:py-20 dark:bg-black bg-white flex flex-col justify-center items-center overflow-hidden">
@@ -81,6 +87,8 @@ export default function LandingPage() {
           />
         </div>
       </div>
+
+      <SelectGender DialogOpen={!isLoading && !isError && data?.userData.gender===null}/>
     </div>
   );
 }

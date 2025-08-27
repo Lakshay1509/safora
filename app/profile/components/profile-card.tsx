@@ -6,13 +6,16 @@ import { useGetUserComments } from "@/features/user/use-get-user-comment";
 import { MapPin, Calendar, Star } from "lucide-react"
 import { format, parseISO } from "date-fns"
 import { useGetUserLocationCount } from "@/features/user/use-get-locationCount";
+import { Button } from "@/components/ui/button";
+import { useState } from "react";
+import SelectGender from "@/components/SelectGender";
 
 export function ProfileCard() {
 
   const {data:UserData,isLoading,isError} =useGetDefaultUser();
   const {data:UserComment} =  useGetUserComments();
   const {data:UserLocationCount} =  useGetUserLocationCount();
-  
+  const [dialogOpen,setIsDialogOpen]= useState<boolean>(false);  
 
   // Format the date if it exists
   const formatCreatedDate = (dateString: string) => {
@@ -66,6 +69,18 @@ export function ProfileCard() {
             </div>
           </div>
         </div>
+        {!isLoading && !isError && UserData?.userData.gender===null && (<div className="flex justify-center items-center mt-10">
+        <Button onClick={() => {
+          setIsDialogOpen(true)
+        }}>
+          Update Gender
+        </Button>
+
+        <SelectGender 
+          DialogOpen={dialogOpen} 
+          onClose={() => setIsDialogOpen(false)}
+        />
+        </div>)}
       </CardContent>
     </Card>
   )
