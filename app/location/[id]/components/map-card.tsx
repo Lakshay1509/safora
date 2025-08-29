@@ -4,18 +4,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { useGetLocationPrecautions } from "@/features/location/use-get-location-precaution";
 import { useParams } from "next/navigation";
 import { AlertTriangle, Loader2  } from "lucide-react";
-
-// Define the expected precaution type
-interface Precaution {
-  tip: string;
-  // Add other properties if needed
-}
+import { GeneratedPrecautions,SafetyTip} from "@/lib/gemini-service";
 
 // Helper function to clean precaution tips
 const cleanPrecautionTip = (tip: string): string => {
-  // Find the first period and trim any content after it that resembles an array reference
-  const match = tip.match(/^(.*?\.)\s*\[\d+(?:,\s*\d+)*\]?/);
-  return match ? match[1] : tip;
+  // Remove citation brackets like [1], [2, 3] from the end of the string
+  return tip.replace(/\s*\[[\d\s,]+\]\s*$/, '').trim();
 };
 
 export function PrecautionCard() {
@@ -28,10 +22,12 @@ export function PrecautionCard() {
     isError
   } = useGetLocationPrecautions(id);
 
-  // Ensure precautions is always an array with the correct type
-  const precautions: Precaution[] = Array.isArray(data?.locationPrecautions?.approved_precautions) 
-    ? data.locationPrecautions.approved_precautions 
-    : [];
+  
+
+  // Ensure tips is always an array with the correct type
+  const safetyTips: SafetyTip[] = data?.approved_precautions?.tips ?? [];
+  
+   
 
   return (
     <Card
@@ -57,15 +53,15 @@ export function PrecautionCard() {
           </div>
         )}
         
-        {!isLoading && !isError && precautions.length === 0 && (
+        {!isLoading && !isError && safetyTips.length === 0 && (
           <div className="text-center" style={{ color: "#000000" }}>
             No safety precautions available for this location
           </div>
         )}
         
-        {!isLoading && !isError && precautions.length > 0 && (
+        {!isLoading && !isError && safetyTips.length > 0 && (
           <ul className="space-y-3 pr-2 text-sm md:text-base">
-            {precautions.map((item, index) => (
+            {safetyTips.map((item, index) => (
               <li key={index} className="bg-[#F8F4EF] p-3 rounded-md border border-white/10 transition-all">
                 <p style={{ color: "#000000" }}>
                   {cleanPrecautionTip(item.tip)}

@@ -4,6 +4,7 @@ import { createClient } from "@/utils/supabase/server";
 import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
 import { randomUUID } from "crypto";
+import { generateLocationPrecautions } from "@/lib/gemini-service";
 enum TimeOfDay {
   DAY = "DAY",
   NIGHT = "NIGHT",
@@ -173,10 +174,45 @@ const app = new Hono()
       where: { location_id: id },
     });
 
-    if (!locationPrecautions) {
-      return ctx.json({ error: "Location not found" }, 404);
+    const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+
+    if (!locationPrecautions || locationPrecautions.created_at < oneDayAgo) {
+       const location = await db.locations.findUnique({
+        where: { id: id },
+      });
+
+      if (!location) {
+        return ctx.json({ error: "Location not found" }, 404);
+      }
+      
+      try{
+        const generatedData = await generateLocationPrecautions(
+          location.name,
+          location.city,
+          location.country
+        )
+
+        const createdPrecautions = await db.precautions.create(
+          {
+            data:{
+              location_id:id,
+              approved_precautions:generatedData,
+            }
+          }
+        )
+
+        if(!createdPrecautions){
+          return ctx.json({error:"Error getting precautions"},500);
+        }
+
+        return ctx.json({location_id:createdPrecautions.location_id,approved_precautions:createdPrecautions.approved_precautions},200)
+      }
+      catch(error){
+        console.log(error)
+        return ctx.json({error:"Error getting precautions"},500)
+      }
     }
-    return ctx.json({ locationPrecautions }, 200);
+    return ctx.json( locationPrecautions , 200);
   })
 
   .get("/comments/:id", async (ctx) => {
