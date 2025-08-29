@@ -18,6 +18,11 @@ export const EditReview = (location_id:string,time_of_day:string)=>{
                 param:{location_id,time_of_day}
             });
 
+            if(!response.ok){
+
+                throw new Error("Failed to edit review");
+            }
+
             return response.json();
         },
         onSuccess:()=>{

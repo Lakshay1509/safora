@@ -1,3 +1,4 @@
+//@ts-nocheck
 "use client"
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -6,10 +7,15 @@ import { useParams } from "next/navigation";
 import { AlertTriangle, Loader2  } from "lucide-react";
 import { GeneratedPrecautions,SafetyTip} from "@/lib/gemini-service";
 
-// Helper function to clean precaution tips
 const cleanPrecautionTip = (tip: string): string => {
-  // Remove citation brackets like [1], [2, 3] from the end of the string
-  return tip.replace(/\s*\[[\d\s,]+\]\s*$/, '').trim();
+  // Remove citation brackets like [1], [2, 3] from anywhere in the string
+  // Handles cases like: "Text[1].", "Text.[1]", "Text[1, 2].", "Text.[1, 2]"
+  return tip
+    .replace(/\[[\d\s,]+\]\./g, '.') // Remove citations before periods: [1]. -> .
+    .replace(/\.\[[\d\s,]+\]/g, '.') // Remove citations after periods: .[1] -> .
+    .replace(/\s*\[[\d\s,]+\]\s*/g, ' ') // Remove remaining citations and normalize spaces
+    .replace(/\s+/g, ' ') // Clean up multiple spaces
+    .trim(); // Remove leading/trailing whitespace
 };
 
 export function PrecautionCard() {
@@ -26,6 +32,7 @@ export function PrecautionCard() {
 
   // Ensure tips is always an array with the correct type
   const safetyTips: SafetyTip[] = data?.approved_precautions?.tips ?? [];
+
   
    
 

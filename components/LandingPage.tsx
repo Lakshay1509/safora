@@ -1,23 +1,21 @@
 "use client"
-import { useEffect, useState } from "react";
 import WorldMap from "@/components/ui/world-map";
-import { Button } from "@/components/ui/button";
-import { useRouter } from "next/navigation";
-import { createClient } from "@/utils/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
-import { useGetDefaultUser } from "@/features/user/use-get-default";
 import SelectGender from "./SelectGender";
 import LoginButton from "./LoginLogoutButton";
+import { useGetDefaultUserLanding } from "@/features/user/use-get-user-landing";
 
 
 export default function LandingPage() {
 
-    
-  
-    const router = useRouter();
+
     const {user,loading} = useAuth();
 
-    const {data,isLoading,isError} = useGetDefaultUser();
+     const shouldFetchUserData = !!user && !loading;
+    
+    const {data,isLoading,isError} = useGetDefaultUserLanding({
+      enabled:shouldFetchUserData
+    });
     
   return (
     <div className="min-h-screen w-full py-10 sm:py-16 md:py-20 dark:bg-black bg-white flex flex-col justify-center items-center overflow-hidden">

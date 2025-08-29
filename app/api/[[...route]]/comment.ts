@@ -39,7 +39,7 @@ const app = new Hono()
     })
 
     if(comment){
-      return ctx.json({comment});
+      return ctx.json({comment},200);
     }
 
     return ctx.json({error:"Error creating comment"},500)

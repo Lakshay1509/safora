@@ -19,6 +19,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle
 } from "@/components/ui/alert-dialog";
+import { createClient } from "@/utils/supabase/client";
 
 export function ReviewsCard() {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
@@ -26,6 +27,21 @@ export function ReviewsCard() {
   const [timeMode, setTimeMode] = useState<"DAY" | "NIGHT">("DAY");
   const params = useParams();
   const id = params.id as string
+  const [userId, setUserId] = useState<string | null>(null);
+
+  const supabase = createClient();
+    
+    // Get current user ID
+    useEffect(() => {
+      const getCurrentUser = async () => {
+        const { data } = await supabase.auth.getUser();
+        if (data?.user) {
+          setUserId(data.user.id);
+        }
+      };
+      
+      getCurrentUser();
+    }, []);
 
   const {
     data,
@@ -147,7 +163,7 @@ export function ReviewsCard() {
           </Button>
         </div>
         
-        <div className="flex gap-2 w-full sm:w-auto justify-end">
+        {userId && <div className="flex gap-2 w-full sm:w-auto justify-end">
           {hasUserReview && (
             <Button
               size="sm"
@@ -179,7 +195,7 @@ export function ReviewsCard() {
               </>
             )}
           </Button>
-        </div>
+        </div>}
       </CardHeader>
       <CardContent className="space-y-4 sm:space-y-6 pb-6">
         <div className="space-y-3 sm:space-y-4">

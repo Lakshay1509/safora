@@ -18,6 +18,11 @@ export const addReview = (location_id:string,time_of_day:string)=>{
                 json
             });
 
+            if(!response.ok){
+
+                throw new Error("Failed to create review");
+            }
+
             return response.json();
         },
         onSuccess:async()=>{

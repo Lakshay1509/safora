@@ -17,6 +17,11 @@ export const addComment = ()=>{
                 json
             });
 
+             if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || "Failed to add comment");
+            }
+
             return response.json();
         },
         onSuccess:()=>{

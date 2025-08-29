@@ -17,6 +17,10 @@ export const EditComment = ()=>{
                 json
             });
 
+            if(!response.ok){
+                throw new Error("Failed to update comment");
+            }
+
             return response.json();
         },
         onSuccess:()=>{

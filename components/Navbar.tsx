@@ -13,6 +13,7 @@ import "@geoapify/geocoder-autocomplete/styles/minimal.css"
 import { useGetLocationByCoord } from "@/features/location/use-get-location-coord"
 import { addLocationByCoord } from "@/features/location/use-add-location-coord"
 import { useAuth } from "@/contexts/AuthContext"
+import Link from "next/link"
 
 interface LocationResult {
   formatted: string
@@ -243,9 +244,11 @@ export function Navbar() {
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
             <div className="flex-shrink-0">
+              <Link href="/">
               <h1 className="text-xl font-bold text-black">
-                SafeSpot
+                Safe or Not
               </h1>
+              </Link>
             </div>
 
             {/* Search Bar - visible on larger screens */}

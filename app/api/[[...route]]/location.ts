@@ -65,15 +65,15 @@ const app = new Hono()
 
   .get("/locationByID/:id", async (ctx) => {
     const id = ctx.req.param("id");
-    const supabase = await createClient();
-    const {
-      data: { user },
-      error,
-    } = await supabase.auth.getUser();
+    // const supabase = await createClient();
+    // const {
+    //   data: { user },
+    //   error,
+    // } = await supabase.auth.getUser();
 
-    if (error || !user) {
-      return ctx.json({ error: "Unauthorized" }, 401);
-    }
+    // if (error || !user) {
+    //   return ctx.json({ error: "Unauthorized" }, 401);
+    // }
 
     const location = await db.locations.findUnique({
       where: { id: id },
@@ -91,14 +91,14 @@ const app = new Hono()
     const time_of_day = time_of_day_param as TimeOfDay;
 
     const supabase = await createClient();
-    const {
-      data: { user },
-      error,
-    } = await supabase.auth.getUser();
+    // const {
+    //   data: { user },
+    //   error,
+    // } = await supabase.auth.getUser();
 
-    if (error || !user) {
-      return ctx.json({ error: "Unauthorized" }, 401);
-    }
+    // if (error || !user) {
+    //   return ctx.json({ error: "Unauthorized" }, 401);
+    // }
 
     // Query reviews table directly
     const { data: reviewData } = await supabase
@@ -160,15 +160,15 @@ const app = new Hono()
 
   .get("/precautions/:id", async (ctx) => {
     const id = ctx.req.param("id");
-    const supabase = await createClient();
-    const {
-      data: { user },
-      error,
-    } = await supabase.auth.getUser();
+    // const supabase = await createClient();
+    // const {
+    //   data: { user },
+    //   error,
+    // } = await supabase.auth.getUser();
 
-    if (error || !user) {
-      return ctx.json({ error: "Unauthorized" }, 401);
-    }
+    // if (error || !user) {
+    //   return ctx.json({ error: "Unauthorized" }, 401);
+    // }
 
     const locationPrecautions = await db.precautions.findUnique({
       where: { location_id: id },
@@ -218,14 +218,14 @@ const app = new Hono()
   .get("/comments/:id", async (ctx) => {
     const id = ctx.req.param("id");
     const supabase = await createClient();
-    const {
-      data: { user },
-      error,
-    } = await supabase.auth.getUser();
+    // const {
+    //   data: { user },
+    //   error,
+    // } = await supabase.auth.getUser();
 
-    if (error || !user) {
-      return ctx.json({ error: "Unauthorized" }, 401);
-    }
+    // if (error || !user) {
+    //   return ctx.json({ error: "Unauthorized" }, 401);
+    // }
 
     const locationComments = await db.comments.findMany({
       where: { location_id: id },

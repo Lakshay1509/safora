@@ -107,7 +107,7 @@ export function CommentsCard() {
       </CardHeader>
       <CardContent className="flex-1">
         {/* Comment Form */}
-        <form onSubmit={handleCommentSubmit} className="mb-6">
+        {userId && <form onSubmit={handleCommentSubmit} className="mb-6">
           <div className="space-y-3">
             <Textarea
               placeholder="Add a comment..."
@@ -126,14 +126,9 @@ export function CommentsCard() {
               </Button>
             </div>
           </div>
-        </form>
+        </form>}
         
-        {/* Comment submission feedback */}
-        {commentMutation.isError && (
-          <div className="mb-4 p-3 rounded-lg bg-red-500/20 border border-red-500/30 text-sm text-red-200">
-            Failed to post comment. Please try again.
-          </div>
-        )}
+        
 
         {/* Comments List */}
         {isLoading ? (

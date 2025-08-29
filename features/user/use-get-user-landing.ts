@@ -2,10 +2,11 @@ import {useQuery} from "@tanstack/react-query";
 import {client} from "@/lib/hono"
 
 
-export const useGetDefaultUser = ()=>{
+export const useGetDefaultUserLanding = (options?: { enabled?: boolean })=>{
     const query = useQuery({
     
         queryKey: ["user"],
+        enabled: options?.enabled ?? true,
         queryFn: async ()=>{
             const response = await client.api.user.default.$get();
 

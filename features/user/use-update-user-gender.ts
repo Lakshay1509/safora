@@ -15,6 +15,11 @@ export const useUpdateUserGender = () => {
                 json,
             });
 
+            if(!response.ok){
+
+                throw new Error("Failed to update gender");
+            }
+
             return response.json();
         },
         onSuccess: () => {
