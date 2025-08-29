@@ -69,12 +69,14 @@ export async function signout() {
 }
 
 export async function signInWithGoogle() {
+  const redirectUrl = process.env.NEXT_PUBLIC_API_URL!
   const supabase = await createClient(); // Add await here
   
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: "google",
     options: {
       queryParams: {
+        redirectTo: redirectUrl,
         access_type: "offline",
         prompt: "consent",
       },
