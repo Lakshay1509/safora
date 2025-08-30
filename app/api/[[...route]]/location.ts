@@ -192,14 +192,19 @@ const app = new Hono()
           location.country
         )
 
-        const createdPrecautions = await db.precautions.create(
-          {
-            data:{
-              location_id:id,
-              approved_precautions:generatedData,
-            }
-          }
-        )
+        const createdPrecautions = await db.precautions.upsert({
+  where: {
+    location_id: id,
+  },
+  update: {
+    approved_precautions: generatedData,
+    created_at:new Date()
+  },
+  create: {
+    location_id: id,
+    approved_precautions: generatedData,
+  },
+})
 
         if(!createdPrecautions){
           return ctx.json({error:"Error getting precautions"},500);

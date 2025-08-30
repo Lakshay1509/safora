@@ -34,10 +34,23 @@ export function PrecautionCard() {
 
   // Ensure tips is always an array with the correct type
   const safetyTips: SafetyTip[] = data?.approved_precautions?.tips ?? [];
+     
 
-  const loadingDiv =()=>{
-   return (
-        <Card className="w-full text-black bg-white border border-white/10 min-h-[20rem]">
+  return (
+    <Card
+      className="w-full bg-white border border-white/10 h-110 transition-colors duration-200 hover:shadow-lg"
+    >
+      <CardHeader>
+        <CardTitle className="text-lg font-bold" style={{ color: "#000000" }}>
+          <div>
+          <p>Precautions & Safety Concerns <span className="text-[12px] text text-black">(AI Generated)</span></p>
+          {data?.created_at && <p className="text-[12px] text-right">Updated {formatDistanceToNow(new Date(data?.created_at),{ addSuffix: true })}</p>}
+          </div>
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="flex-1 overflow-auto ">
+
+        {isLoading ? (<Card className="w-full text-black bg-white border border-white/10 min-h-[20rem]">
           <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div className="flex flex-col sm:flex-row sm:items-center gap-4 w-full sm:w-auto">
               <Skeleton className="h-4 w-32 bg-gradient-to-r from-[#f292ed] to-[#e1dae6]" />
@@ -60,43 +73,19 @@ export function PrecautionCard() {
               ))}
             </div>
           </CardContent>
-        </Card>
-      )
-  }
-
-  
-   
-
-  return (
-    <Card
-      className="w-full bg-white border border-white/10 h-110 transition-colors duration-200 hover:shadow-lg"
-    >
-      <CardHeader>
-        <CardTitle className="text-lg font-bold" style={{ color: "#000000" }}>
-          <div>
-          <p>Precautions & Safety Concerns <span className="text-[12px] text text-black">(AI Generated)</span></p>
-          {data?.created_at && <p className="text-[12px] text-right">Updated {formatDistanceToNow(new Date(data?.created_at),{ addSuffix: true })}</p>}
-          </div>
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="flex-1 overflow-auto ">
-
-        {isLoading && loadingDiv() }
-        
-        {isError && (
+        </Card>)
+        : isError ? (
           <div className="flex flex-col items-center justify-center h-full">
             <AlertTriangle className="w-8 h-8 text-black mb-2" />
             <p className="text-black">Failed to load safety information</p>
           </div>
-        )}
-        
-        {!isLoading && !isError && safetyTips.length === 0 && (
+        )
+        : safetyTips.length === 0 ? (
           <div className="text-center" style={{ color: "#000000" }}>
             No safety precautions available for this location
           </div>
-        )}
-        
-        {!isLoading && !isError && safetyTips.length > 0 && (
+        )
+        : (
           <ul className="space-y-3 pr-2 text-sm md:text-base">
             {safetyTips.map((item, index) => (
               <li key={index} className="bg-[#F8F4EF] p-3 rounded-md border border-white/10 transition-all">
