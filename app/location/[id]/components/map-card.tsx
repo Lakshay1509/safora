@@ -45,7 +45,7 @@ export function PrecautionCard() {
         <CardTitle className="text-lg font-bold" style={{ color: "#000000" }}>
           <div>
           <p>Precautions & Safety Concerns <span className="text-[12px] text text-black">(AI Generated)</span></p>
-          <p className="text-[12px] text-right">Updated {formatDistanceToNow(new Date(data?.created_at),{ addSuffix: true })}</p>
+          {data?.created_at && <p className="text-[12px] text-right">Updated {formatDistanceToNow(new Date(data?.created_at),{ addSuffix: true })}</p>}
           </div>
         </CardTitle>
       </CardHeader>
