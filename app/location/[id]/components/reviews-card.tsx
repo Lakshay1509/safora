@@ -20,6 +20,7 @@ import {
   AlertDialogTitle
 } from "@/components/ui/alert-dialog";
 import { createClient } from "@/utils/supabase/client";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export function ReviewsCard() {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
@@ -128,6 +129,36 @@ export function ReviewsCard() {
     </div>
   );
 };
+
+
+  if(isLoading){
+    return (
+      <Card className="w-full text-black bg-white border border-white/10 min-h-[20rem]">
+        <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-4 w-full sm:w-auto">
+            <Skeleton className="h-7 w-32" />
+            <Skeleton className="h-9 w-24" />
+          </div>
+          <div className="flex gap-2 w-full sm:w-auto justify-end">
+            <Skeleton className="h-9 w-28" />
+          </div>
+        </CardHeader>
+        <CardContent className="space-y-4 sm:space-y-6 pb-6">
+          <div className="space-y-3 sm:space-y-4">
+            {[...Array(2)].map((_, i) => (
+              <div key={i} className="space-y-2 sm:space-y-3">
+                <Skeleton className="h-6 w-3/4 sm:w-1/2" />
+                <div className="flex items-center justify-between">
+                  <Skeleton className="h-2 flex-1 rounded-full mr-4" />
+                  <Skeleton className="h-7 w-12" />
+                </div>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+    )
+  }
 
 
 

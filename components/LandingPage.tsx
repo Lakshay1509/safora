@@ -26,7 +26,7 @@ export default function LandingPage() {
         <p className="text-sm sm:text-base md:text-lg text-neutral-500 max-w-xs sm:max-w-md md:max-w-2xl mx-auto py-2 sm:py-3 md:py-4">
          Subtle safety insights — quick, simple, and reassuring.
         </p>
-        <p className="mt-10 text-sm sm:text-base md:text-lg text-neutral-500 max-w-xs sm:max-w-md md:max-w-4xl mx-auto py-2 sm:py-3 md:py-4">
+        <p className="mt-6 text-sm sm:text-base md:text-lg text-neutral-500 max-w-xs sm:max-w-md md:max-w-4xl mx-auto py-2 sm:py-3 md:py-4">
         Get community driven and AI-generated real time tips for safer decisions wherever you go.
         </p>
         

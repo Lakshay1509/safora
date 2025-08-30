@@ -1,9 +1,13 @@
+"use client"
+
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { useGetLocation } from "@/features/location/use-get-location";
 import { useParams } from "next/navigation";
 import { MapPin } from "lucide-react"
 import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts"
 import { useGetLocationReview } from "@/features/location/use-get-location-review";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useEffect } from "react";
 
 export function AreaCard() {
   const params = useParams();
@@ -14,6 +18,12 @@ export function AreaCard() {
     isLoading,
     isError
   } = useGetLocation(id);
+
+  // useEffect(() => {
+  //   if (data?.location.name) {
+  //     document.title = `${data.location.name} - Safe Or Not`;
+  //   }
+  // }, [data]);
 
   const {
     data:dayData,
@@ -44,9 +54,30 @@ export function AreaCard() {
     { name: "Safe", value: ((nightSafeValue)/5)*100, color: "#10B981" },
     { name: "Unsafe", value: ((5 - nightSafeValue)/5)*100, color: "#374151" },
   ];
+  
+
+  if(isLoading){
+    return (
+      <Card className="w-full bg-white border border-white/10">
+        <CardContent className="pt-0 flex flex-col lg:flex-row w-full justify-between gap-4 lg:gap-0">
+          <div className="space-y-2 lg:space-y-4">
+            <div className="flex items-center gap-x-2 lg:gap-x-3 text-xl sm:text-2xl lg:text-3xl font-semibold">
+              <Skeleton className="h-8 w-8 bg-gray-300 " />
+              <Skeleton className="h-7 w-48 bg-gray-300" />
+            </div>
+            <div className="text-black ml-8 sm:ml-10 lg:ml-12">
+              <Skeleton className="h-5 w-32" />
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    )
+  }
 
   return (
+
     <Card className="w-full bg-white border border-white/10" >
+      
       <CardContent className="pt-0 flex flex-col lg:flex-row w-full justify-between gap-4 lg:gap-0">
         <div className="space-y-2 lg:space-y-4">
           <h2 className="flex items-center gap-x-2 lg:gap-x-3 text-xl sm:text-2xl lg:text-3xl font-semibold">

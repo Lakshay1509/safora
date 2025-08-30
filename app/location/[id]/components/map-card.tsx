@@ -7,6 +7,7 @@ import { useParams } from "next/navigation";
 import { AlertTriangle, Loader2  } from "lucide-react";
 import { GeneratedPrecautions,SafetyTip} from "@/lib/gemini-service";
 import { formatDistanceToNow } from "date-fns";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const cleanPrecautionTip = (tip: string): string => {
   // Remove citation brackets like [1], [2, 3] from anywhere in the string
@@ -34,6 +35,35 @@ export function PrecautionCard() {
   // Ensure tips is always an array with the correct type
   const safetyTips: SafetyTip[] = data?.approved_precautions?.tips ?? [];
 
+  const loadingDiv =()=>{
+   return (
+        <Card className="w-full text-black bg-white border border-white/10 min-h-[20rem]">
+          <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-4 w-full sm:w-auto">
+              <Skeleton className="h-4 w-32 bg-gradient-to-r from-[#f292ed] to-[#e1dae6]" />
+              <Skeleton className="h-4 w-24 bg-gradient-to-r from-[#f292ed] to-[#e1dae6]" />
+            </div>
+            <div className="flex gap-2 w-full sm:w-auto justify-end">
+              <Skeleton className="h-9 w-28 bg-gradient-to-r from-[#f292ed] to-[#e1dae6]" />
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-4 sm:space-y-6 pb-6">
+            <div className="space-y-3 sm:space-y-4">
+              {[...Array(2)].map((_, i) => (
+                <div key={i} className="space-y-2 sm:space-y-3">
+                  <Skeleton className="h-6 w-3/4 sm:w-1/2 bg-gradient-to-r from-[#f292ed] to-[#e1dae6]" />
+                  <div className="flex items-center justify-between">
+                    <Skeleton className="h-2 flex-1 rounded-full mr-4 bg-gradient-to-r from-[#f292ed] to-[#e1dae6]" />
+                    <Skeleton className="h-7 w-12 bg-gradient-to-r from-[#f292ed] to-[#e1dae6]" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )
+  }
+
   
    
 
@@ -50,12 +80,8 @@ export function PrecautionCard() {
         </CardTitle>
       </CardHeader>
       <CardContent className="flex-1 overflow-auto ">
-        {isLoading && (
-          <div className="flex items-center justify-center h-full">
-            <Loader2 className="w-8 h-8 animate-spin text-black" />
-            <p className="ml-2 text-black">Loading safety tips...</p>
-          </div>
-        )}
+
+        {isLoading && loadingDiv() }
         
         {isError && (
           <div className="flex flex-col items-center justify-center h-full">

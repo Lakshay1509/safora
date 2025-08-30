@@ -14,6 +14,7 @@ import { useGetLocationByCoord } from "@/features/location/use-get-location-coor
 import { addLocationByCoord } from "@/features/location/use-add-location-coord"
 import { useAuth } from "@/contexts/AuthContext"
 import Link from "next/link"
+import Image from "next/image"
 
 interface LocationResult {
   formatted: string
@@ -241,9 +242,15 @@ export function Navbar() {
             {/* Logo */}
             <div className="flex-shrink-0">
               <Link href="/">
-                <h1 className="text-xl font-bold text-black">
+                {/* <h1 className="text-xl font-bold text-black">
                   Safe or Not
-                </h1>
+                </h1> */}
+                <Image
+                  src="/logo.png"
+                  alt="Safe or Not"
+                  width={150}
+                  height={50}
+                />
               </Link>
             </div>
 

@@ -1,8 +1,9 @@
+import Image from "next/image"
 import SignInWithGoogleButton from "./SignInWithGoogleButton"
 
 export function LoginForm() {
   return (
-    <div className="min-h-screen flex">
+    <div className="h-[85vh] flex overflow-hidden max-w-full">
       {/* Left side - Sign in form */}
       <div className="flex-1 flex items-center justify-center p-8 bg-background">
         <div className="w-full max-w-md space-y-8">
@@ -18,11 +19,16 @@ export function LoginForm() {
       </div>
 
       {/* Right side - App branding */}
-      <div className="hidden md:flex flex-1 bg-black items-center justify-center">
-        <div className="text-center">
-          <h2 className="text-6xl font-bold text-white tracking-tight">Safora</h2>
-          <div className="mt-4 w-24 h-1 bg-white mx-auto rounded-full"></div>
-        </div>
-      </div>
+      <div className="hidden md:flex flex-1 bg-[#F8F4FF] items-center justify-center md:rounded-l-xl">
+  <div className="text-center p-4">
+    <Image
+      src="/logo.png"
+      alt="Safe or Not"
+      width={250}
+      height={80}
+      className="max-w-full h-auto"
+    />
+  </div>
+</div>
     </div>
   )}
