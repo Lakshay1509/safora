@@ -205,7 +205,7 @@ const app = new Hono()
           return ctx.json({error:"Error getting precautions"},500);
         }
 
-        return ctx.json({location_id:createdPrecautions.location_id,approved_precautions:createdPrecautions.approved_precautions},200)
+        return ctx.json({location_id:createdPrecautions.location_id,approved_precautions:createdPrecautions.approved_precautions,created_at:createdPrecautions.created_at},200)
       }
       catch(error){
         console.log(error)

@@ -342,7 +342,7 @@ model locations {
   precautions precautions?
   reviews     reviews[]
 
-  @@unique([city, name], map: "locations_city_area_key")
+  
   @@index([geog], map: "idx_locations_geog", type: Gist)
   @@index([city, name], map: "idx_locations_city_area")
   @@schema("public")

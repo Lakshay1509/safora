@@ -27,16 +27,16 @@ interface LocationResult {
 }
 
 interface LocationFormatted {
-  lat: number 
+  lat: number
   long: number
   city: string | null
   country: string
-  name:string
+  name: string
 }
 
 export function Navbar() {
-  
-  const [selectedCoords, setSelectedCoords] = useState<{lat: number, lon: number} | null>(null)
+  const [loadingLocation, setLoadingLocation] = useState(false)
+  const [selectedCoords, setSelectedCoords] = useState<{ lat: number, lon: number } | null>(null)
   const [selectedLocation, setSelectedLocation] = useState<LocationFormatted>()
   const autocompleteDesktopRef = useRef<HTMLDivElement>(null)
   const autocompleteMobileRef = useRef<HTMLDivElement>(null)
@@ -47,47 +47,53 @@ export function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchBarOpen, setSearchBarOpen] = useState(false);
 
-  const {user, loading} = useAuth();
+  const { user, loading } = useAuth();
 
   // Get location data when coordinates change
-  const {data, isError, isSuccess, refetch} = useGetLocationByCoord(
+  const { data, isError, isSuccess, isLoading } = useGetLocationByCoord(
     selectedCoords?.lon || 0,
     selectedCoords?.lat || 0,
-    
+
   )
 
+  const showLoading = isLoading || loadingLocation;
+
   useEffect(() => {
-    if (isSuccess && data?.location?.length) {
-      router.push(`/location/${data.location[0].id}`);
-     
+  if (isSuccess && data?.location?.length) {
+    
+    router.push(`/location/${data.location[0].id}`);
+    setSelectedLocation(undefined);
+    setSelectedCoords(null);
+    setLoadingLocation(false); 
+  } else if (isError && selectedLocation) {
+    const postLocation = async () => {
+      setLoadingLocation(true); 
+      
+      const locationToCreate = { ...selectedLocation };
       setSelectedLocation(undefined);
-      setSelectedCoords(null);
-    } else if (isError && selectedLocation) {
-      const postLocation = async () => {
-       
-        const locationToCreate = { ...selectedLocation };
-        setSelectedLocation(undefined);
 
-        try {
-          const result:any = await LocationMutation.mutateAsync(locationToCreate);
-          if (result?.location?.length) {
-             // After successful creation, navigate to the new page
-            router.push(`/location/${result.location[0].id}`);
-            setSelectedCoords(null); // Clear coords as well
-          }
-        } catch (e) {
-          console.error("Failed to create location:", e);
-          
+      try {
+        const result: any = await LocationMutation.mutateAsync(locationToCreate);
+        if (result?.location?.length) {
+          router.push(`/location/${result.location[0].id}`);
+          setSelectedCoords(null);
         }
-      };
+      } catch (e) {
+        console.error("Failed to create location:", e);
+      } finally {
+        setLoadingLocation(false); // Stop loading in all cases
+      }
+    };
 
-      postLocation();
-    }
-  }, [isSuccess, data, isError, selectedLocation, LocationMutation, router]);
+    postLocation();
+  }
+}, [isSuccess, data, isError, selectedLocation, LocationMutation, router]);
 
 
 
-  // Replace with your actual Geoapify API key
+
+
+  
   const GEOAPIFY_API_KEY = process.env.NEXT_PUBLIC_GEOAPIFY_API_KEY || "YOUR_API_KEY_HERE"
 
   useEffect(() => {
@@ -118,7 +124,7 @@ export function Navbar() {
             city: location.properties.city,
             country: location.properties.country
           }
-          
+
           handleLocationSelect(locationData)
         }
       })
@@ -165,7 +171,7 @@ export function Navbar() {
             city: location.properties.city,
             country: location.properties.country
           }
-          
+
           handleLocationSelect(locationData)
           // Close search dialog after selection
           setSearchBarOpen(false)
@@ -188,36 +194,23 @@ export function Navbar() {
 
   const handleLocationSelect = (location: LocationResult) => {
     console.log('Selected location:', location)
-   
-    
+    setLoadingLocation(true);
+
     // Update the coordinates state instead of directly calling the hook
     setSelectedCoords({
       lat: location.lat,
       lon: location.lon
     })
     setSelectedLocation({
-      lat:location.lat,
-      long:location.lon,
-      city:location?.city?  location.city : null,
-      country:location.country,
-      name:location.address_line1
+      lat: location.lat,
+      long: location.lon,
+      city: location?.city ? location.city : null,
+      country: location.country,
+      name: location.address_line1
     })
-    
-    // Here you can:
-    // 1. Update global state with selected location
-    // 2. Navigate to location details page
-    // 3. Update map view
-    // 4. Store in localStorage
-    // 5. Make API calls with coordinates
-    
-    // Example: Update URL or navigate
-    // router.push(`/location/${location.place_id}`)
-    
-    // Example: Update parent component or global state
-    // onLocationSelect?.(location)
   }
 
- 
+
 
   // Toggle mobile menu
   const toggleMobileMenu = () => {
@@ -239,15 +232,18 @@ export function Navbar() {
 
   return (
     <div className="my-4 mx-2 sm:mx-10">
-      <nav className="max-w-8xl rounded-xl shadow-sm" style={{ backgroundColor: "#F9FAFB" }}>
+
+
+      <nav className={`bg-[#F9FAFB] rounded-xl shadow-sm border-b transition-all duration-200 ${showLoading ? 'border-b-4 border-blue-500' : ''
+        }`}>
         <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
             <div className="flex-shrink-0">
               <Link href="/">
-              <h1 className="text-xl font-bold text-black">
-                Safe or Not
-              </h1>
+                <h1 className="text-xl font-bold text-black">
+                  Safe or Not
+                </h1>
               </Link>
             </div>
 
@@ -257,10 +253,10 @@ export function Navbar() {
                 <Search
                   className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 z-10 text-black"
                 />
-                
+
                 {/* Geoapify Autocomplete Container for Desktop */}
-                <div 
-                  ref={autocompleteDesktopRef} 
+                <div
+                  ref={autocompleteDesktopRef}
                   className="relative w-full geoapify-autocomplete-container ml-10 bg-white text-black"
                 >
                   {/* The autocomplete will inject its input here */}
@@ -282,15 +278,15 @@ export function Navbar() {
 
             {/* Profile and Logout - visible on larger screens */}
             <div className="hidden md:flex items-center space-x-4">
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                className={`p-2 hover:bg-gray-200 ${user?.id && !loading ? "block":"hidden"}`} 
-                onClick={()=>{router.push('/profile')}} 
+              <Button
+                variant="ghost"
+                size="sm"
+                className={`p-2 hover:bg-gray-200 ${user?.id && !loading ? "block" : "hidden"}`}
+                onClick={() => { router.push('/profile') }}
               >
                 <User className="w-5 h-5 text-black" />
               </Button>
-              <LoginButton/>
+              <LoginButton />
             </div>
           </div>
 
@@ -299,18 +295,18 @@ export function Navbar() {
             <div className="md:hidden px-2 pb-4 pt-2 transition-all duration-300 ease-in-out">
               <div className="bg-white rounded-lg shadow-md p-3">
                 <div className="flex justify-between items-center">
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
-                    className="p-1 h-auto" 
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="p-1 h-auto"
                     onClick={() => setSearchBarOpen(false)}
                   >
                   </Button>
                 </div>
-                
+
                 {/* Geoapify Autocomplete Container for Mobile */}
-                <div 
-                  ref={autocompleteMobileRef} 
+                <div
+                  ref={autocompleteMobileRef}
                   className="relative w-full geoapify-autocomplete-container bg-white text-black"
                 >
                   {/* The autocomplete will inject its input here */}
@@ -324,11 +320,11 @@ export function Navbar() {
             <div className="md:hidden px-2 pb-4 pt-1 transition-all duration-300 ease-in-out">
               <div className="flex flex-col space-y-3">
                 {user?.id && !loading && (
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
-                    className="flex items-center justify-start p-2 hover:bg-gray-200" 
-                    onClick={()=>{
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="flex items-center justify-start p-2 hover:bg-gray-200"
+                    onClick={() => {
                       router.push('/profile');
                       setMobileMenuOpen(false);
                     }}

@@ -6,6 +6,7 @@ import { useGetLocationPrecautions } from "@/features/location/use-get-location-
 import { useParams } from "next/navigation";
 import { AlertTriangle, Loader2  } from "lucide-react";
 import { GeneratedPrecautions,SafetyTip} from "@/lib/gemini-service";
+import { formatDistanceToNow } from "date-fns";
 
 const cleanPrecautionTip = (tip: string): string => {
   // Remove citation brackets like [1], [2, 3] from anywhere in the string
@@ -42,7 +43,10 @@ export function PrecautionCard() {
     >
       <CardHeader>
         <CardTitle className="text-lg font-bold" style={{ color: "#000000" }}>
-          <span></span>Precautions and Safety Concerns <span className="text-sm text text-black">(AI Generated)</span>
+          <div>
+          <p>Precautions & Safety Concerns <span className="text-[12px] text text-black">(AI Generated)</span></p>
+          <p className="text-[12px] text-right">Updated {formatDistanceToNow(new Date(data?.created_at),{ addSuffix: true })}</p>
+          </div>
         </CardTitle>
       </CardHeader>
       <CardContent className="flex-1 overflow-auto ">
