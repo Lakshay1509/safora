@@ -39,7 +39,7 @@ export default function LandingPage() {
             // >
             //   Login to Get Started
             // </Button>
-            <LoginButton/>
+            <LoginButton extraLoading={isLoading}/>
 
           ) : (
             // <Button 

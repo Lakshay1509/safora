@@ -5,12 +5,16 @@ import { useRouter } from "next/navigation";
 import { signout } from "@/lib/auth-action";
 import { useAuth } from "@/contexts/AuthContext";
 
-const LoginButton = () => {
+interface Props{
+  extraLoading?:boolean
+}
+
+const LoginButton = ({extraLoading}:Props) => {
   const { user, loading, setUser } = useAuth(); // Get setUser from context
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const router = useRouter();
 
-  if (loading) {
+  if (loading || extraLoading) {
     return <Button variant="outline" disabled>Loading...</Button>;
   }
 
