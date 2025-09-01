@@ -332,17 +332,17 @@ model auth_users {
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model locations {
-  id          String                   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  country     String
-  city        String?
-  name        String
-  geog        Unsupported("geography") @unique
-  created_at  DateTime                 @default(now()) @db.Timestamptz(6)
-  comments    comments[]
-  precautions precautions?
-  reviews     reviews[]
+  id           String                   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  country      String
+  city         String?
+  name         String
+  geog         Unsupported("geography") @unique
+  created_at   DateTime                 @default(now()) @db.Timestamptz(6)
+  comments     comments[]
+  fake_reviews fake_reviews?
+  precautions  precautions?
+  reviews      reviews[]
 
-  
   @@index([geog], map: "idx_locations_geog", type: Gist)
   @@index([city, name], map: "idx_locations_city_area")
   @@schema("public")
@@ -412,6 +412,15 @@ model comments {
   created_at  DateTime?    @default(now()) @db.Timestamp(6)
   locations   locations    @relation(fields: [location_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   users       public_users @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@schema("public")
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model fake_reviews {
+  location_id String    @id @db.Uuid
+  review      Decimal?  @db.Decimal
+  locations   locations @relation(fields: [location_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
   @@schema("public")
 }
