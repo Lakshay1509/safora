@@ -9,24 +9,42 @@ type Props = {
   params: Promise<{ id: string }>;
 };
 
-export async function generateMetadata(
-  { params }: Props,
-): Promise<Metadata> {
-  // read route params
+// ✅ Dynamic metadata for SEO
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const {id} = await params;
-
-  // fetch data
   const location = await db.locations.findUnique({
-    where: {
-      id: id,
-    },
-    select: {
-      name: true,
-    },
+    where: { id: id },
+    select: { name: true },
   });
 
+  if (!location) {
+    return { title: "Location not found | Safe or Not" };
+  }
+
   return {
-    title: location?.name || "Location",
+    title: `${location.name} `,
+    description: `Discover safety insights, reviews, and precautions for ${location.name}. Community-driven safety ratings powered by AI.`,
+    openGraph: {
+      title: `${location.name} | Safe or Not`,
+      description: `Check safety reviews and insights for ${location.name}.`,
+      url: `https://www.safeornot.space/location/${id}`,
+      siteName: "Safe or Not",
+      images: [
+        {
+          url: "/og.webp",
+          width: 1200,
+          height: 630,
+          alt: `${location.name} - Safe or Not`,
+        },
+      ],
+      type: "website",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${location.name} | Safe or Not`,
+      description: `Community insights & safety tips for ${location.name}.`,
+      images: ["/og.webp"],
+    },
   };
 }
 
