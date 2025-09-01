@@ -1,78 +1,88 @@
-"use client"
+"use client";
+
 import WorldMap from "@/components/ui/world-map";
 import { useAuth } from "@/contexts/AuthContext";
 import SelectGender from "./SelectGender";
 import LoginButton from "./LoginLogoutButton";
 import { useGetDefaultUserLanding } from "@/features/user/use-get-user-landing";
-
+import Script from "next/script";
+import Image from "next/image";
 
 export default function LandingPage() {
+  const { user, loading } = useAuth();
 
+  const shouldFetchUserData = !!user && !loading;
 
-    const {user,loading} = useAuth();
+  const { data, isLoading, isError } = useGetDefaultUserLanding({
+    enabled: shouldFetchUserData,
+  });
 
-     const shouldFetchUserData = !!user && !loading;
-    
-    const {data,isLoading,isError} = useGetDefaultUserLanding({
-      enabled:shouldFetchUserData
-    });
-    
   return (
-    <div className="min-h-screen w-full py-10 sm:py-16 md:py-20 dark:bg-black bg-white flex flex-col justify-center items-center overflow-hidden">
-      <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        <p className="font-bold text-xl sm:text-2xl md:text-3xl lg:text-4xl dark:text-white text-black">
+    <main className="min-h-screen w-full py-10 sm:py-16 md:py-20 dark:bg-black bg-white flex flex-col justify-center items-center overflow-hidden">
+      {/* Metadata JSON-LD for SEO */}
+      <Script
+        id="ld-json"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "WebSite",
+            name: "SafeOrNot",
+            url: "https://safeornot.space",
+            description:
+              "Community-driven and AI-generated real-time safety tips.",
+          }),
+        }}
+      />
+
+      {/* Hero Section */}
+      <header className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <h1 className="font-bold text-xl sm:text-2xl md:text-3xl lg:text-4xl dark:text-white text-black">
           Your Everyday Safety Lens
-        </p>
+        </h1>
         <p className="text-sm sm:text-base md:text-lg text-neutral-500 max-w-xs sm:max-w-md md:max-w-2xl mx-auto py-2 sm:py-3 md:py-4">
-         Subtle safety insights — quick, simple, and reassuring.
+          Subtle safety insights — quick, simple, and reassuring.
         </p>
-        <p className="mt-6 text-sm sm:text-base md:text-lg text-neutral-500 max-w-xs sm:max-w-md md:max-w-4xl mx-auto py-2 sm:py-3 md:py-4">
-        Get community driven and AI-generated real time tips for safer decisions wherever you go.
+      </header>
+
+      {/* Why Section */}
+      <section
+        aria-labelledby="why-safeornot"
+        className="w-full max-w-4xl text-center px-4 sm:px-6 lg:px-8"
+      >
+        <p className="mt-2 text-sm sm:text-base md:text-lg text-neutral-500 mx-auto py-2 sm:py-3 md:py-4">
+          Get community-driven and AI-generated real-time tips for safer
+          decisions wherever you go.
         </p>
-        
-        <div className="mt-4 sm:mt-5 md:mt-6">
-          {!user ? (
-            // <Button
-            //   className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 sm:py-2.5 px-4 sm:px-6 rounded-lg shadow-sm hover:shadow-md transition-colors duration-200 text-sm sm:text-base"
-            //   size="lg"
-            //   onClick={()=>{router.push('/login')}}
-            // >
-            //   Login to Get Started
-            // </Button>
-            <LoginButton extraLoading={isLoading}/>
+      </section>
 
-          ) : (
-            // <Button 
-            //   className="bg-teal-600 hover:bg-teal-700 text-white font-medium py-2 sm:py-2.5 md:py-3 px-4 sm:px-6 md:px-8 rounded-lg shadow-sm hover:shadow-md transition-colors duration-200 text-sm sm:text-base"
-            //   size="lg"
-            // >
-            //   Search Locations
-            // </Button>
-            <></>
+      {/* CTA Section */}
+      <section className="mt-6 sm:mt-8 md:mt-10">
+        {!user ? (
+          <LoginButton extraLoading={isLoading} />
+        ) : (
+          <></>
+        )}
+      </section>
 
-          )}
-        </div>
-      </div>
-      <div className="w-full max-w-7xl mx-auto mt-4 sm:mt-6 md:mt-8 px-2 sm:px-4">
+      {/* Map Section */}
+      <section
+        aria-label="Interactive World Safety Map"
+        className="w-full max-w-7xl mx-auto mt-6 sm:mt-8 md:mt-10 px-2 sm:px-4"
+      >
         <div className="aspect-[16/9] sm:aspect-[16/8] md:aspect-[16/7] lg:aspect-[16/6]">
           <WorldMap
             dots={[
               {
-                start: {
-                  lat: 64.2008,
-                  lng: -149.4937,
-                }, // Alaska (Fairbanks)
-                end: {
-                  lat: 34.0522,
-                  lng: -118.2437,
-                }, // Los Angeles
+                start: { lat: 64.2008, lng: -149.4937 }, // Alaska
+                end: { lat: 34.0522, lng: -118.2437 }, // Los Angeles
               },
               {
-                start: { lat: 64.2008, lng: -149.4937 }, // Alaska (Fairbanks)
-                end: { lat: -15.7975, lng: -47.8919 }, // Brazil (Brasília)
+                start: { lat: 64.2008, lng: -149.4937 }, // Alaska
+                end: { lat: -15.7975, lng: -47.8919 }, // Brasília
               },
               {
-                start: { lat: -15.7975, lng: -47.8919 }, // Brazil (Brasília)
+                start: { lat: -15.7975, lng: -47.8919 }, // Brasília
                 end: { lat: 38.7223, lng: -9.1393 }, // Lisbon
               },
               {
@@ -90,9 +100,72 @@ export default function LandingPage() {
             ]}
           />
         </div>
-      </div>
+      </section>
 
-      <SelectGender DialogOpen={!isLoading && !isError && data?.userData.gender===null}/>
-    </div>
+      {/* Gender Selection */}
+      <SelectGender
+        DialogOpen={
+          !isLoading && !isError && data?.userData.gender === null
+        }
+      />
+
+      {/* Hero Support Section */}
+      <section
+        aria-labelledby="support-hero"
+        className="w-full flex justify-center items-center py-8 md:py-16 px-4 sm:px-6 lg:px-8"
+      >
+        <div className="max-w-2xl mx-auto">
+          <Image
+            src="/peerlist.avif"
+            alt="Peerlist community support"
+            width={550}
+            height={550}
+            className="w-full h-auto max-w-md md:max-w-lg mx-auto"
+            priority
+          />
+        </div>
+      </section>
+
+      {/* Community Description Section */}
+      <section
+        aria-labelledby="community-description"
+        className="w-full py-12 md:py-20 lg:py-24 px-4 sm:px-6 lg:px-8"
+      >
+        <div className="max-w-7xl mx-auto">
+          <div className="flex flex-col lg:flex-row items-center justify-center gap-8 lg:gap-12">
+            {/* Text Content */}
+            <div className="flex-1 max-w-2xl">
+              <h2
+                id="community-description"
+                className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-center lg:text-left bg-gradient-to-r from-emerald-600 to-teal-500 bg-clip-text text-transparent leading-tight tracking-wide animate-fade-in"
+              >
+                A growing community of{' '}
+                <span className="italic font-semibold">travelers</span>{' '}
+                sharing real experiences for safer, smarter journeys.
+              </h2>
+            </div>
+
+            {/* Image Content */}
+            <div className="flex-1 max-w-2xl">
+              <Image
+                src="/og.webp"
+                alt="Travel community experiences and reviews"
+                width={1000}
+                height={1000}
+                className="rounded-2xl border-b-4 border-black"
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+
+
+      {/* Footer */}
+      <footer className="mt-10 text-center text-xs text-neutral-500">
+        <p>
+          © {new Date().getFullYear()} SafeOrNot. All rights reserved.
+        </p>
+      </footer>
+    </main>
   );
 }
