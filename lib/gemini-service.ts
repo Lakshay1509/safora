@@ -42,7 +42,7 @@ export async function generateLocationPrecautions(
 1. Search the web for the **latest** safety guidance and incidents about \`place\`.
    * Use **credible sources**: government/police/transport advisories, local authorities, major news outlets, and official operators.
    * Only use sources **published/updated within the last 6 months**.
-2. Generate **exactly 8 tips**, each on **one line** (no line breaks).
+2. Generate **exactly 8 tips**, each on **one line** (no line breaks) and should be strictly in English .
    * **At least 5** tips must be **women-focused** (e.g., women-only transit options, helplines, harassment reporting, late-night travel practices).
    * Keep language clear, non-alarmist, and non-victim-blaming.
    * Tailor to local context (transit, neighborhoods, hours, scams, events).
