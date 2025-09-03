@@ -5,6 +5,7 @@ import comment from "./comment"
 import user from "./user"
 import review from "./review"
 import review1 from "./reviews_fake"
+import post from "./post"
 
 export const runtime = "nodejs";
 const app = new Hono().basePath("/api");
@@ -14,7 +15,8 @@ const routes = app
     .route("/comment",comment)
     .route("/user",user)
     .route("/review",review)
-    .route("/review1",review1);
+    .route("/review1",review1)
+    .route("post",post)
 
 
 
