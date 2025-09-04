@@ -19,6 +19,7 @@ import {
   AlertDialogTitle
 } from "@/components/ui/alert-dialog";
 import { useState } from "react";
+import Comment from "./Comment";
 
 const Post = () => {
     const { user, loading } = useAuth();
@@ -28,7 +29,7 @@ const Post = () => {
     const postId = params.id as string;
   
     const { data: post, isLoading, error } = useGetPost(postId);
-    const {data: comments, isLoading: commentsLoading, error: commentsError} = useGetPostComments(postId);
+    
 
     const deletePostMutation = useDeletePost(postId);
 
@@ -61,7 +62,7 @@ const Post = () => {
 
     return (
         <>
-        <div className="max-w-3xl mx-auto p-4 bg-white rounded-lg shadow-sm mt-6">
+        <div className="max-w-3xl mx-auto p-4 bg-white rounded-lg  mt-6">
             <div className="flex justify-between items-start mb-2">
                 <h1 className="text-2xl font-bold">{post?.post.heading}</h1>
                 <div className="flex justify-center items-center space-x-2">
@@ -112,42 +113,7 @@ const Post = () => {
             </div>
       
             {/* Comments section */}
-            <div className="mt-8 border-t pt-6">
-                <h2 className="text-xl font-semibold mb-4">Comments</h2>
-        
-                {commentsLoading && (
-                    <div className="flex justify-center py-4">
-                        <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-gray-900"></div>
-                    </div>
-                )}
-        
-                {commentsError && (
-                    <div className="p-3 bg-red-50 rounded-lg">
-                        <p className="text-red-600">Failed to load comments: {(commentsError as Error).message}</p>
-                    </div>
-                )}
-        
-                {!commentsLoading && !commentsError && comments?.post_comments.length === 0 && (
-                    <p className="text-gray-500 italic">No comments yet. Be the first to comment!</p>
-                )}
-        
-                <div className="space-y-4">
-                    {comments?.post_comments.map((comment) => (
-                        <div key={comment.id} className="p-3 bg-gray-50 rounded-lg">
-                            <div className="flex items-center text-sm text-gray-600 mb-2">
-                                <span className="font-medium">{comment.users?.name || "Anonymous"}</span>
-                                <span className="mx-2">•</span>
-                                <span>
-                                    {comment.created_at 
-                                        ? format(new Date(comment.created_at), 'MMM d, yyyy')
-                                        : "Unknown date"}
-                                </span>
-                            </div>
-                            <p className="text-gray-800">{comment.text}</p>
-                        </div>
-                    ))}
-                </div>
-            </div>
+            <Comment postId={postId}/>
         </div>
         <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
         <AlertDialogContent className="bg-white border border-gray-200 text-gray-900">

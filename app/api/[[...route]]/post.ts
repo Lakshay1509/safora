@@ -93,7 +93,7 @@ const app = new Hono()
     return ctx.json({post},200);
   })
 
-  .get("comments/:id",async(ctx)=>{
+  .get("/comments/:id",async(ctx)=>{
 
     const id = ctx.req.param("id");
 
