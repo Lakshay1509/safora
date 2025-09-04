@@ -99,43 +99,32 @@ export function ReviewsCard() {
     setTimeMode(prev => prev === "DAY" ? "NIGHT" : "DAY");
   };
 
-  const BarRating = ({ rating, isWomenScore = false }: { rating: number; isWomenScore?: boolean }) => {
-    const percentage = (rating / 5) * 100;
-
-    // Pick color dynamically
-    let barColor = "";
-    if (rating >= 4) {
-      barColor = "#10B981"; // green
-    } else if (rating >= 3) {
-      barColor = "#FACC15"; // yellow
-    } else {
-      barColor = "#EF4444"; // red
-    }
-
+  const StarRating = ({ rating, label }: { rating: number; label: string }) => {
+    const filledStars = Math.floor(rating);
+    const partialStar = rating % 1 > 0;
+    
     return (
-      <div className="flex items-center justify-between">
-        <div
-          className="flex-1 h-2 rounded-full mr-4"
-          style={{ backgroundColor: "#2A2A2A" }}
-        >
-          <div
-            className="h-full rounded-full transition-all duration-300"
-            style={{
-              backgroundColor: barColor,
-              width: `${percentage}%`,
-            }}
-          />
-        </div>
-        <span
-          className="text-lg font-semibold min-w-[2.5rem] text-right"
-          style={{ color: "#000000" }}
-        >
-          {rating.toFixed(1)}
+      <div className="flex flex-col items-center">
+        <span className="text-sm font-medium mb-1" style={{ color: "#000000" }}>
+          {label}
         </span>
+        <div className="flex items-center">
+          {[...Array(5)].map((_, i) => (
+            <svg 
+              key={i} 
+              className={`w-5 h-5 ${i < filledStars ? 'text-yellow-400' : (i === filledStars && partialStar ? 'text-yellow-400' : 'text-gray-300')}`} 
+              fill="currentColor" 
+              viewBox="0 0 20 20" 
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+            </svg>
+          ))}
+          <span className="ml-2 text-sm font-semibold text-black">{rating?.toFixed(1) || "N/A"}</span>
+        </div>
       </div>
     );
   };
-
 
   if (isLoading) {
     return (
@@ -150,28 +139,26 @@ export function ReviewsCard() {
           </div>
         </CardHeader>
         <CardContent className="space-y-4 sm:space-y-6 pb-6">
-          <div className="space-y-3 sm:space-y-4">
-            {[...Array(2)].map((_, i) => (
-              <div key={i} className="space-y-2 sm:space-y-3">
-                <Skeleton className="h-6 w-3/4 sm:w-1/2" />
-                <div className="flex items-center justify-between">
-                  <Skeleton className="h-2 flex-1 rounded-full mr-4" />
-                  <Skeleton className="h-7 w-12" />
+          <div className="mb-4">
+            <Skeleton className="h-6 w-3/4 sm:w-1/2 mb-4" />
+            <div className="grid grid-cols-4 gap-4">
+              {[...Array(4)].map((_, i) => (
+                <div key={i} className="flex flex-col items-center">
+                  <Skeleton className="h-5 w-20 mb-2" />
+                  <Skeleton className="h-5 w-24" />
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </CardContent>
       </Card>
     )
   }
 
-
-
   return (
     <>
       <Card
-        className="w-full text-black bg-white border border-white/10 min-h-[20rem] transition-colors duration-200 hover:shadow-lg"
+        className="w-full text-black bg-white border border-white/10 transition-colors duration-200"
       >
         <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="flex flex-col sm:flex-row sm:items-center gap-4 w-full sm:w-auto">
@@ -186,7 +173,7 @@ export function ReviewsCard() {
               onClick={toggleDayNightMode}
               variant="outline"
               size="sm"
-              className="flex items-center gap-2 border bg-[#F8F4EF] border-white/20 text-black w-fit"
+              className="flex items-center justify-end gap-2 border bg-[#F8F4EF] border-white/20 text-black w-fit"
             >
               {timeMode === "DAY" ? (
                 <>
@@ -236,36 +223,32 @@ export function ReviewsCard() {
             </Button>
           </div>}
         </CardHeader>
-        <CardContent className="space-y-4 sm:space-y-6 pb-6">
-          <div className="space-y-3 sm:space-y-4">
-            <div className="space-y-2 sm:space-y-3">
-              <span className="text-base sm:text-xl font-medium" style={{ color: "#000000" }}>
-                {timeMode === "DAY" ? "Daytime" : "Nighttime"} Overall Safety Score
-              </span>
-              {!ratings.overall && <p className="text-black text-sm sm:text-base">No reviews</p>}
-              {ratings.overall && <BarRating rating={Number(ratings.overall)} />}
-            </div>
-            <div className="space-y-2 sm:space-y-3">
-              <span className="text-base sm:text-xl font-medium" style={{ color: "#000000" }}>
-                {timeMode === "DAY" ? "Daytime" : "Nighttime"} Women Safety Score
-              </span>
-              {!ratings.women && <p className="text-black text-sm sm:text-base">No reviews</p>}
-              {ratings.women !== null && ratings.women !== undefined && <BarRating rating={Number(ratings.women)} isWomenScore={true} />}
-            </div>
-            <div className="space-y-2 sm:space-y-3">
-              <span className="text-sm sm:text-base font-medium" style={{ color: "#000000" }}>
-                {timeMode === "DAY" ? "Daytime" : "Nighttime"} Transit Safety Score
-              </span>
-              {!ratings.transit && <p className="text-black text-sm sm:text-base">No reviews</p>}
-              {ratings.transit !== null && ratings.transit !== undefined && <BarRating rating={Number(ratings.transit)} />}
-            </div>
-            <div className="space-y-2 sm:space-y-3">
-              <span className="text-sm sm:text-base font-medium" style={{ color: "#000000" }}>
-                {timeMode === "DAY" ? "Daytime" : "Nighttime"} Neighbourhood Safety Score
-              </span>
-              {!ratings.neighbourhood && <p className="text-black text-sm sm:text-base">No reviews</p>}
-              {ratings.neighbourhood !== null && ratings.neighbourhood !== undefined && <BarRating rating={Number(ratings.neighbourhood)} />}
-            </div>
+        <CardContent className="space-y-4 sm:space-y-6 ">
+          <div>
+            
+            {/* Display all ratings in a grid layout */}
+            {(!ratings.overall && !ratings.women && !ratings.transit && !ratings.neighbourhood) ? (
+              <p className="text-black text-sm sm:text-base">No reviews yet</p>
+            ) : (
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                <StarRating 
+                  rating={Number(ratings.overall) || 0} 
+                  label="Overall Safety"
+                />
+                <StarRating 
+                  rating={Number(ratings.women) || 0} 
+                  label="Women Safety"
+                />
+                <StarRating 
+                  rating={Number(ratings.transit) || 0} 
+                  label="Transit Safety"
+                />
+                <StarRating 
+                  rating={Number(ratings.neighbourhood) || 0} 
+                  label="Neighbourhood"
+                />
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>
@@ -299,6 +282,4 @@ export function ReviewsCard() {
         </AlertDialogContent>
       </AlertDialog>
     </>
-  )
-
-}
+  )}

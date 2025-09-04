@@ -1,0 +1,65 @@
+"use client"
+
+import { useGetLocation } from "@/features/location/use-get-location"
+import { useGetLocationPost } from "@/features/post/use-get-by-locationId";
+import { ArrowRight } from "lucide-react";
+import Link from "next/link";
+
+interface Props{
+    id:string
+}
+
+const RightSidebar = ({id}:Props) => {
+    const {data,isLoading,isError} = useGetLocation(id); 
+    const { data:post, isLoading:post_Loading, isError:post_error } = useGetLocationPost(id);
+  return (
+    <div className="fixed right-0 top-0 h-[90vh] w-80 bg-white border-l border-t rounded-xl border-gray-200 mt-22 py-10 px-6 hidden lg:block overflow-y-auto">
+
+      <Link href={`/location/${data?.location.id}`} className="hover:underline">
+        <h2 className="flex items-center gap-x-2 text-xl  font-semibold">
+            {data?.location.name}
+          </h2>
+
+          <div className="text-black ">
+            <span className="text-sm sm:text-base">{data?.location.country}, {data?.location.city}</span>
+          </div>
+
+          <div className="flex justify-start items-center space-x-2">
+             <p className="text-[14px] text-gray-600">1.8k posts</p>
+             <p className="text-[14px] text-gray-600">2k comments</p>
+          </div>
+        </Link>
+
+        <div className="mt-10">
+          <h1 className="font-semibold flex items-center mb-4">More posts <ArrowRight size={16} className="ml-1"/></h1>
+          
+          {post_Loading ? (
+            <div className="text-sm text-gray-500">Loading posts...</div>
+          ) : post_error ? (
+            <div className="text-sm text-red-500">Error loading posts</div>
+          ) : post?.post && post.post.length > 0 ? (
+            <div className="space-y-4">
+              {post.post.slice(0, 6).map((item) => (
+                
+                <div key={item.id} className="border border-gray-200 rounded-lg p-3 hover:bg-gray-50 cursor-pointer">
+                  <Link href={`/post/${item.id}`}>
+                  <h3 className="font-medium text-sm line-clamp-2">{item.heading}</h3>
+                  <div className="flex items-center mt-2 text-xs text-gray-500">
+                    <span>{item.upvotes} upvotes</span>
+                  
+                  </div>
+                  </Link>
+                </div>
+                
+              ))}
+            </div>
+          ) : (
+            <div className="text-sm text-gray-500">No posts available</div>
+          )}
+        </div>
+
+    </div>
+  )
+}
+
+export default RightSidebar

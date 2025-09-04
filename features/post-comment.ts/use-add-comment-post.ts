@@ -27,6 +27,7 @@ export const addCommenttoPost = (postId:string)=>{
         },
         onSuccess:()=>{
             queryClient.invalidateQueries({queryKey:["post-comments"]});
+            queryClient.invalidateQueries({queryKey:["post-stats"]});
             toast.success("Comment added successfully");
         },
         onError:(error)=>{

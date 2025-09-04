@@ -88,7 +88,12 @@ export function AreaCard() {
           <div className="text-black ml-8 sm:ml-10 lg:ml-12">
             <span className="text-sm sm:text-base">{data?.location.country}, {data?.location.city}</span>
           </div>
+          <div className="ml-8 sm:ml-10 lg:ml-12 flex justify-center items-center space-x-2">
+             <p className="text-[14px] text-gray-600">1.8k posts</p>
+             <p className="text-[14px] text-gray-600">2k comments</p>
+          </div>
         </div>
+       
 
         <div className="flex flex-row justify-between px-8 lg:items-center gap-4 sm:gap-6">
             <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-3">

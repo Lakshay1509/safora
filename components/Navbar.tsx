@@ -232,12 +232,10 @@ export function Navbar() {
   };
 
   return (
-    <div className="my-4 mx-2 sm:mx-10">
-
-
+    <div className="fixed top-0 left-0 right-0 z-50">
       <nav className={`bg-[#F9FAFB] rounded-xl shadow-sm border-b transition-all duration-200 ${showLoading ? 'border-b-4 border-blue-500' : ''
         }`}>
-        <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto px-4 py-2 md:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
             <div className="flex-shrink-0">

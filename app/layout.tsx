@@ -5,6 +5,7 @@ import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 import { Navbar } from "@/components/Navbar";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { SidebarLayout } from "@/components/SidebarLayout";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -91,7 +92,10 @@ export default function RootLayout({
         <QueryProviders>
           <Toaster richColors theme="light"/>
           <Navbar/>
-        {children}
+        <SidebarLayout>
+
+          {children}
+        </SidebarLayout>
         </QueryProviders>
         </AuthProvider>
       </body>

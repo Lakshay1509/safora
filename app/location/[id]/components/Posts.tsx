@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { ArrowUp, ArrowDown, MessageCircle, Bookmark, Share } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import PostStats from "@/components/PostStats";
 
 const Posts = () => {
     const params = useParams();
@@ -43,50 +44,25 @@ const Posts = () => {
     }
 
     return (
-        <section className="flex flex-col justify-center items-center">
-            <div className="p-4 rounded-lg border border-gray-200 max-w-4xl">
-                <h1 className="text-xl font-bold mb-4">All Posts ({data.post.length})</h1>
+        <section className="flex flex-col justify-start items-start">
+            <div className="p-4 rounded-lg max-w-full">
+                {/* <h1 className="text-xl font-bold mb-4">All Posts ({data.post.length})</h1> */}
                 <div className="flex flex-col gap-4">
 
 
                     {data.post.map((post) => (
                         
-                            <div key={post.id} className="p-4 border border-gray-200 rounded-lg transition-colors duration-200 hover:bg-gray-50">
+                            <div key={post.id} className="p-4 border-b border-gray-200 rounded-lg transition-colors duration-200 hover:bg-gray-50 text-sm">
                                 <Link
                                     href={`/post/${post.id}`}
-                                    className="block text-blue-500 hover:text-blue-700"
+                                    className="block text-black hover:text-gray-500"
                                 >
                                     <h2 className="font-semibold text-lg">{truncateText(post.heading)}</h2>
                                     <p className="text-gray-700 mt-2">{truncateText(post.body, true)}</p>
                                 </Link>
 
                                 {/* Social interaction bar */}
-                                <div className="flex mt-10 gap-2">
-                                    <Button className="bg-gray-100 text-black hover:bg-gray-200 border-black">
-                                        <div className="p-1">
-                                            <ArrowUp className="w-4 h-4" />
-                                        </div>
-                                        <span className="mx-1 text-sm">{post.upvotes}</span>
-                                       
-                                    </Button>
-
-                                   <Button className="bg-gray-100 text-black hover:bg-gray-200 border-black">
-                                        <div className="p-1">
-                                            <MessageCircle className="w-4 h-4" />
-                                        </div>
-                                        <span className="mx-1 text-sm">{post.upvotes}</span>
-                                       
-                                    </Button>
-
-                                    <Button className="bg-gray-100 text-black hover:bg-gray-200 border-black">
-                                        <div className="p-1">
-                                            <Share className="w-4 h-4" />
-                                        </div>
-                                        <span className="mx-1 text-sm">{post.upvotes}</span>
-                                       
-                                    </Button>
-
-                                </div>
+                                <PostStats id={post.id}/>
 
                                 <div className="text-xs text-gray-500 mt-2">
                                     {post.created_at && new Date(post.created_at).toLocaleDateString()}

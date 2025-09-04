@@ -29,6 +29,7 @@ export const addPost = (location_id:string)=>{
         onSuccess:()=>{
             queryClient.invalidateQueries({queryKey:["location-post"]});
             queryClient.invalidateQueries({queryKey:["post"]});
+            queryClient.invalidateQueries({queryKey:["recent-post"]});
             toast.success("Post added successfully");
         },
         onError:(error)=>{

@@ -1,7 +1,7 @@
 import { AreaCard } from "./components/area-card";
 import { PrecautionCard } from "./components/map-card";
 import { ReviewsCard } from "./components/reviews-card";
-import { CommentsCard } from "./components/comments-card";
+import TabView from "./components/TabView";
 import { Metadata} from "next";
 import { db } from "@/lib/prisma";
 
@@ -57,13 +57,14 @@ const page = () => {
         <AreaCard  />
 
         {/* Middle Row - Map and Reviews Cards */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <ReviewsCard  />
           <PrecautionCard  />
-        </div>
+        </div> */}
+        <ReviewsCard/>
 
-        {/* Bottom Comments Card - Full Width */}
-        <CommentsCard  />
+        {/* Tabbed Interface for Comments and Posts */}
+        <TabView />
       </div>
     </div>
   );

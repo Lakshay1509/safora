@@ -20,6 +20,8 @@ import {
 } from "@/components/ui/alert-dialog";
 import { useState } from "react";
 import Comment from "./Comment";
+import RightSidebar from "./RightSidebar";
+import PostStats from "@/components/PostStats";
 
 const Post = () => {
     const { user, loading } = useAuth();
@@ -41,7 +43,7 @@ const Post = () => {
 
     const handleDeleteClick=async ()=>{
         await deletePostMutation.mutateAsync();
-        router.push(`/location/${post?.post.location_id}`)
+        router.push(`/community`)
     }
 
     if (isLoading) {
@@ -62,7 +64,8 @@ const Post = () => {
 
     return (
         <>
-        <div className="max-w-3xl mx-auto p-4 bg-white rounded-lg  mt-6">
+        <div className="max-w-3xl mx-10 p-4 bg-white rounded-lg  mt-6">
+            {post?.post.location_id && <RightSidebar id={post?.post.location_id }/>}
             <div className="flex justify-between items-start mb-2">
                 <h1 className="text-2xl font-bold">{post?.post.heading}</h1>
                 <div className="flex justify-center items-center space-x-2">
@@ -111,6 +114,8 @@ const Post = () => {
             <div className="prose mb-8">
                 {post?.post.body}
             </div>
+
+            <PostStats id={postId}/>
       
             {/* Comments section */}
             <Comment postId={postId}/>

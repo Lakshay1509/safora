@@ -7,6 +7,7 @@ import review from "./review"
 import review1 from "./reviews_fake"
 import post from "./post"
 import post_comment from "./post-comments"
+import community from './community'
 
 export const runtime = "nodejs";
 const app = new Hono().basePath("/api");
@@ -19,6 +20,7 @@ const routes = app
     .route("/review1",review1)
     .route("post",post)
     .route("post_comments",post_comment)
+    .route("community",community)
 
 
 
