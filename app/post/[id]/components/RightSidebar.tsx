@@ -1,6 +1,7 @@
 "use client"
 
 import { useGetLocation } from "@/features/location/use-get-location"
+import { useGetLocationStats } from "@/features/location/use-get-location-stats";
 import { useGetLocationPost } from "@/features/post/use-get-by-locationId";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
@@ -11,9 +12,10 @@ interface Props{
 
 const RightSidebar = ({id}:Props) => {
     const {data,isLoading,isError} = useGetLocation(id); 
+    const{data:stats,isLoading:stats_loading,isError:stats_error} = useGetLocationStats(id);
     const { data:post, isLoading:post_Loading, isError:post_error } = useGetLocationPost(id);
   return (
-    <div className="fixed right-0 top-0 h-[90vh] w-80 bg-white border-l border-t rounded-xl border-gray-200 mt-22 py-10 px-6 hidden lg:block overflow-y-auto">
+    <div className="fixed right-0 top-0 h-[90vh] w-80 bg-white border-l border-t border-r rounded-xl border-gray-200 mt-22 mr-4 py-10 px-6 hidden lg:block overflow-y-auto">
 
       <Link href={`/location/${data?.location.id}`} className="hover:underline">
         <h2 className="flex items-center gap-x-2 text-xl  font-semibold">
@@ -25,8 +27,8 @@ const RightSidebar = ({id}:Props) => {
           </div>
 
           <div className="flex justify-start items-center space-x-2">
-             <p className="text-[14px] text-gray-600">1.8k posts</p>
-             <p className="text-[14px] text-gray-600">2k comments</p>
+             <p className="text-[14px] text-gray-600">{stats?.posts} posts</p>
+             <p className="text-[14px] text-gray-600">{stats?.comments} comments</p>
           </div>
         </Link>
 

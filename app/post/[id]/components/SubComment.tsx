@@ -23,7 +23,6 @@ interface Props {
 }
 
 const SubComment = ({ id, postId }: Props) => {
-    console.log(postId);
   const { data, isLoading, isError } = useGetSubComments(id);
   const mutation = addSubCommenttoPost(postId, id);
 
@@ -103,7 +102,7 @@ const SubComment = ({ id, postId }: Props) => {
         {data?.sub_comment.map((reply) => (
           <div key={reply.id} className="p-2 bg-gray-50 rounded-lg text-sm">
             <div className="flex items-center text-xs text-gray-600 mb-1">
-              <span className="font-medium">Reply</span>
+              <span className="font-medium">{reply.users?.name}</span>
               <span className="mx-2">•</span>
               <span>
                 {reply.created_at

@@ -8,6 +8,7 @@ import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts"
 import { useGetLocationReview } from "@/features/location/use-get-location-review";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useEffect } from "react";
+import { useGetLocationStats } from "@/features/location/use-get-location-stats";
 
 export function AreaCard() {
   const params = useParams();
@@ -24,6 +25,8 @@ export function AreaCard() {
   //     document.title = `${data.location.name} - Safe Or Not`;
   //   }
   // }, [data]);
+
+  const{data:stats,isLoading:stats_loading,isError:stats_error} = useGetLocationStats(id);
 
   const {
     data:dayData,
@@ -88,9 +91,9 @@ export function AreaCard() {
           <div className="text-black ml-8 sm:ml-10 lg:ml-12">
             <span className="text-sm sm:text-base">{data?.location.country}, {data?.location.city}</span>
           </div>
-          <div className="ml-8 sm:ml-10 lg:ml-12 flex justify-center items-center space-x-2">
-             <p className="text-[14px] text-gray-600">1.8k posts</p>
-             <p className="text-[14px] text-gray-600">2k comments</p>
+          <div className="ml-8 sm:ml-10 lg:ml-12 flex justify-start items-center space-x-2">
+             <p className="text-[14px] text-gray-600">{stats?.posts} posts</p>
+             <p className="text-[14px] text-gray-600">{stats?.comments} comments</p>
           </div>
         </div>
        

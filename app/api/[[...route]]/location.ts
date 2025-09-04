@@ -255,6 +255,22 @@ const app = new Hono()
     return ctx.json({ locationComments }, 200);
   })
 
+  .get("/location_stats/:id",async(ctx)=>{
+
+
+      const id = ctx.req.param("id");
+      const posts = await db.posts.count({
+        where:{location_id:id}
+      })
+
+      const comments = await db.comments.count({
+        where:{location_id:id}
+      })
+
+      
+      return ctx.json({posts,comments},200)
+  })
+
   .post(
     "/createLocationByCoord",
     zValidator(

@@ -11,7 +11,14 @@ const app = new Hono()
   const id = ctx.req.param("parentCommentID");
 
   const sub_comment = await db.posts_comments.findMany({
-    where:{parent_id:id}
+    where:{parent_id:id},
+    include:{
+            users:{
+              select:{
+                name:true
+              }
+            }
+          }
   })
 
   if(!sub_comment){
@@ -101,7 +108,8 @@ const app = new Hono()
             post_id:post_id,
             parent_id:parentCommentId
     
-          }
+          },
+          
         })
     
         if(comment){
