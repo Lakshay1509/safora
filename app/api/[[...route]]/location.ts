@@ -25,14 +25,14 @@ const app = new Hono()
 
   .get("/locationsByCoord", async (ctx) => {
     const supabase = await createClient();
-    const {
-      data: { user },
-      error,
-    } = await supabase.auth.getUser();
+    // const {
+    //   data: { user },
+    //   error,
+    // } = await supabase.auth.getUser();
 
-    if (error || !user) {
-      return ctx.json({ error: "Unauthorized" }, 401);
-    }
+    // if (error || !user) {
+    //   return ctx.json({ error: "Unauthorized" }, 401);
+    //}
     const latParam = ctx.req.query("lat");
     const lonParam = ctx.req.query("lon");
 

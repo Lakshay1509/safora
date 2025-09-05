@@ -29,6 +29,7 @@ export const useDeletePost = (id:string) => {
             queryClient.invalidateQueries({ queryKey: ["location-post"] });
             queryClient.invalidateQueries({ queryKey: ["post",id] });
             queryClient.invalidateQueries({queryKey:["location-stats"]});
+            queryClient.invalidateQueries({queryKey:["recent-post"]});
             toast.success("Post deleted successfully");
         },
         onError: (error) => {

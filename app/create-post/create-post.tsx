@@ -14,12 +14,13 @@ import { Label } from "@/components/ui/label";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useGetLocation } from "@/features/location/use-get-location";
 import { useGetPost } from "@/features/post/use-get-byId";
+import ChangeLocation from "./change_location";
 
 // Schema should match backend validation
 const postSchema = z.object({
   heading: z.string()
     .min(10, "Heading must be at least 10 characters")
-    .max(50, "Heading must be less than 50 characters"),
+    .max(250, "Heading must be less than 50 characters"),
   body: z.string()
     .min(10, "Body must be at least 10 characters")
     .max(1500, "Body must be less than 1500 characters"),
@@ -34,7 +35,9 @@ const CreatePost = () => {
 
   const isEditMode = searchParams.get('edit') === 'true';
   const postId = searchParams.get('post-id');
-  const locationId = searchParams.get('location-id');
+  
+  const initialLocationId = searchParams.get('location-id');
+  const [locationId, setLocationId] = useState<string | null>(initialLocationId);
 
   // Fetch post data if in edit mode
   const { data: postData, isLoading: isLoadingPost } = useGetPost(
@@ -67,10 +70,10 @@ const CreatePost = () => {
     }
   }, [isEditMode, postData, setValue]);
 
-  const {data: LocationData, isLoading: isLoadingLocation} = useGetLocation(locationId ? locationId : '');
+  const {data: LocationData, isLoading: isLoadingLocation} = useGetLocation(locationId?locationId : '');
 
   // Create mutation
-  const { mutate: createPost, isPending: isCreating } = addPost(LocationData?.location?.id ?? '');
+  const { mutate: createPost, isPending: isCreating } = addPost(locationId ?? '');
   
   // Update mutation
   const { mutate: updatePost, isPending: isUpdating } = EditPostComment(postId || '');
@@ -88,13 +91,18 @@ const CreatePost = () => {
         },
       });
     } else {
+      if (!locationId) {
+        // Optionally, handle the case where location is not selected
+        alert("Please select a location before creating a post.");
+        return;
+      }
       createPost({
         ...data,
       }, {
         onSuccess: () => {
           reset();
           setCharCount({ heading: 0, body: 0 });
-          router.push(`/location/${locationId}`);
+          router.push(`/community`);
 
         },
       });
@@ -108,17 +116,11 @@ const CreatePost = () => {
       </h1>
       
       {/* Show location info at the top if available and not in edit mode */}
-      {!isEditMode && LocationData?.location?.name && (
-        <div className="flex justify-between items-center mb-4">
-          <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-md text-blue-800 dark:text-blue-200">
-            <p className="font-medium">Posting in: {LocationData?.location?.name}</p>
-          </div>
-          <div>
-            <Button>
-              Change location
-            </Button>
-          </div>
-        </div>
+      {!isEditMode && (
+        <ChangeLocation 
+          onLocationSelect={setLocationId} 
+          currentLocationName={LocationData?.location?.name}
+        />
       )}
       
       {isLoading ? (
@@ -126,7 +128,7 @@ const CreatePost = () => {
           <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-gray-900"></div>
         </div>
       ) : (
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 mt-8">
           <div className="space-y-2">
             <Label htmlFor="heading" className="text-sm font-medium">
               Heading
@@ -144,8 +146,8 @@ const CreatePost = () => {
               ) : (
                 <span className="text-sm text-muted-foreground">Min 10 characters</span>
               )}
-              <span className={`text-sm ${charCount.heading > 50 ? 'text-red-500' : 'text-muted-foreground'}`}>
-                {charCount.heading}/50
+              <span className={`text-sm ${charCount.heading > 250 ? 'text-red-500' : 'text-muted-foreground'}`}>
+                {charCount.heading}/250
               </span>
             </div>
           </div>
@@ -187,7 +189,7 @@ const CreatePost = () => {
             )}
             <Button
               type="submit"
-              disabled={isPending}
+              disabled={isPending || (!isEditMode && !locationId)}
               className={isEditMode ? "" : "w-full"}
             >
               {isPending ? (

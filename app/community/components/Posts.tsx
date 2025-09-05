@@ -5,6 +5,7 @@ import Link from "next/link"
 import { ArrowUp, MessageCircle, Share, Tag } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import PostStats from "@/components/PostStats"
+import RightSidebar from "./RightSidebar"
 
 export const Posts = () => {
   const { data, isLoading, isError } = useGetPostCommunity();
@@ -39,51 +40,56 @@ export const Posts = () => {
   }
 
   return (
-    <section className="flex flex-col justify-start items-start">
-      <div className="p-4 rounded-lg max-w-full">
-        <div className="flex flex-col gap-4">
-          {data.posts.map((post) => (
-            <div key={post.id} className="p-4 border-b border-gray-200 rounded-lg transition-colors duration-200 hover:bg-gray-50 text-sm">
-              {/* User and location info */}
-              <div className="flex items-center text-xs text-gray-500 mb-2">
-                {post.users && (
-                  <span className="font-medium mr-2">
-                    {post.users.name}
-                  </span>
-                )}
-
-                {post.created_at && (
-                  <span>
-                    • {new Date(post.created_at).toLocaleDateString()}
-                  </span>
-                )}
-              </div>
-
-              <div>
-                <Link href={`location/${post.locations?.id ? post.locations.id : ''}`} className="hover:underline">
-                  {post.locations && (
-                    <span className="mr-2 bg-blue-200 px-2 py-1 inline-flex items-center gap-1 rounded text-[10px] ">
-                      <Tag size={10} />
-                      <span>{post.locations.name}</span>
+    <section className="flex flex-row justify-start w-full">
+      <div className="flex-1 max-w-4xl">
+        <div className="p-4 rounded-lg w-full">
+          <div className="flex flex-col gap-4">
+            {data.posts.map((post) => (
+              <div key={post.id} className="p-4 border-b border-gray-200 rounded-lg transition-colors duration-200 hover:bg-gray-50 text-sm">
+                {/* User and location info */}
+                <div className="flex items-center text-xs text-gray-500 mb-2">
+                  {post.users && (
+                    <span className="font-medium mr-2">
+                      {post.users.name}
                     </span>
                   )}
+
+                  {post.created_at && (
+                    <span>
+                      • {new Date(post.created_at).toLocaleDateString()}
+                    </span>
+                  )}
+                </div>
+
+                <div>
+                  <Link href={`location/${post.locations?.id ? post.locations.id : ''}`} className="hover:underline">
+                    {post.locations && (
+                      <span className="mr-2 bg-blue-200 px-2 py-1 inline-flex items-center gap-1 rounded text-[10px] ">
+                        <Tag size={10} />
+                        <span>{post.locations.name}</span>
+                      </span>
+                    )}
+                  </Link>
+                </div>
+
+
+                <Link
+                  href={`/post/${post.id}`}
+                  className="block text-black hover:text-gray-500"
+                >
+                  <h2 className="font-semibold text-lg">{truncateText(post.heading)}</h2>
+                  <p className="text-gray-700 mt-2 break-words">{truncateText(post.body, true)}</p>
                 </Link>
+
+                {/* Social interaction bar */}
+                <PostStats id={post.id}/>
               </div>
-
-
-              <Link
-                href={`/post/${post.id}`}
-                className="block text-black hover:text-gray-500"
-              >
-                <h2 className="font-semibold text-lg">{truncateText(post.heading)}</h2>
-                <p className="text-gray-700 mt-2">{truncateText(post.body, true)}</p>
-              </Link>
-
-              {/* Social interaction bar */}
-              <PostStats id={post.id}/>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
+      </div>
+      <div className="hidden lg:block w-80 p-4">
+        <RightSidebar/>
       </div>
     </section>
   )

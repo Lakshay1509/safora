@@ -4,37 +4,68 @@ import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
 import { randomUUID } from "crypto";
 import { createClient } from "@/utils/supabase/server";
-import { error } from "console";
+
+
+interface posts{
+  heading:string,
+  body:string,
+  id:string
+
+}
 
 const app = new Hono()
-.get("/recent", async (ctx) => {
-  const posts = await db.posts.findMany({
-    orderBy: {
-      created_at: "desc",
-    },
-    take: 500,
-    include: {
-      users: {
-        select:{
+  .get("/recent", async (ctx) => {
+    const posts = await db.posts.findMany({
+      orderBy: {
+        created_at: "desc",
+      },
+      take: 500,
+      include: {
+        users: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        locations: {
+          select: {
+            name: true,
+            id: true,
+          },
+        },
+      },
+    });
 
-            id:true,
-            name:true
-        }
-      },
-      locations: {
-        select:{
-            name:true,
-            id:true
-        }
-      },
-    },
+    if (!posts) {
+      return ctx.json({ error: "Error getting posts" }, 500);
+    }
+
+    return ctx.json({ posts }, 200);
+  })
+
+  .get("/following", async (ctx) => {
+    const supabase = await createClient();
+    const {
+      data: { user },
+      error,
+    } = await supabase.auth.getUser();
+
+    if (error || !user) {
+      return ctx.json({ error: "Unauthorized" }, 401);
+    }
+
+    const posts = await db.$queryRaw<posts[]>`
+          SELECT p.id, p.user_id, p.location_id, p.heading, p.body, p.upvotes, p.created_at
+          FROM posts p
+          INNER JOIN user_location_follows ulf ON p.location_id = ulf.location_id
+          WHERE ulf.user_id = ${user.id}::uuid  
+          ORDER BY p.created_at DESC
+          LIMIT 10;
+          `;
+    
+    return ctx.json({posts},200)
+
+    
   });
-
-  if (!posts) {
-    return ctx.json({ error: "Error getting posts" }, 500);
-  }
-
-  return ctx.json({ posts }, 200);
-});
 
 export default app;

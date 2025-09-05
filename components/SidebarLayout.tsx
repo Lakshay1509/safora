@@ -13,11 +13,13 @@ export function SidebarLayout({ children }: SidebarLayoutProps) {
   
   // Don't show sidebar on landing page
   const isLandingPage = pathname === "/";
+  const isSignup = pathname === '/login'
+  const islegal = pathname === '/privacy-policy'
   
   return (
     <>
-      {!isLandingPage && <Sidebar />}
-      <main className={!isLandingPage ? "lg:pl-64" : ""}>
+      {!isLandingPage && !isSignup && !islegal && <Sidebar />}
+      <main className={!isLandingPage  && !isSignup && !islegal ? "lg:pl-64" : ""}>
         {children}
       </main>
     </>
