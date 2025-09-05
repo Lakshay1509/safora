@@ -9,6 +9,7 @@ import post from "./post"
 import post_comment from "./post-comments"
 import community from './community'
 import following from "./following"
+import upvotes from './votes'
 
 export const runtime = "nodejs";
 const app = new Hono().basePath("/api");
@@ -22,7 +23,8 @@ const routes = app
     .route("/post",post)
     .route("/post_comments",post_comment)
     .route("/community",community)
-    .route("/following",following);
+    .route("/following",following)
+    .route("/upvotes",upvotes);
 
 
 
