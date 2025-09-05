@@ -9,6 +9,9 @@ import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
 import { format } from "date-fns";
+import { useAuth } from "@/contexts/AuthContext";
+import { useDeleteCommentPost } from "@/features/post-comment.ts/use-delete-comment";
+import { Trash2 } from "lucide-react";
 
 // SubComment schema with validation
 const subCommentSchema = z.object({
@@ -23,8 +26,10 @@ interface Props {
 }
 
 const SubComment = ({ id, postId }: Props) => {
+  const { user, loading } = useAuth();
   const { data, isLoading, isError } = useGetSubComments(id);
   const mutation = addSubCommenttoPost(postId, id);
+   const deleteCommentMutation = useDeleteCommentPost();
 
   // Initialize form with React Hook Form and Zod validation
   const form = useForm<SubCommentFormValues>({
@@ -42,6 +47,12 @@ const SubComment = ({ id, postId }: Props) => {
       }
     });
   };
+
+  const handleDelete = async (id: string) => {
+        await deleteCommentMutation.mutateAsync({ commentId: id });
+    }
+
+    
 
   return (
     <div className="pl-6 mt-2 border-l-2 border-gray-200">
@@ -109,6 +120,17 @@ const SubComment = ({ id, postId }: Props) => {
                   ? format(new Date(reply.created_at), 'MMM d, yyyy')
                   : "Unknown date"}
               </span>
+              {user && reply.user_id === user.id && (
+                                <div className="flex gap-2 ml-auto pl-2">
+                                    <button
+                                        onClick={() => handleDelete(reply.id)}
+                                        disabled={deleteCommentMutation.isPending}
+                                        className="text-red-500 hover:text-red-700 disabled:opacity-50"
+                                    >
+                                        <Trash2 size={14} />
+                                    </button>
+                                </div>
+                            )}
             </div>
             <p className="text-gray-800">{reply.text}</p>
           </div>

@@ -120,6 +120,47 @@ const app = new Hono()
     
 
   }
+
+)
+.delete(
+  "/delete/:commentId",
+  async (ctx) => {
+    const supabase = await createClient();
+    const {
+      data: { user },
+      error,
+    } = await supabase.auth.getUser();
+
+    if (error || !user) {
+      return ctx.json({ error: "Unauthorized" }, 401);
+    }
+
+    const commentId = ctx.req.param("commentId");
+
+    // Check if comment exists and belongs to the user
+    const comment = await db.posts_comments.findUnique({
+      where: { id: commentId }
+    });
+
+    if (!comment) {
+      return ctx.json({ error: "Comment not found" }, 404);
+    }
+
+    if (comment.user_id !== user.id) {
+      return ctx.json({ error: "Not authorized to delete this comment" }, 403);
+    }
+
+    // Delete the comment
+    const deletedComment = await db.posts_comments.delete({
+      where: { id: commentId }
+    });
+
+    if (deletedComment) {
+      return ctx.json({ message: "Comment deleted successfully" }, 200);
+    }
+
+    return ctx.json({ error: "Error deleting comment" }, 500);
+  }
 )
 
 
