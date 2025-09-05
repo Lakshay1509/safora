@@ -267,8 +267,15 @@ const app = new Hono()
         where:{location_id:id}
       })
 
+      const followers = await db.locations.findUnique({
+        where:{id:id},
+        select:{
+          followers_count:true
+        }
+      })
+
       
-      return ctx.json({posts,comments},200)
+      return ctx.json({posts,comments,followers},200)
   })
 
   .post(

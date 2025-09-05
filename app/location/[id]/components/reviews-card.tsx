@@ -51,10 +51,10 @@ export function ReviewsCard() {
     isError
   } = useGetLocationReview(id, timeMode);
 
-  const {
-    data: Review1,
+  // const {
+  //   data: Review1,
 
-  } = useGetReview1(id);
+  // } = useGetReview1(id);
 
   // Get the user's review for this location
   const {
@@ -164,7 +164,7 @@ export function ReviewsCard() {
           <div className="flex flex-col sm:flex-row sm:items-center gap-4 w-full sm:w-auto">
 
             <CardTitle className="text-lg sm:text-xl font-bold" style={{ color: "#000000" }}>
-              Reviews ({(data?.review_count || 0) + Number(Review1?.review?.review || 0)})
+              Reviews ({(data?.review_count || 0) })
             </CardTitle>
 
 

@@ -26,9 +26,21 @@ const RightSidebar = ({id}:Props) => {
             <span className="text-sm sm:text-base">{data?.location.country}, {data?.location.city}</span>
           </div>
 
-          <div className="flex justify-start items-center space-x-2">
-             <p className="text-[14px] text-gray-600">{stats?.posts} posts</p>
-             <p className="text-[14px] text-gray-600">{stats?.comments} comments</p>
+          <div className=" flex items-center space-x-2 text-gray-700 text-sm font-medium">
+            <p className="flex items-center space-x-1">
+              <span className="font-semibold">{stats?.followers?.followers_count}</span>
+              <span className="text-gray-500">Followers</span>
+            </p>
+            <div className="h-4 w-px bg-gray-300"></div>
+            <p className="flex items-center space-x-1">
+              <span className="font-semibold">{stats?.posts}</span>
+              <span className="text-gray-500">Posts</span>
+            </p>
+            <div className="h-4 w-px bg-gray-300"></div>
+            <p className="flex items-center space-x-1">
+              <span className="font-semibold">{stats?.comments}</span>
+              <span className="text-gray-500">Comments</span>
+            </p>
           </div>
         </Link>
 
