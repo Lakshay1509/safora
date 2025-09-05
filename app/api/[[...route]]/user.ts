@@ -52,16 +52,85 @@ const app = new Hono()
       orderBy: { created_at: "desc" },
     });
 
-    if (comments.length === 0) {
-      return ctx.json({ comments }, 200);
+    const following_count = await db.public_users.findFirst({
+      where:{id:user.id},
+      select:{
+        following_locations_count:true
+      }
+    })
+
+    if (comments.length === 0 ) {
+      return ctx.json({ comments,following_count }, 200);
     }
 
     if (!comments) {
       return ctx.json({ Error: "Error getting comments" }, 500);
     }
 
-    return ctx.json({ comments }, 200);
+    return ctx.json({ comments,following_count }, 200);
   })
+
+  .get("/posts", async (ctx) => {
+    const supabase = await createClient();
+    const {
+      data: { user },
+      error,
+    } = await supabase.auth.getUser();
+
+    if (error || !user) {
+      return ctx.json({ error: "Unauthorized" }, 401);
+    }
+
+    const posts = await db.posts.findMany({
+      where: { user_id: user.id },
+    
+      orderBy: { created_at: "desc" },
+    });
+
+    if (posts.length === 0) {
+      return ctx.json({ posts }, 200);
+    }
+
+    if (!posts) {
+      return ctx.json({ Error: "Error getting comments" }, 500);
+    }
+
+    return ctx.json({ posts }, 200);
+  })
+
+    .get("/following", async (ctx) => {
+    const supabase = await createClient();
+    const {
+      data: { user },
+      error,
+    } = await supabase.auth.getUser();
+
+    if (error || !user) {
+      return ctx.json({ error: "Unauthorized" }, 401);
+    }
+
+    const following = await db.user_location_follows.findMany({
+      where: { user_id: user.id },
+      include:{
+        locations:{
+          select:{
+            name:true
+          }
+        }
+      }
+    });
+
+    if (following.length === 0) {
+      return ctx.json({ following }, 200);
+    }
+
+    if (!following) {
+      return ctx.json({ Error: "Error getting comments" }, 500);
+    }
+
+    return ctx.json({following }, 200);
+  })
+
 
   .get("/locations-count", async (ctx) => {
     const supabase = await createClient();

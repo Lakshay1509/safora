@@ -27,7 +27,7 @@ export function ProfileCard() {
   }
 
   return (
-    <Card className="rounded-xl border shadow-sm" style={{ backgroundColor: "#FFFFFF" }}>
+    <Card className="rounded-xl border h-80 shadow-sm" style={{ backgroundColor: "#FFFFFF" }}>
       <CardContent className="p-6">
         {/* Profile Header */}
         <div className="flex flex-col items-center text-center space-y-4">
@@ -51,7 +51,7 @@ export function ProfileCard() {
 
 
         {/* Profile Stats Numbers */}
-        <div className="mt-6 grid grid-cols-2 gap-4 text-center">
+        <div className="mt-6 grid grid-cols-3 gap-4 text-center">
           <div>
             <div className="text-lg font-bold" style={{ color: "#111827" }}>
               {UserComment?.comments.length}
@@ -66,6 +66,14 @@ export function ProfileCard() {
             </div>
             <div className="text-xs" style={{ color: "#6B7280" }}>
               Places Visited
+            </div>
+          </div>
+          <div>
+            <div className="text-lg font-bold" style={{ color: "#111827" }}>
+              {UserComment?.following_count?.following_locations_count}
+            </div>
+            <div className="text-xs" style={{ color: "#6B7280" }}>
+              Following
             </div>
           </div>
         </div>
