@@ -64,11 +64,11 @@ const Post = () => {
 
     return (
         <>
-        <div className="max-w-3xl mx-10 p-4 bg-white rounded-lg  mt-6">
+        <div className="max-w-3xl mx-4 p-4 bg-white rounded-lg mt-6 lg:mx-10">
             {post?.post.location_id && <RightSidebar id={post?.post.location_id }/>}
             <div className="flex justify-between items-start mb-2">
                 <h1 className="text-2xl font-bold">{post?.post.heading}</h1>
-                <div className="flex justify-center items-center space-x-2">
+                <div className="flex flex-col justify-center items-center space-x-2 lg:flex-row">
                 {isAuthor && (
                     <Button 
                         variant="outline" 

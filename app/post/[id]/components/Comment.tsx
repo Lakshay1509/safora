@@ -71,7 +71,7 @@ const Comment = ({ postId }: Props) => {
             <h2 className="text-xl font-semibold mb-4">Comments</h2>
 
             {/* Comment form */}
-            <div className="mb-6">
+            {user && <div className="mb-6">
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                         <FormField
@@ -104,7 +104,7 @@ const Comment = ({ postId }: Props) => {
                         </Button>
                     </form>
                 </Form>
-            </div>
+            </div>}
 
             {commentsLoading && (
                 <div className="flex justify-center py-4">

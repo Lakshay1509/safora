@@ -1,6 +1,6 @@
 "use client"
 
-import { Search, User, Menu, X } from "lucide-react"
+import { Search, User, Menu, X, Users } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import LoginButton from "./LoginLogoutButton"
 import { useEffect, useRef, useState } from "react"
@@ -253,7 +253,7 @@ export function Navbar() {
             </div>
 
             {/* Search Bar - visible on larger screens */}
-            <div className={`hidden flex-1 max-w-md mx-8 ${user?.id && !loading ? "md:flex" : "md:hidden"}`}>
+            <div className="hidden flex-1 max-w-md mx-8 md:flex">
               <div className="relative w-full">
                 <Search
                   className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 z-10 text-black"
@@ -271,18 +271,16 @@ export function Navbar() {
 
             {/* Mobile Icons */}
             <div className="flex items-center md:hidden">
-              {user?.id && !loading && (
-                <Button variant="ghost" size="sm" className="p-2 mr-2" onClick={toggleSearchBar}>
-                  <Search className="w-5 h-5 text-black" />
-                </Button>
-              )}
+              <Button variant="ghost" size="sm" className="p-2 mr-2" onClick={toggleSearchBar}>
+                <Search className="w-5 h-5 text-black" />
+              </Button>
               <Button variant="ghost" size="sm" className="p-2" onClick={toggleMobileMenu}>
                 {mobileMenuOpen ? <X className="w-5 h-5 text-black" /> : <Menu className="w-5 h-5 text-black" />}
               </Button>
             </div>
 
             {/* Profile and Logout - visible on larger screens */}
-            <div className="hidden md:flex items-center space-x-4">
+            <div className="hidden md:flex justify-center items-center space-x-6">
               <Button
                 variant="ghost"
                 size="sm"
@@ -291,12 +289,21 @@ export function Navbar() {
               >
                 <User className="w-5 h-5 text-black" />
               </Button>
+              <Link
+  className="flex items-center gap-2 text-sm text-gray-700 hover:text-blue-600 hover:underline transition-all duration-200 group"
+  href="/community"
+>
+  <Users className="w-4 h-4 group-hover:scale-110 transition-transform duration-200" />
+  <span className="group-hover:translate-x-1 transition-transform duration-200">
+    Community
+  </span>
+</Link>
               <LoginButton />
             </div>
           </div>
 
           {/* Mobile Search Dialog - appears when search icon is clicked */}
-          {searchBarOpen && user?.id && !loading && (
+          {searchBarOpen && (
             <div className="md:hidden px-2 pb-4 pt-2 transition-all duration-300 ease-in-out">
               <div className="bg-white rounded-lg shadow-md p-3">
                 <div className="flex justify-between items-center">
@@ -307,6 +314,7 @@ export function Navbar() {
                     onClick={() => setSearchBarOpen(false)}
                   >
                   </Button>
+                  
                 </div>
 
                 {/* Geoapify Autocomplete Container for Mobile */}
@@ -324,6 +332,15 @@ export function Navbar() {
           {mobileMenuOpen && (
             <div className="md:hidden px-2 pb-4 pt-1 transition-all duration-300 ease-in-out">
               <div className="flex flex-col space-y-3">
+                <Link
+  className="flex items-center gap-2 text-sm text-gray-700 hover:text-blue-600 hover:underline transition-all duration-200 group"
+  href="/community"
+>
+  <Users className="w-4 h-4 group-hover:scale-110 transition-transform duration-200" />
+  <span className="group-hover:translate-x-1 transition-transform duration-200">
+    Community
+  </span>
+</Link>
                 {user?.id && !loading && (
                   <Button
                     variant="ghost"
@@ -341,6 +358,7 @@ export function Navbar() {
                 <div className="py-1">
                   <LoginButton />
                 </div>
+                
               </div>
             </div>
           )}

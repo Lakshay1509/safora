@@ -4,11 +4,13 @@ import { useState, useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { ArrowUpRight, Plus } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
 
 export function Sidebar() {
   const router = useRouter();
   const pathname = usePathname();
   const [isMounted, setIsMounted] = useState(false);
+  const {user,loading} = useAuth();
 
   // Handle client-side mounting
   useEffect(() => {
@@ -20,7 +22,13 @@ export function Sidebar() {
 
   // Navigate to create post page
   const handleCreatePost = () => {
-    router.push("/create-post");
+    if(user===null){
+      router.push('/login')
+    }
+    else{
+      router.push("/create-post");
+    }
+    
   };
 
   return (

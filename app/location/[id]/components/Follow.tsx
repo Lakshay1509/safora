@@ -5,6 +5,8 @@ import { useGetFollow } from "@/features/following/use-get-follow"
 import { useDeleteFollow } from "@/features/following/use-delete-follow";
 import { addFollow } from "@/features/following/use-post-follow";
 import { PlusCircle, PlusCircleIcon, PlusIcon } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "sonner";
 
 interface Props{
     id:string
@@ -14,8 +16,13 @@ const Follow = ({id}:Props) => {
     const {data, isLoading, isError} = useGetFollow(id);
     const deleteFollowMutation = useDeleteFollow();
     const addFollowMutation = addFollow();
+    const {user,loading} = useAuth();
     
     const handleFollowToggle = () => {
+        if(user===null){
+          toast.error("Please login to follow");
+          return;
+        }
         if (data?.data!==null) {
             deleteFollowMutation.mutate({id: id});
         } else {

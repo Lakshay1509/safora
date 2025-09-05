@@ -1,5 +1,6 @@
 "use client"
 
+import { useAuth } from "@/contexts/AuthContext";
 import { useGetFollowingPost } from "@/features/community/use-get-post-folllowing";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
@@ -9,12 +10,15 @@ import Link from "next/link";
 const RightSidebar = () => {
    
     const {data,isLoading,isError} = useGetFollowingPost();
+    const {user,loading} = useAuth();
+
+    
   return (
     <div className="fixed right-0 top-0 h-[90vh] w-70 bg-white border-l border-t border-r rounded-xl border-gray-200 mt-22 mr-4 py-10 px-6 hidden lg:block overflow-y-auto">
 
         <h1 className="font-bold ">From your following</h1>
 
-        <div className="mt-8 space-y-2">
+        {user &&  <div className="mt-8 space-y-2">
           {isLoading && <p className="text-sm text-gray-500">Loading...</p>}
           {isError && <p className="text-sm text-red-500">Error loading posts</p>}
           {data?.posts && data.posts.length === 0 && (
@@ -30,7 +34,9 @@ const RightSidebar = () => {
             </div>
             
           ))}
-        </div>
+        </div>}
+
+        {!user && <h1 className="mt-8">Login to explore more !</h1>}
       
     </div>
   )

@@ -7,6 +7,8 @@ import { ArrowUp, MessageCircle, Share } from "lucide-react"
 import { Button } from "./ui/button";
 import { useGetUpVotesByUser } from "@/features/votes/use-get-upvotes-byUser";
 import { addUpvotetoPost } from "@/features/votes/use-post-upvotes";
+import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "sonner";
 
 interface Props {
   id: string
@@ -19,11 +21,18 @@ const PostStats = ({ id }: Props) => {
   const { data, isLoading, isError } = useGetPostStats(id);
   const { data: upvotes, isLoading: upvotes_loading, isError: upvotes_error } = useGetUpVotesByUser(id);
 
+  const {user,loading} = useAuth();
+
 
 
   const mutation = addUpvotetoPost();
 
   const handleClick = () => {
+
+    if(user===null){
+      toast.error("Please login to upvote!")
+      return;
+    }
 
     if (upvotes?.upvotes === null || upvotes?.upvotes.vote_type ===-1) {
       mutation.mutateAsync({

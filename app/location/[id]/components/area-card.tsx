@@ -93,19 +93,19 @@ export function AreaCard() {
           <div className="text-black ml-8 sm:ml-10 lg:ml-12">
             <span className="text-sm sm:text-base">{data?.location.country}, {data?.location.city}</span>
           </div>
-          <div className="ml-8 sm:ml-10 lg:ml-12 flex items-center space-x-6 text-gray-700 text-sm font-medium">
+          <div className="ml-8 sm:ml-10 lg:ml-12 flex flex-col md:flex-row md:items-center md:space-x-4 space-y-2 md:space-y-0 text-gray-700 text-sm font-medium mt-2">
             <p className="flex items-center space-x-1">
-              <span className="font-semibold">{stats?.followers?.followers_count}</span>
+              <span className="font-semibold">{stats?.followers?.followers_count ?? 0}</span>
               <span className="text-gray-500">Followers</span>
             </p>
-            <div className="h-4 w-px bg-gray-300"></div>
+            <div className="hidden md:block h-4 w-px bg-gray-300"></div>
             <p className="flex items-center space-x-1">
-              <span className="font-semibold">{stats?.posts}</span>
+              <span className="font-semibold">{stats?.posts ?? 0}</span>
               <span className="text-gray-500">Posts</span>
             </p>
-            <div className="h-4 w-px bg-gray-300"></div>
+            <div className="hidden md:block h-4 w-px bg-gray-300"></div>
             <p className="flex items-center space-x-1">
-              <span className="font-semibold">{stats?.comments}</span>
+              <span className="font-semibold">{stats?.comments ?? 0}</span>
               <span className="text-gray-500">Comments</span>
             </p>
           </div>

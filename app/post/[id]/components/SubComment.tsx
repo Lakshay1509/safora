@@ -57,7 +57,7 @@ const SubComment = ({ id, postId }: Props) => {
   return (
     <div className="pl-6 mt-2 border-l-2 border-gray-200">
       {/* Sub-comment form */}
-      <div className="mb-4">
+      {user && <div className="mb-4">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
             <FormField
@@ -91,7 +91,7 @@ const SubComment = ({ id, postId }: Props) => {
             </Button>
           </form>
         </Form>
-      </div>
+      </div>}
 
       {isLoading && (
         <div className="flex justify-center py-2">
