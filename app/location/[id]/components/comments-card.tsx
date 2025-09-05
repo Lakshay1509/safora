@@ -1,6 +1,6 @@
 "use client"
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import { useGetLocationComments } from "@/features/location/use-get-location-comments";
 import { useParams } from "next/navigation";
 import { formatDistanceToNow } from "date-fns";
@@ -11,7 +11,7 @@ import { addComment } from "@/features/comments.ts/use-post-comment";
 import { createClient } from "@/utils/supabase/client";
 import { useDeleteComment } from "@/features/comments.ts/use-delete-comment";
 import { EditComment } from "@/features/comments.ts/use-edit-comment";
-import { Trash2, Edit2, Save, X } from "lucide-react";
+import { Trash2, PenSquare } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export function CommentsCard() {
@@ -98,162 +98,125 @@ export function CommentsCard() {
   };
 
   if(isLoading){
-      return (
-        <Card className="w-full text-black bg-white border border-white/10 min-h-[20rem]">
-          <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <div className="flex flex-col sm:flex-row sm:items-center gap-4 w-full sm:w-auto">
-              <Skeleton className="h-7 w-32" />
-              <Skeleton className="h-9 w-24" />
-            </div>
-            <div className="flex gap-2 w-full sm:w-auto justify-end">
-              <Skeleton className="h-9 w-28" />
-            </div>
-          </CardHeader>
-          <CardContent className="space-y-4 sm:space-y-6 pb-6">
-            <div className="space-y-3 sm:space-y-4">
-              {[...Array(2)].map((_, i) => (
-                <div key={i} className="space-y-2 sm:space-y-3">
-                  <Skeleton className="h-6 w-3/4 sm:w-1/2" />
-                  <div className="flex items-center justify-between">
-                    <Skeleton className="h-2 flex-1 rounded-full mr-4" />
-                    <Skeleton className="h-7 w-12" />
-                  </div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      )
-    }
+    return (
+      <Card className="w-full border-none shadow-none">
+        <CardContent className="p-4">
+          <div className="space-y-4">
+            <Skeleton className="h-10 w-full" />
+            <Skeleton className="h-24 w-full" />
+          </div>
+        </CardContent>
+      </Card>
+    )
+  }
 
   return (
-    <Card
-      className="w-full  bg-white border border-white/10 min-h-64 transition-colors duration-200 hover:shadow-lg"
-    >
-      <CardHeader>
-        <CardTitle className="text-lg font-bold" style={{ color: "#000000" }}>
-          Comments ({data?.locationComments.length})
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="flex-1">
-        {/* Comment Form */}
-        {userId && <form onSubmit={handleCommentSubmit} className="mb-6">
-          <div className="space-y-3">
-            <Textarea
-              placeholder="Add a comment..."
-              value={commentText}
-              onChange={(e) => setCommentText(e.target.value)}
-              className="w-full bg-white/10 border-white/20 text-black placeholder:text-gray-400 resize-none"
-              rows={3}
-            />
-            <div className="flex justify-end">
-              <Button 
-                type="submit" 
-                disabled={commentMutation.isPending || !commentText.trim()}
-                className="bg-indigo-600 hover:bg-indigo-700 text-white"
-              >
-                {commentMutation.isPending ? "Posting..." : "Post Comment"}
-              </Button>
-            </div>
+    <div className="w-full">
+      {userId && (
+        <div className="mb-6">
+          <Textarea
+            placeholder="Add a comment..."
+            value={commentText}
+            onChange={(e) => setCommentText(e.target.value)}
+            className="w-full border border-gray-200 rounded-md mb-2 resize-none bg-white text-gray-800 p-3"
+            rows={2}
+          />
+          <div className="flex justify-end">
+            <Button 
+              onClick={handleCommentSubmit}
+              disabled={commentMutation.isPending || !commentText.trim()}
+              className="bg-blue-600 hover:bg-blue-700 text-white rounded-md"
+            >
+              Post Comment
+            </Button>
           </div>
-        </form>}
-        
-        
-
-        {/* Comments List */}
-        {isLoading ? (
-          <div className="flex items-center justify-center h-full">
-            <p style={{ color: "#000000" }}>Loading comments...</p>
-          </div>
-        ) : isError ? (
-          <div className="flex items-center justify-center h-full">
-            <p style={{ color: "#000000" }}>Failed to load comments</p>
-          </div>
-        ) : data?.locationComments.length === 0 ? (
-          <div className="flex items-center justify-center h-full">
-            <p style={{ color: "#000000" }}>No comments yet</p>
-          </div>
-        ) : (
-          <div className="space-y-4">
-            {data?.locationComments.map((comment) => (
-              <div 
-                key={comment.comment_id} 
-                className="p-3 rounded-lg bg-[#F8F4EF] border border-white/5"
-              >
-                <div className="flex items-center justify-between mb-2">
-                  <p className="font-medium text-sm" style={{ color: "#000000" }}>
-                    {comment.users?.name || "Anonymous"}
+        </div>
+      )}
+      
+      {isLoading ? (
+        <div className="py-8 text-center">
+          <p className="text-gray-500">Loading comments...</p>
+        </div>
+      ) : isError ? (
+        <div className="py-8 text-center">
+          <p className="text-gray-500">Failed to load comments</p>
+        </div>
+      ) : data?.locationComments.length === 0 ? (
+        <div className="py-8 text-center">
+          <p className="text-gray-500">No comments yet</p>
+        </div>
+      ) : (
+        <div className="space-y-4">
+          {data?.locationComments.map((comment) => (
+            <div 
+              key={comment.comment_id} 
+              className="p-3 border-b border-gray-100 text-sm last:border-none"
+            >
+              <div className="flex items-center justify-between mb-1">
+                <p className="font-medium text-black">
+                  {comment.users?.name || "Anonymous"}
+                </p>
+                <div className="flex items-center gap-4">
+                  <p className="text-[10px] text-gray-500">
+                    {comment.created_at && formatDistanceToNow(new Date(comment.created_at), { addSuffix: true })}
                   </p>
-                  <div className="flex items-center gap-2">
-                    <p className="text-xs opacity-70" style={{ color: "#000000" }}>
-                      {comment.created_at && formatDistanceToNow(new Date(comment.created_at), { addSuffix: true })}
-                    </p>
-                    {userId && comment.user_id === userId && (
-                      <>
-                        {editCommentId !== comment.comment_id && (
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-6 w-6 text-blue-400 hover:text-blue-300 hover:bg-blue-900/20"
-                            onClick={() => handleEditClick(comment.comment_id, comment.text)}
-                          >
-                            <Edit2 size={16} />
-                          </Button>
-                        )}
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-6 w-6 text-red-400 hover:text-red-300 hover:bg-red-900/20"
-                          onClick={() => handleDeleteComment(comment.comment_id)}
-                          disabled={deleteCommentMutation.isPending}
-                        >
-                          <Trash2 size={16} />
-                        </Button>
-                      </>
-                    )}
+                  {userId && comment.user_id === userId && (
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => handleEditClick(comment.comment_id, comment.text)}
+                        className="text-blue-500 hover:text-blue-700"
+                      >
+                        <PenSquare size={14} />
+                      </button>
+                      <button
+                        onClick={() => handleDeleteComment(comment.comment_id)}
+                        disabled={deleteCommentMutation.isPending}
+                        className="text-red-500 hover:text-red-700"
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
+              
+              {editCommentId === comment.comment_id ? (
+                <div className="space-y-2 mt-2">
+                  <Textarea
+                    value={editCommentText}
+                    onChange={(e) => setEditCommentText(e.target.value)}
+                    className="w-full border border-gray-200 rounded-md resize-none bg-white text-gray-800"
+                    rows={2}
+                  />
+                  <div className="flex justify-end gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={handleCancelEdit}
+                      className="text-gray-700 border-gray-300"
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      size="sm"
+                      onClick={() => handleEditSubmit(comment.comment_id)}
+                      disabled={editCommentMutation.isPending || !editCommentText.trim()}
+                      className="bg-blue-600 hover:bg-blue-700 text-white"
+                    >
+                      {editCommentMutation.isPending ? "Saving..." : "Save"}
+                    </Button>
                   </div>
                 </div>
-                
-                {editCommentId === comment.comment_id ? (
-                  <div className="space-y-2">
-                    <Textarea
-                      value={editCommentText}
-                      onChange={(e) => setEditCommentText(e.target.value)}
-                      className="w-full bg-white/10 border-white/20 text-black placeholder:text-gray-400 resize-none"
-                      rows={2}
-                    />
-                    <div className="flex justify-end gap-2">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="text-white bg-gray-500"
-                        onClick={handleCancelEdit}
-                      >
-                        <X size={14} className="mr-1" /> Cancel
-                      </Button>
-                      <Button
-                        size="sm"
-                        className="bg-blue-600 hover:bg-blue-700 text-white"
-                        onClick={() => handleEditSubmit(comment.comment_id)}
-                        disabled={editCommentMutation.isPending || !editCommentText.trim()}
-                      >
-                        <Save size={14} className="mr-1" /> {editCommentMutation.isPending ? "Saving..." : "Save"}
-                      </Button>
-                    </div>
-                    {editCommentMutation.isError && (
-                      <p className="text-xs text-red-400">Failed to edit comment. Please try again.</p>
-                    )}
-                  </div>
-                ) : (
-                  <p className="text-sm" style={{ color: "#000000" }}>
-                    {comment.text}
-                  </p>
-                )}
-              </div>
-            ))}
-          </div>
-        )}
-      </CardContent>
-    </Card>
+              ) : (
+                <p className="text-gray-800">
+                  {comment.text}
+                </p>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
   )
 }
+                      

@@ -77,7 +77,7 @@ export function ProfileCommentsCard() {
 
   return (
     <Card
-      className="w-full  bg-white border border-white/10 min-h-64 transition-colors duration-200 hover:shadow-lg"
+      className="w-full  bg-white border border-white/10 max-h-80 transition-colors duration-200 hover:shadow-lg overflow-x-auto"
     >
       <CardHeader>
         <CardTitle className="text-lg font-bold" style={{ color: "#000000" }}>

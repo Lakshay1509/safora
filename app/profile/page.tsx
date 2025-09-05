@@ -1,5 +1,7 @@
 import { ProfileCard } from "./components/profile-card";
 import { ProfileCommentsCard } from "./components/profile-comment";
+import { ProfileFollowingCard } from "./components/profile-following";
+import { ProfilePostsCard } from "./components/profile-posts";
 
 
 
@@ -11,11 +13,13 @@ export default function ProfilePage() {
         <div className="max-w-7xl mx-auto">
           {/* Profile Layout - Left Profile Card, Right Comments */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div className="lg:col-span-1">
+            <div className="lg:col-span-1 space-y-5">
               <ProfileCard />
+              <ProfileFollowingCard/>
             </div>
-            <div className="lg:col-span-2">
+            <div className="lg:col-span-2 space-y-5">
               <ProfileCommentsCard />
+              <ProfilePostsCard/>
             </div>
           </div>
         </div>

@@ -25,14 +25,14 @@ const app = new Hono()
 
   .get("/locationsByCoord", async (ctx) => {
     const supabase = await createClient();
-    const {
-      data: { user },
-      error,
-    } = await supabase.auth.getUser();
+    // const {
+    //   data: { user },
+    //   error,
+    // } = await supabase.auth.getUser();
 
-    if (error || !user) {
-      return ctx.json({ error: "Unauthorized" }, 401);
-    }
+    // if (error || !user) {
+    //   return ctx.json({ error: "Unauthorized" }, 401);
+    //}
     const latParam = ctx.req.query("lat");
     const lonParam = ctx.req.query("lon");
 
@@ -253,6 +253,29 @@ const app = new Hono()
     }
 
     return ctx.json({ locationComments }, 200);
+  })
+
+  .get("/location_stats/:id",async(ctx)=>{
+
+
+      const id = ctx.req.param("id");
+      const posts = await db.posts.count({
+        where:{location_id:id}
+      })
+
+      const comments = await db.comments.count({
+        where:{location_id:id}
+      })
+
+      const followers = await db.locations.findUnique({
+        where:{id:id},
+        select:{
+          followers_count:true
+        }
+      })
+
+      
+      return ctx.json({posts,comments,followers},200)
   })
 
   .post(
