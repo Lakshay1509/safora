@@ -290,15 +290,18 @@ export function Navbar() {
                   Community
                 </span>
               </Link>
-              <Link
-                className="flex items-center gap-2 text-sm text-gray-700 hover:text-blue-600 hover:underline transition-all duration-200 group"
-                href="/profile"
-              >
-                <User className="w-4 h-4 group-hover:scale-110 transition-transform duration-200" />
-                <span className="group-hover:translate-x-1 transition-transform duration-200">
-                  Profile
-                </span>
-              </Link>
+              {user?.id && !loading && (
+                   <Link
+                  className="flex items-center gap-2 text-sm text-gray-700 hover:text-blue-600 hover:underline transition-all duration-200 group"
+                  href="/profile"
+                  onClick={()=>{setMobileMenuOpen(false)}}
+                >
+                  <User className="w-4 h-4 group-hover:scale-110 transition-transform duration-200" />
+                  <span className="group-hover:translate-x-1 transition-transform duration-200">
+                    Profile
+                  </span>
+                </Link>
+                )}
               <LoginButton />
             </div>
           </div>
@@ -343,19 +346,6 @@ export function Navbar() {
                   </span>
                 </Link>
                 {user?.id && !loading && (
-                  // <Button
-                  //   variant="ghost"
-                  //   size="sm"
-                  //   className="flex items-center justify-start py-2 hover:bg-gray-200"
-                  //   onClick={() => {
-                  //     router.push('/profile');
-                  //     setMobileMenuOpen(false);
-                  //   }}
-                  // >
-                  //   <User className="w-5 h-5 text-black mr-2" />
-                  //   <span className="text-black">Profile</span>
-                  // </Button>
-
                    <Link
                   className="flex items-center gap-2 text-sm text-gray-700 hover:text-blue-600 hover:underline transition-all duration-200 group"
                   href="/profile"
