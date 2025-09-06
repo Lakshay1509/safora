@@ -12,10 +12,13 @@ type RequestType = InferRequestType<
   (typeof client.api.following)[":id"]["$delete"]
 >["param"];
 
+// Define the type for the query cache
+type FollowQueryData = { data: { id: string } | null };
+
 export const useDeleteFollow = () => {
     const queryClient = useQueryClient();
 
-    return useMutation<ResponseType, Error, RequestType>({
+    return useMutation<ResponseType, Error, RequestType, { previousFollow?: FollowQueryData }>({
         mutationFn: async (param) => {
             const response = await client.api.following[":id"]["$delete"]({
                 param,
@@ -27,19 +30,29 @@ export const useDeleteFollow = () => {
 
             return response.json();
         },
-        onSuccess: (_, variables) => {
-            // Invalidate the specific query with the ID
-            queryClient.invalidateQueries({ queryKey: ["follow", variables.id] });
-            
-            // Also invalidate any other related queries
-            queryClient.invalidateQueries({ queryKey: ["follow"] });
-            queryClient.invalidateQueries({queryKey:["location-stats"]});
-           
-            toast.success("Follow deleted successfully");
+        onMutate: async (deletedFollow) => {
+            await queryClient.cancelQueries({ queryKey: ["follow", deletedFollow.id] });
+
+            const previousFollow = queryClient.getQueryData<FollowQueryData>(["follow", deletedFollow.id]);
+
+            // Optimistically update to unfollowed state
+            queryClient.setQueryData<FollowQueryData>(
+                ["follow", deletedFollow.id],
+                { data: null }
+            );
+
+            return { previousFollow };
         },
-        onError: (error) => {
-            console.log("Delete follow error:", error);
+        onError: (err, deletedFollow, context) => {
+            if (context?.previousFollow) {
+                queryClient.setQueryData(["follow", deletedFollow.id], context.previousFollow);
+            }
+            console.log("Delete follow error:", err);
             toast.error("Failed to delete follow");
+        },
+        onSettled: (data, error, variables) => {
+            queryClient.invalidateQueries({ queryKey: ["follow", variables.id] });
+            queryClient.invalidateQueries({queryKey:["location-stats"]});
         }
     });
 };
