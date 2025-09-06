@@ -6,11 +6,14 @@ import { toast } from "sonner";
 type ResponseType = InferResponseType<(typeof client.api.following)["$post"]>
 type RequestType = InferRequestType<(typeof client.api.following)["$post"]>["json"]
 
+// Define the type for the query cache
+type FollowQueryData = { data: { id: string } | null };
+
 export const addFollow = ()=>{
 
     const queryClient = useQueryClient();
 
-    return useMutation<ResponseType,Error,RequestType>({
+    return useMutation<ResponseType,Error,RequestType, { previousFollow?: FollowQueryData }>({
 
         mutationFn : async(json)=>{
             const response = await client.api.following["$post"]({
@@ -25,19 +28,29 @@ export const addFollow = ()=>{
 
             return response.json();
         },
-        onSuccess:(data, variables)=>{
-            // Invalidate the specific query with the location_id
-            queryClient.invalidateQueries({queryKey:["follow", variables.location_id]});
-            
-            // Also invalidate any other related queries
-            queryClient.invalidateQueries({queryKey:["follow"]});
-            queryClient.invalidateQueries({queryKey:["location-stats"]});
-            
-            toast.success("Follow added successfully");
+        onMutate: async (newFollow) => {
+            await queryClient.cancelQueries({ queryKey: ["follow", newFollow.location_id] });
+
+            const previousFollow = queryClient.getQueryData<FollowQueryData>(["follow", newFollow.location_id]);
+
+            // Optimistically update to the new value
+            queryClient.setQueryData<FollowQueryData>(
+                ["follow", newFollow.location_id],
+                (old) => ({ data: { id: 'optimistic-follow' } }) // Assume followed
+            );
+
+            return { previousFollow };
         },
-        onError:(error)=>{
-            console.log(error);
+        onError:(err, newFollow, context)=>{
+            if (context?.previousFollow) {
+                queryClient.setQueryData(["follow", newFollow.location_id], context.previousFollow);
+            }
+            console.log(err);
             toast.error("Failed to add follow");
+        },
+        onSettled: (data, error, variables) => {
+            queryClient.invalidateQueries({queryKey:["follow", variables.location_id]});
+            queryClient.invalidateQueries({queryKey:["location-stats"]});
         }
     })
 }
