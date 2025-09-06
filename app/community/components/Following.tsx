@@ -7,9 +7,11 @@ import { Button } from "@/components/ui/button"
 import PostStats from "@/components/PostStats"
 import RightSidebar from "./RightSidebar"
 import PostSkeleton from "./PostsSkeleton"
+import { useGetFollowingPost } from "@/features/community/use-get-post-folllowing"
+import { useAuth } from "@/contexts/AuthContext"
 
-export const Posts = () => {
-  const { data, isLoading, isError } = useGetPostCommunity();
+export const Following = () => {
+  const { data, isLoading, isError } = useGetFollowingPost({limit:"50"});
 
   // Function to truncate text to first 2 lines
   const truncateText = (text: string, isBody: boolean = false) => {
@@ -37,12 +39,20 @@ export const Posts = () => {
     </div>)
   }
 
+  
+
   if (isError) {
     return <div className="p-4 text-center text-red-500">Error loading posts. Please try again later.</div>;
   }
 
-  if (!data || !data.posts || data.posts.length === 0) {
-    return <div className="p-4 text-center">No posts available.</div>;
+  if (!data || data.posts.length === 0) {
+    return (
+  <div className="p-6 text-center max-w-4xl mt-10 rounded-2xl shadow-md bg-gray-50 border border-gray-200">
+    <p className="text-gray-600 text-lg font-medium">🚫 No posts available</p>
+    <p className="text-gray-400 text-sm mt-1">Be the first one to share something!</p>
+  </div>
+);
+
   }
 
   return (
@@ -53,7 +63,7 @@ export const Posts = () => {
             {data.posts.map((post) => (
               <div key={post.id} className="p-4 border-b border-gray-200 rounded-lg transition-colors duration-200 hover:bg-gray-50 text-sm">
                 {/* User and location info */}
-                <div className="flex items-center text-xs text-gray-500 mb-2">
+                {/* <div className="flex items-center text-xs text-gray-500 mb-2">
                   {post.users && (
                     <span className="font-medium mr-2">
                       {post.users.name}
@@ -76,7 +86,7 @@ export const Posts = () => {
                       </span>
                     )}
                   </Link>
-                </div>
+                </div> */}
 
 
                 <Link
@@ -94,6 +104,8 @@ export const Posts = () => {
           </div>
         </div>
       </div>
+      
+      
     </section>
   )
 }

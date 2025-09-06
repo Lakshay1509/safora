@@ -168,7 +168,7 @@ const ChangeLocation = ({ onLocationSelect, currentLocationName }: ChangeLocatio
   }
 
   return (
-    <div className="flex justify-between items-center mb-10">
+    <div className="flex justify-between items-center mb-10 text-sm">
       {currentLocationName ? (
         <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-md text-blue-800 dark:text-blue-200">
           <p className="font-medium">Posting in: {currentLocationName}</p>

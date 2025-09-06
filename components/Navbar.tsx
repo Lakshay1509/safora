@@ -60,41 +60,41 @@ export function Navbar() {
   const showLoading = isLoading || loadingLocation;
 
   useEffect(() => {
-  if (isSuccess && data?.location?.length) {
-    
-    router.push(`/location/${data.location[0].id}`);
-    setSelectedLocation(undefined);
-    setSelectedCoords(null);
-    setLoadingLocation(false); 
-  } else if (isError && selectedLocation) {
-    const postLocation = async () => {
-      setLoadingLocation(true); 
-      
-      const locationToCreate = { ...selectedLocation };
+    if (isSuccess && data?.location?.length) {
+
+      router.push(`/location/${data.location[0].id}`);
       setSelectedLocation(undefined);
+      setSelectedCoords(null);
+      setLoadingLocation(false);
+    } else if (isError && selectedLocation) {
+      const postLocation = async () => {
+        setLoadingLocation(true);
 
-      try {
-        const result: any = await LocationMutation.mutateAsync(locationToCreate);
-        if (result?.location?.length) {
-          router.push(`/location/${result.location[0].id}`);
-          setSelectedCoords(null);
+        const locationToCreate = { ...selectedLocation };
+        setSelectedLocation(undefined);
+
+        try {
+          const result: any = await LocationMutation.mutateAsync(locationToCreate);
+          if (result?.location?.length) {
+            router.push(`/location/${result.location[0].id}`);
+            setSelectedCoords(null);
+          }
+        } catch (e) {
+          console.error("Failed to create location:", e);
+        } finally {
+          setLoadingLocation(false); // Stop loading in all cases
         }
-      } catch (e) {
-        console.error("Failed to create location:", e);
-      } finally {
-        setLoadingLocation(false); // Stop loading in all cases
-      }
-    };
+      };
 
-    postLocation();
-  }
-}, [isSuccess, data, isError, selectedLocation, LocationMutation, router]);
+      postLocation();
+    }
+  }, [isSuccess, data, isError, selectedLocation, LocationMutation, router]);
 
 
 
 
 
-  
+
   const GEOAPIFY_API_KEY = process.env.NEXT_PUBLIC_GEOAPIFY_API_KEY || "YOUR_API_KEY_HERE"
 
   useEffect(() => {
@@ -281,23 +281,24 @@ export function Navbar() {
 
             {/* Profile and Logout - visible on larger screens */}
             <div className="hidden md:flex justify-center items-center space-x-6">
-              <Button
-                variant="ghost"
-                size="sm"
-                className={`p-2 hover:bg-gray-200 ${user?.id && !loading ? "block" : "hidden"}`}
-                onClick={() => { router.push('/profile') }}
-              >
-                <User className="w-5 h-5 text-black" />
-              </Button>
               <Link
-  className="flex items-center gap-2 text-sm text-gray-700 hover:text-blue-600 hover:underline transition-all duration-200 group"
-  href="/community"
->
-  <Users className="w-4 h-4 group-hover:scale-110 transition-transform duration-200" />
-  <span className="group-hover:translate-x-1 transition-transform duration-200">
-    Community
-  </span>
-</Link>
+                className="flex items-center gap-2 text-sm text-gray-700 hover:text-blue-600 hover:underline transition-all duration-200 group"
+                href="/community"
+              >
+                <Users className="w-4 h-4 group-hover:scale-110 transition-transform duration-200" />
+                <span className="group-hover:translate-x-1 transition-transform duration-200">
+                  Community
+                </span>
+              </Link>
+              <Link
+                className="flex items-center gap-2 text-sm text-gray-700 hover:text-blue-600 hover:underline transition-all duration-200 group"
+                href="/profile"
+              >
+                <User className="w-4 h-4 group-hover:scale-110 transition-transform duration-200" />
+                <span className="group-hover:translate-x-1 transition-transform duration-200">
+                  Profile
+                </span>
+              </Link>
               <LoginButton />
             </div>
           </div>
@@ -314,7 +315,7 @@ export function Navbar() {
                     onClick={() => setSearchBarOpen(false)}
                   >
                   </Button>
-                  
+
                 </div>
 
                 {/* Geoapify Autocomplete Container for Mobile */}
@@ -333,32 +334,43 @@ export function Navbar() {
             <div className="md:hidden px-2 pb-4 pt-1 transition-all duration-300 ease-in-out">
               <div className="flex flex-col space-y-3">
                 <Link
-  className="flex items-center gap-2 text-sm text-gray-700 hover:text-blue-600 hover:underline transition-all duration-200 group"
-  href="/community"
->
-  <Users className="w-4 h-4 group-hover:scale-110 transition-transform duration-200" />
-  <span className="group-hover:translate-x-1 transition-transform duration-200">
-    Community
-  </span>
-</Link>
+                  className="flex items-center gap-2 text-sm text-gray-700 hover:text-blue-600 hover:underline transition-all duration-200 group"
+                  href="/community"
+                >
+                  <Users className="w-4 h-4 group-hover:scale-110 transition-transform duration-200" />
+                  <span className="group-hover:translate-x-1 transition-transform duration-200">
+                    Community
+                  </span>
+                </Link>
                 {user?.id && !loading && (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="flex items-center justify-start p-2 hover:bg-gray-200"
-                    onClick={() => {
-                      router.push('/profile');
-                      setMobileMenuOpen(false);
-                    }}
-                  >
-                    <User className="w-5 h-5 text-black mr-2" />
-                    <span className="text-black">Profile</span>
-                  </Button>
+                  // <Button
+                  //   variant="ghost"
+                  //   size="sm"
+                  //   className="flex items-center justify-start py-2 hover:bg-gray-200"
+                  //   onClick={() => {
+                  //     router.push('/profile');
+                  //     setMobileMenuOpen(false);
+                  //   }}
+                  // >
+                  //   <User className="w-5 h-5 text-black mr-2" />
+                  //   <span className="text-black">Profile</span>
+                  // </Button>
+
+                   <Link
+                  className="flex items-center gap-2 text-sm text-gray-700 hover:text-blue-600 hover:underline transition-all duration-200 group"
+                  href="/profile"
+                  onClick={()=>{setMobileMenuOpen(false)}}
+                >
+                  <User className="w-4 h-4 group-hover:scale-110 transition-transform duration-200" />
+                  <span className="group-hover:translate-x-1 transition-transform duration-200">
+                    Profile
+                  </span>
+                </Link>
                 )}
                 <div className="py-1">
                   <LoginButton />
                 </div>
-                
+
               </div>
             </div>
           )}
