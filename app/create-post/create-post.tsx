@@ -15,6 +15,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useGetLocation } from "@/features/location/use-get-location";
 import { useGetPost } from "@/features/post/use-get-byId";
 import ChangeLocation from "./change_location";
+import { toast } from "sonner";
 
 // Schema should match backend validation
 const postSchema = z.object({
@@ -93,7 +94,7 @@ const CreatePost = () => {
     } else {
       if (!locationId) {
         // Optionally, handle the case where location is not selected
-        alert("Please select a location before creating a post.");
+        toast.error("Please select a location before creating a post.");
         return;
       }
       createPost({

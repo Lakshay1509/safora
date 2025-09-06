@@ -22,6 +22,7 @@ import { useState } from "react";
 import Comment from "./Comment";
 import RightSidebar from "./RightSidebar";
 import PostStats from "@/components/PostStats";
+import PostDetailSkeleton from "./PostsSkeleton";
 
 const Post = () => {
     const { user, loading } = useAuth();
@@ -48,9 +49,7 @@ const Post = () => {
 
     if (isLoading) {
         return (
-            <div className="flex justify-center items-center min-h-screen">
-                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-gray-900"></div>
-            </div>
+            <PostDetailSkeleton/>
         );
     }
 

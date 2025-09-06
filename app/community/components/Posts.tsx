@@ -6,6 +6,7 @@ import { ArrowUp, MessageCircle, Share, Tag } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import PostStats from "@/components/PostStats"
 import RightSidebar from "./RightSidebar"
+import PostSkeleton from "./PostsSkeleton"
 
 export const Posts = () => {
   const { data, isLoading, isError } = useGetPostCommunity();
@@ -28,7 +29,12 @@ export const Posts = () => {
   };
 
   if (isLoading) {
-    return <div className="p-4 text-center">Loading posts...</div>;
+    return(
+    <div className="space-y-4 p-4">
+      {[1, 2, 3, 4, 5].map((item) => (
+        <PostSkeleton key={item} />
+      ))}
+    </div>)
   }
 
   if (isError) {
