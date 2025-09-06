@@ -17,36 +17,38 @@ const Tabview = () => {
     }, [user]);
     
     return (
-        <div>
-            <div className='max-w-4xl flex justify-end px-8 font-semibold'>
-                <ToggleGroup 
-                    type="single" 
-                    value={view} 
-                    onValueChange={(value) => value && setView(value)}
-                    className="gap-1"
-                >
-                    <ToggleGroupItem 
-                        value="recent" 
-                        aria-label="Recent"
-                        className="data-[state=on]:bg-blue-500 data-[state=on]:text-white hover:bg-blue-100"
+        <div className='flex'>
+            <div className='flex-1'>
+                <div className='max-w-4xl flex justify-end px-8 font-semibold'>
+                    <ToggleGroup 
+                        type="single" 
+                        value={view} 
+                        onValueChange={(value) => value && setView(value)}
+                        className="gap-1"
                     >
-                        Recent
-                    </ToggleGroupItem>
-                    {user && <ToggleGroupItem 
-                        value="following" 
-                        aria-label="Following"
-                        className="data-[state=on]:bg-blue-500 data-[state=on]:text-white hover:bg-blue-100 px-4"
-                    >
-                        Following
-                    </ToggleGroupItem>}
-                </ToggleGroup>
-            </div>
+                        <ToggleGroupItem 
+                            value="recent" 
+                            aria-label="Recent"
+                            className="data-[state=on]:bg-blue-500 data-[state=on]:text-white hover:bg-blue-100"
+                        >
+                            Recent
+                        </ToggleGroupItem>
+                        {user && <ToggleGroupItem 
+                            value="following" 
+                            aria-label="Following"
+                            className="data-[state=on]:bg-blue-500 data-[state=on]:text-white hover:bg-blue-100 px-4"
+                        >
+                            Following
+                        </ToggleGroupItem>}
+                    </ToggleGroup>
+                </div>
 
-            {view === 'recent' && <Posts/>}
-            {view === 'following' && <Following/>}
+                {view === 'recent' && <Posts/>}
+                {view === 'following' && <Following/>}
+            </div>
             <div className="hidden lg:block w-80 p-4">
-        <RightSidebar/>
-      </div>
+                <RightSidebar/>
+            </div>
         </div>
     )
 }
