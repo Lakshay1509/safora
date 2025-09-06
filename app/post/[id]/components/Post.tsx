@@ -63,56 +63,58 @@ const Post = () => {
 
     return (
         <>
-        <div className="max-w-3xl mx-4 p-4 bg-white rounded-lg mt-6 lg:mx-10">
-            {post?.post.location_id && <RightSidebar id={post?.post.location_id }/>}
-            <div className="flex justify-between items-start mb-2">
-                <h1 className="text-2xl font-bold">{post?.post.heading}</h1>
-                <div className="flex flex-col justify-center items-center space-x-2 lg:flex-row">
-                {isAuthor && (
-                    <Button 
-                        variant="outline" 
-                        size="sm"
-                        onClick={handleEditClick}
-                        className="flex items-center gap-1"
-                    >
-                        <PenIcon size={16} />
-                        Edit
-                    </Button>
-                )}
-                {isAuthor && (
-                    <Button 
-                        variant="outline" 
-                        size="sm"
-                        onClick={()=>{setIsDeleteDialogOpen(true)}}
-                        className="flex items-center gap-1"
-                    >
-                        <Trash size={16} />
-                        Delete
-                    </Button>
-                )}
+        <div className="flex justify-center">
+            <div className="w-full max-w-3xl mx-4 p-4 bg-white rounded-lg mt-6 lg:mx-10 lg:mr-[22rem]">
+                <div className="flex justify-between items-start mb-2">
+                    <h1 className="text-2xl font-bold">{post?.post.heading}</h1>
+                    <div className="flex flex-col justify-center items-center space-x-2 lg:flex-row">
+                    {isAuthor && (
+                        <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={handleEditClick}
+                            className="flex items-center gap-1"
+                        >
+                            <PenIcon size={16} />
+                            Edit
+                        </Button>
+                    )}
+                    {isAuthor && (
+                        <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={()=>{setIsDeleteDialogOpen(true)}}
+                            className="flex items-center gap-1"
+                        >
+                            <Trash size={16} />
+                            Delete
+                        </Button>
+                    )}
+                    </div>
                 </div>
-            </div>
       
-            <div className="flex items-center text-sm text-gray-600 mb-4">
-                <span className="mr-2">By {post?.post.users?.name || "Anonymous"}</span>
-                <span className="mx-2">•</span>
-                <span>
-                    {post?.post.created_at 
-                        ? format(new Date(post.post.created_at), 'MMM d, yyyy')
-                        : "Unknown date"}
-                </span>
+                <div className="flex items-center text-sm text-gray-600 mb-4">
+                    <span className="mr-2">By {post?.post.users?.name || "Anonymous"}</span>
+                    <span className="mx-2">•</span>
+                    <span>
+                        {post?.post.created_at 
+                            ? format(new Date(post.post.created_at), 'MMM d, yyyy')
+                            : "Unknown date"}
+                    </span>
                 
                 
-            </div>
-      
-            <div className="prose mb-8">
-                {post?.post.body}
-            </div>
+                </div>
+        
+                <div className="prose mb-8">
+                    {post?.post.body}
+                </div>
 
-            <PostStats id={postId}/>
-      
-            {/* Comments section */}
-            <Comment postId={postId}/>
+                <PostStats id={postId}/>
+        
+                {/* Comments section */}
+                <Comment postId={postId}/>
+            </div>
+            {post?.post.location_id && <RightSidebar id={post?.post.location_id }/>}
         </div>
         <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
         <AlertDialogContent className="bg-white border border-gray-200 text-gray-900">
