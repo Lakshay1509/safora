@@ -94,7 +94,7 @@ const app = new Hono()
     const id = ctx.req.param("id");
 
     const post_comments = await db.posts_comments.findMany({
-      where: { post_id: id },
+      where: { post_id: id ,parent_id:null},
       include: {
         users: {
           select: {
