@@ -3,6 +3,15 @@ import { db } from "@/lib/prisma";
 interface Location {
   id: string;
   created_at: Date;
+  name:string
+}
+
+interface Posts{
+  id:string,
+  created_at:Date|null,
+  heading:string,
+  body:string,
+  upvotes:number
 }
 
 interface SitemapEntry {
@@ -15,7 +24,7 @@ interface SitemapEntry {
 async function getLocationsSitemap(): Promise<Location[]> {
   try {
     return await db.locations.findMany({
-      select: { id: true, created_at: true },
+      select: { id: true, created_at: true ,name:true },
       take: 5000,
       orderBy: { created_at: "desc" }
     });
@@ -25,8 +34,22 @@ async function getLocationsSitemap(): Promise<Location[]> {
   }
 }
 
+async function getPostsSitemap(): Promise<Posts[]>{
+
+  try{
+    return await db.posts.findMany({
+      select:{id:true,created_at:true,heading:true,body:true,upvotes:true}
+    })
+  }
+  catch(error){
+    console.error("Failed to get posts for sitemap",error);
+    return []
+  }
+}
+
 export default async function sitemap(): Promise<SitemapEntry[]> {
   const locations = await getLocationsSitemap();
+  const posts = await getPostsSitemap();
 
   const staticEntries: SitemapEntry[] = [
     {
@@ -50,5 +73,13 @@ export default async function sitemap(): Promise<SitemapEntry[]> {
     priority: 0.8,
   }));
 
-  return [...staticEntries, ...locationEntries];
+  const postEntries : SitemapEntry[] =posts.map((post)=>({
+    url :`https://www.safeornot.space/post/${post.id}`,
+    lastModified:(post.created_at ?? new Date()).toISOString(),
+    changeFrequency:"weekly",
+    priority:0.8,
+
+  }));
+
+  return [...staticEntries, ...locationEntries,...postEntries];
 }
