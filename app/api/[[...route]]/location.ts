@@ -291,16 +291,7 @@ const app = new Hono()
       })
     ),
     async (ctx) => {
-      const supabase = await createClient();
-      const {
-        data: { user },
-        error,
-      } = await supabase.auth.getUser();
-
-      if (error || !user) {
-        return ctx.json({ error: "Unauthorized" }, 401);
-      }
-
+     
       const values = ctx.req.valid("json");
       const location = await db.$queryRaw<location[]>`
   INSERT INTO locations (country, city, name, geog)
