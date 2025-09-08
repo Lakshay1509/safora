@@ -23,6 +23,7 @@ import Comment from "./Comment";
 import RightSidebar from "./RightSidebar";
 import PostStats from "@/components/PostStats";
 import PostDetailSkeleton from "./PostsSkeleton";
+import ExploreMore from "./ExploreMore";
 
 const Post = () => {
     const { user, loading } = useAuth();
@@ -113,6 +114,7 @@ const Post = () => {
         
                 {/* Comments section */}
                 <Comment postId={postId}/>
+                <ExploreMore id={post?.post.location_id ? post.post.location_id : ''}/>
             </div>
             {post?.post.location_id && <RightSidebar id={post?.post.location_id }/>}
         </div>
