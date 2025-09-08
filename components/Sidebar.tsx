@@ -5,12 +5,15 @@ import { usePathname, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { ArrowUpRight, Plus } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import { useGetTrending } from "@/features/community/use-get-trending";
+import TrendingCard from "./TrendingCard";
 
 export function Sidebar() {
   const router = useRouter();
   const pathname = usePathname();
   const [isMounted, setIsMounted] = useState(false);
   const {user,loading} = useAuth();
+  const {data,isLoading,isError} = useGetTrending();
 
   // Handle client-side mounting
   useEffect(() => {
@@ -50,6 +53,16 @@ export function Sidebar() {
               Trending Places
               <ArrowUpRight size={16}/>
             </h1>
+            <div className="mt-4 space-y-4">
+              {isLoading && <p className="text-center text-sm">Loading trending places...</p>}
+              {isError && <p className="text-center text-sm text-red-500">Could not load trending places.</p>}
+              {data?.locations?.map((location) => {
+                if (location.location_id) {
+                  return <TrendingCard key={location.location_id} id={location.location_id} />;
+                }
+                return null;
+              })}
+            </div>
             
           </div>
         </div>
