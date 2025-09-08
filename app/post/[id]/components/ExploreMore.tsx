@@ -18,7 +18,7 @@ const ExploreMore = ({ id }: Props) => {
                 <h2 className="font-semibold text-sm text-gray-800">{data?.location.name}</h2>
             </div>
             <Link
-                href={`location/${data?.location.id}`}
+                href={`/location/${data?.location.id}`}
                 className="bg-blue-600 text-white px-3 py-1.5 rounded-md text-sm hover:bg-blue-700 transition"
             >
                 Explore
