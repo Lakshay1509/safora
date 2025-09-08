@@ -73,6 +73,22 @@ const app = new Hono()
     return ctx.json({posts}, 200);
 })
 
+.get("/trending", async (ctx) => {
+    const locations = await db.posts.groupBy({
+      by : ['location_id'],
+      _count :{location_id:true},
+      orderBy:{_count:{location_id:'desc'}},
+      take:3
+    })
+
+    if(!locations){
+      return ctx.json({error:"Error getting trending"},500);
+    }
+
+    return ctx.json({locations},200);
+
+  })
+
 
   
 
