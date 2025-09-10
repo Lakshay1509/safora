@@ -25,7 +25,7 @@ export const metadata: Metadata = {
     template: "%s | Safe or Not",
   },
   description:
-    "Discover subtle safety insights powered by community feedback and AI. Safe or Not helps travelers and locals assess places with real experiences, ratings, and tips for a safer journey.",
+    "Safe or Not: Get AI-powered community insights, ratings, and tips to travel and explore safely",
   keywords: [
   "safety insights",
   "safe or not",
