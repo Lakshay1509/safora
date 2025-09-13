@@ -19,7 +19,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   return {
   title: `${post.heading} - Safety Review`,
-  description: `${post.body}. Read real experiences, safety tips, and insights about ${post.heading}. Powered by community-driven safety ratings and AI.`,
+  description: `${post.body}. Read real experiences, safety tips, and insights about ${post.heading}`,
   openGraph: {
     title: `${post.heading} | Safe or Not`,
     description: `${post.body}. Discover safety ratings, traveler reviews, and precautions shared by the community about ${post.heading}.`,
@@ -30,7 +30,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         url: "/og.webp",
         width: 1200,
         height: 630,
-        alt: `${post.heading} - Safety Review by Safe or Not`,
+        alt: `${post.heading} - Safe or Not`,
       },
     ],
     type: "article",

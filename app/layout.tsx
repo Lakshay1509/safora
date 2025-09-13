@@ -29,6 +29,7 @@ export const metadata: Metadata = {
   keywords: [
   "safety insights",
   "safe or not",
+  "Safe or Not",
   "travel safety",
   "community safety ratings",
   "AI safety tips",
