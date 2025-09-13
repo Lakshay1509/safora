@@ -4,6 +4,7 @@ import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
 import { randomUUID } from "crypto";
 import { createClient } from "@/utils/supabase/server";
+import { generateSlug } from "@/utils/slug";
 
 const app = new Hono()
   .post(
@@ -35,6 +36,7 @@ const app = new Hono()
           ...values,
           user_id: user.id,
           location_id: location_id,
+          slug: generateSlug(values.heading)
         },
       });
 

@@ -56,7 +56,7 @@ const RightSidebar = ({id}:Props) => {
               {post.post.slice(0, 6).map((item) => (
                 
                 <div key={item.id} className="border border-gray-200 rounded-lg p-3 hover:bg-gray-50 cursor-pointer">
-                  <Link href={`/post/${item.id}`}>
+                  <Link href={`/post/${item.id}/${item.slug}`}>
                   <h3 className="font-medium text-sm line-clamp-2">{item.heading}</h3>
                   <div className="flex items-center mt-2 text-xs text-gray-500">
                     <span>{item.upvotes} upvotes</span>

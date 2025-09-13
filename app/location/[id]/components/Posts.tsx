@@ -54,7 +54,7 @@ const Posts = () => {
                         
                             <div key={post.id} className="p-4 border-b border-gray-200 rounded-lg transition-colors duration-200 hover:bg-gray-50 text-sm">
                                 <Link
-                                    href={`/post/${post.id}`}
+                                    href={`/post/${post.id}/${post.slug}`}
                                     className="block text-black hover:text-gray-500"
                                 >
                                     <h2 className="font-semibold text-lg">{truncateText(post.heading)}</h2>

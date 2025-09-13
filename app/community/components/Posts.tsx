@@ -80,7 +80,7 @@ export const Posts = () => {
 
 
                 <Link
-                  href={`/post/${post.id}`}
+                  href={`/post/${post.id}/${post.slug}`}
                   className="block text-black hover:text-gray-500"
                 >
                   <h2 className="font-semibold text-lg">{truncateText(post.heading)}</h2>
