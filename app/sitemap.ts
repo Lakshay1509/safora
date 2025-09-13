@@ -11,7 +11,8 @@ interface Posts{
   created_at:Date|null,
   heading:string,
   body:string,
-  upvotes:number
+  upvotes:number,
+  slug:string|null
 }
 
 interface SitemapEntry {
@@ -38,7 +39,7 @@ async function getPostsSitemap(): Promise<Posts[]>{
 
   try{
     return await db.posts.findMany({
-      select:{id:true,created_at:true,heading:true,body:true,upvotes:true}
+      select:{id:true,created_at:true,heading:true,body:true,upvotes:true,slug:true}
     })
   }
   catch(error){
@@ -74,7 +75,7 @@ export default async function sitemap(): Promise<SitemapEntry[]> {
   }));
 
   const postEntries : SitemapEntry[] =posts.map((post)=>({
-    url :`https://www.safeornot.space/post/${post.id}`,
+    url :`https://www.safeornot.space/post/${post.id}/${post.slug}`,
     lastModified:(post.created_at ?? new Date()).toISOString(),
     changeFrequency:"weekly",
     priority:0.8,
