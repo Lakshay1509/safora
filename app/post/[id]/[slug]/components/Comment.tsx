@@ -14,6 +14,7 @@ import SubComment from "./SubComment";
 import { useState } from "react";
 import { useDeleteCommentPost } from "@/features/post-comment.ts/use-delete-comment";
 import { useAuth } from "@/contexts/AuthContext";
+import AvatarCircle from "@/app/profile/components/AvatarCircle";
 
 
 // Comment schema with validation
@@ -126,7 +127,10 @@ const Comment = ({ postId }: Props) => {
                 {comments?.post_comments.map((comment) => (
                     <div key={comment.id} className="p-3 bg-gray-50 rounded-lg">
                         <div className="flex items-center text-sm text-gray-600 mb-2">
-                            <span className="font-medium">{comment.users?.name || "Anonymous"}</span>
+                            {comment.users && (
+                                                 <AvatarCircle url={comment?.users?.profile_url} name={comment?.users?.name} />
+                                )}
+                            <span className="font-medium mx-2">{comment.users?.name || "Anonymous"}</span>
                             <span className="mx-2">•</span>
                             <span>
                                 {comment.created_at

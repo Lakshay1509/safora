@@ -7,10 +7,24 @@ import { MapPin, Calendar, Star } from "lucide-react"
 import { format, parseISO } from "date-fns"
 import { useGetUserLocationCount } from "@/features/user/use-get-locationCount";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import SelectGender from "@/components/SelectGender";
+import AvatarUpload from "./AvatarUpload";
 
 export function ProfileCard() {
+  const [currentAvatar, setCurrentAvatar] = useState<string>('');
+
+  const handleUploadSuccess = (newAvatarUrl: string) => {
+    setCurrentAvatar(newAvatarUrl);
+    console.log('Avatar uploaded successfully:', newAvatarUrl);
+    // You can also update your global state, show a toast notification, etc.
+  };
+
+  const handleUploadError = (error: string) => {
+    console.error('Avatar upload failed:', error);
+    // Show error toast or notification
+  };
+
 
   const {data:UserData,isLoading,isError} =useGetDefaultUser();
   const {data:UserComment} =  useGetUserComments();
@@ -26,8 +40,16 @@ export function ProfileCard() {
     }
   }
 
+  useEffect(()=>{
+
+    setCurrentAvatar(UserData?.userData?.profile_url ? UserData.userData.profile_url : '');
+
+
+  },[UserData])
+
+
   return (
-    <Card className="rounded-xl border h-80 shadow-sm" style={{ backgroundColor: "#FFFFFF" }}>
+    <Card className="rounded-xl border min-h-120 shadow-sm" style={{ backgroundColor: "#FFFFFF" }}>
       <CardContent className="p-6">
         {/* Profile Header */}
         <div className="flex flex-col items-center text-center space-y-4">
@@ -37,6 +59,14 @@ export function ProfileCard() {
             </h2>
           </div>
         </div>
+
+         <AvatarUpload
+        currentAvatarUrl={currentAvatar}
+        onUploadSuccess={handleUploadSuccess}
+        onUploadError={handleUploadError}
+        maxSizeInMB={3}
+        className="mb-6"
+      />
 
         {/* Profile Stats */}
         <div className="mt-6 space-y-1">

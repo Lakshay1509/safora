@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import PostStats from "@/components/PostStats"
 import RightSidebar from "./RightSidebar"
 import PostSkeleton from "./PostsSkeleton"
+import AvatarCircle from "@/app/profile/components/AvatarCircle"
 
 export const Posts = () => {
   const { data, isLoading, isError } = useGetPostCommunity();
@@ -55,10 +56,15 @@ export const Posts = () => {
                 {/* User and location info */}
                 <div className="flex items-center text-xs text-gray-500 mb-2">
                   {post.users && (
-                    <span className="font-medium mr-2">
+                     <AvatarCircle url={post?.users?.profile_url} name={post?.users?.name} />
+                  )}
+
+                  {post.users && (
+                    <span className="font-medium mx-2">
                       {post.users.name}
                     </span>
                   )}
+                  
 
                   {post.created_at && (
                     <span>

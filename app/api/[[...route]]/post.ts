@@ -58,6 +58,7 @@ const app = new Hono()
           select: {
             id: true,
             name: true,
+            profile_url:true
           },
         },
       },
@@ -80,6 +81,7 @@ const app = new Hono()
           select: {
             id: true,
             name: true,
+            profile_url:true
           },
         },
       },
@@ -102,6 +104,7 @@ const app = new Hono()
           select: {
             id: true,
             name: true,
+            profile_url:true
           },
         },
       },

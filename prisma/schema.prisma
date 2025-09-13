@@ -391,6 +391,7 @@ model public_users {
   gender                    gender_t?
   created_at                DateTime                @default(now()) @db.Timestamptz(6)
   following_locations_count Int?                    @default(0)
+  profile_url               String?
   comments                  comments[]
   posts                     posts[]
   posts_comments            posts_comments[]

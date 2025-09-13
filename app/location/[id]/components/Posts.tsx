@@ -7,6 +7,7 @@ import { useState } from "react";
 import { ArrowUp, ArrowDown, MessageCircle, Bookmark, Share } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import PostStats from "@/components/PostStats";
+import AvatarCircle from "@/app/profile/components/AvatarCircle";
 
 const Posts = () => {
     const params = useParams();
@@ -52,14 +53,20 @@ const Posts = () => {
 
                     {data.post.map((post) => (
                         
-                            <div key={post.id} className="p-4 border-b border-gray-200 rounded-lg transition-colors duration-200 hover:bg-gray-50 text-sm">
+                            <div key={post.id} className="p-2 py-3 lg:p-4 border-b border-gray-200 rounded-lg transition-colors duration-200 hover:bg-gray-50 text-sm">
+                                <div className="flex items-start gap-3">
+                                    {post.users && (
+                                    <AvatarCircle url={post?.users?.profile_url} name={post?.users?.name} size="40"/>
+                                                      )}
                                 <Link
                                     href={`/post/${post.id}/${post.slug}`}
-                                    className="block text-black hover:text-gray-500"
-                                >
+                                    className="block text-black hover:text-gray-500 w-full"
+                                >   
+                                    
                                     <h2 className="font-semibold text-lg">{truncateText(post.heading)}</h2>
                                     <p className="text-gray-700 mt-2">{truncateText(post.body, true)}</p>
                                 </Link>
+                                </div>
 
                                 {/* Social interaction bar */}
                                 <PostStats id={post.id}/>

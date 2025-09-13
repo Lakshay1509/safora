@@ -24,6 +24,7 @@ import RightSidebar from "./RightSidebar";
 import PostStats from "@/components/PostStats";
 import PostDetailSkeleton from "./PostsSkeleton";
 import ExploreMore from "./ExploreMore";
+import AvatarCircle from "@/app/profile/components/AvatarCircle";
 
 const Post = () => {
     const { user, loading } = useAuth();

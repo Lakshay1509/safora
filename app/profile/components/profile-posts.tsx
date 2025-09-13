@@ -75,7 +75,7 @@ export function ProfilePostsCard() {
           <ul className="space-y-2">
             {data.posts.map((post) => (
               <li key={post.id}>
-                <Link href={`/post/${post.id}`} className="block p-4 rounded-md bg-[#F8F4EF] hover:underline">
+                <Link href={`/post/${post.id}/${post.slug}`} className="block p-4 rounded-md bg-[#F8F4EF] hover:underline">
                     <h3 className="font-semibold text-gray-900 truncate">{post.heading}</h3>
                     <p className="text-sm text-gray-600 line-clamp-2">
                       {post.body}

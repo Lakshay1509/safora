@@ -4,6 +4,7 @@ import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
 import { randomUUID } from "crypto";
 import { createClient } from "@/utils/supabase/server";
+import cloudinaryService from "@/lib/cloudinary-service";
 
 const app = new Hono()
 
@@ -205,6 +206,50 @@ const app = new Hono()
 
       return ctx.json({updatedProfile},200);
     }
-  );
+  )
+  .put('/update_avatar',async(ctx)=>{
+
+    const supabase = await createClient();
+      const {
+        data: { user },
+        error,
+      } = await supabase.auth.getUser();
+      if (error || !user) {
+        return ctx.json({ error: "Unauthorized" }, 401);
+      }
+
+    const body = await ctx.req.parseBody();
+    const file = body.avatar;
+
+    if(!file){
+      return ctx.json({error:"No file upload"},400);
+    }
+
+    const fileBuffer = await (file as File).arrayBuffer();
+    const buffer = Buffer.from(fileBuffer);
+
+
+
+    const uploadResult = await cloudinaryService.uploadAvatar(
+      buffer,
+      user.id,
+    )
+
+    const data = await db.public_users.update({
+      where:{id:user.id},
+      data:{
+        profile_url:uploadResult.url,
+      }
+    })
+
+    if(!data){
+      return ctx.json({error:"Error updating avatar"},500);
+    }
+
+    return ctx.json({data},200);
+
+
+
+  })
 
 export default app;
