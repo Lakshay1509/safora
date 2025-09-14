@@ -27,7 +27,7 @@ const RightSidebar = () => {
           {data?.posts && data.posts.map((post, index) => (
             
             <div key={index} className="pb-3 border-b border-gray-100 last:border-b-0">
-                <Link href={`/post/${post.id}`} className="hover:underline ">
+                <Link href={`/post/${post.id}/${post.slug}`} className="hover:underline ">
               <h3 className="text-sm font-medium truncate">{post.heading}</h3>
               <p className="text-sm text-gray-500 truncate">{post.body}</p>
               </Link>

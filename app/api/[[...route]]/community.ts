@@ -10,6 +10,9 @@ interface posts{
   heading:string,
   body:string,
   id:string,
+  slug:string,
+  upvotes:number,
+  comment_count:number
 
 }
 
@@ -34,12 +37,19 @@ const app = new Hono()
             id: true,
           },
         },
+        _count: {
+          select: {
+            posts_comments: true
+          }
+        }
       },
     });
 
     if (!posts) {
       return ctx.json({ error: "Error getting posts" }, 500);
     }
+
+
 
     return ctx.json({ posts }, 200);
   })
@@ -63,9 +73,15 @@ const app = new Hono()
     const maxLimit = Math.min(limit, 50);
 
     const posts = await db.$queryRaw<posts[]>`
-          SELECT p.id, p.user_id, p.location_id, p.heading, p.body, p.upvotes, p.created_at
+          SELECT p.id, p.user_id, p.location_id, p.heading, p.body, p.upvotes, p.created_at, p.slug,
+                 COALESCE(c.comment_count, 0) AS comment_count
           FROM posts p
           INNER JOIN user_location_follows ulf ON p.location_id = ulf.location_id
+          LEFT JOIN (
+              SELECT post_id, COUNT(*)::INTEGER AS comment_count
+              FROM posts_comments
+              GROUP BY post_id
+          ) c ON p.id = c.post_id
           WHERE ulf.user_id = ${user.id}::uuid  
           ORDER BY p.created_at DESC
           LIMIT ${maxLimit};

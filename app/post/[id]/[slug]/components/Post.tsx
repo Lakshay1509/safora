@@ -66,8 +66,10 @@ const Post = () => {
     return (
         <>
         <div className="flex justify-center">
+            
             <div className="w-full max-w-3xl mx-4 p-4 bg-white rounded-lg mt-6 lg:mx-10 lg:mr-[22rem]">
-                <div className="flex justify-between items-start mb-2">
+                <div className="flex space-x-2 items-start mb-2">
+                    <AvatarCircle url={post?.post.users?.profile_url} name={post?.post.users?.name} size="40" />
                     <h1 className="text-2xl font-bold">{post?.post.heading}</h1>
                     <div className="flex flex-col justify-center items-center space-x-2 lg:flex-row">
                     {isAuthor && (
@@ -95,7 +97,7 @@ const Post = () => {
                     </div>
                 </div>
       
-                <div className="flex items-center text-sm text-gray-600 mb-4">
+                <div className="flex items-center text-sm text-gray-600 my-4 ">
                     <span className="mr-2">By {post?.post.users?.name || "Anonymous"}</span>
                     <span className="mx-2">•</span>
                     <span>
@@ -111,7 +113,7 @@ const Post = () => {
                     {post?.post.body}
                 </div>
 
-                <PostStats id={postId}/>
+                <PostStats id={postId} upvotes_count={post?.post.upvotes} comments={post?.post._count.posts_comments}/>
         
                 {/* Comments section */}
                 <Comment postId={postId}/>

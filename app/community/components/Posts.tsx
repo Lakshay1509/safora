@@ -94,7 +94,7 @@ export const Posts = () => {
                 </Link>
 
                 {/* Social interaction bar */}
-                <PostStats id={post.id}/>
+                <PostStats id={post.id} upvotes_count={post.upvotes} comments={post._count.posts_comments}/>
               </div>
             ))}
           </div>

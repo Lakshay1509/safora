@@ -69,7 +69,7 @@ const Posts = () => {
                                 </div>
 
                                 {/* Social interaction bar */}
-                                <PostStats id={post.id}/>
+                                <PostStats id={post?.id} upvotes_count={post?.upvotes} comments={post?._count?.posts_comments}/>
 
                                 <div className="text-xs text-gray-500 mt-2">
                                     {post.created_at && new Date(post.created_at).toLocaleDateString()}

@@ -12,14 +12,16 @@ import { toast } from "sonner";
 import { useState } from "react";
 
 interface Props {
-  id: string
+  id: string,
+  upvotes_count?:number,
+  comments?:number,
 }
 
-const PostStats = ({ id }: Props) => {
+const PostStats = ({ id ,upvotes_count,comments}: Props) => {
 
 
 
-  const { data, isLoading, isError } = useGetPostStats(id);
+  // const { data, isLoading, isError } = useGetPostStats(id);
   const { data: upvotes, isLoading: upvotes_loading, isError: upvotes_error } = useGetUpVotesByUser(id);
 
   const {user,loading} = useAuth();
@@ -60,8 +62,8 @@ const PostStats = ({ id }: Props) => {
   }
 
 
-  if (isLoading) return <div className="mt-6">Loading stats...</div>;
-  if (isError) return <div className="mt-6">Error loading stats</div>;
+  // if (isLoading) return <div className="mt-6">Loading stats...</div>;
+  // if (isError) return <div className="mt-6">Error loading stats</div>;
 
   return (
     <div className="flex mt-6 gap-3">
@@ -73,14 +75,14 @@ const PostStats = ({ id }: Props) => {
     onClick={handleClick}
   >
     <ArrowUp className="w-4 h-4" />
-    <span className="text-sm font-medium">{data?.upvotes.upvotes || 0}</span>
+    <span className="text-sm font-medium">{upvotes_count || 0}</span>
   </Button>
 
   <Button
     className="flex items-center gap-2 bg-gray-100 text-gray-700 hover:bg-gray-200 rounded-xl px-3 py-2 shadow-sm transition-all duration-200"
   >
     <MessageCircle className="w-4 h-4" />
-    <span className="text-sm font-medium">{data?.comment_count || 0}</span>
+    <span className="text-sm font-medium">{comments || 0}</span>
   </Button>
 
   <Button

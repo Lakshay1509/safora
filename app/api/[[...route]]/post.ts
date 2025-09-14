@@ -61,6 +61,11 @@ const app = new Hono()
             profile_url:true
           },
         },
+        _count:{
+          select:{
+            posts_comments:true
+          }
+        }
       },
     });
 
@@ -84,7 +89,13 @@ const app = new Hono()
             profile_url:true
           },
         },
+        _count:{
+          select:{
+            posts_comments:true
+          }
+        }
       },
+      
     });
 
     if (!post) {
