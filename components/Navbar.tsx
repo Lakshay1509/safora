@@ -6,7 +6,7 @@ import LoginButton from "./LoginLogoutButton"
 import { useEffect, useRef, useState } from "react"
 import { GeocoderAutocomplete } from "@geoapify/geocoder-autocomplete"
 import type { GeoJSON } from "geojson"
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 
 // Import the CSS styles for the autocomplete
 import "@geoapify/geocoder-autocomplete/styles/minimal.css"
@@ -44,6 +44,7 @@ export function Navbar() {
   const geocoderDesktopRef = useRef<GeocoderAutocomplete | null>(null)
   const geocoderMobileRef = useRef<GeocoderAutocomplete | null>(null)
   const router = useRouter();
+  const pathname = usePathname();
   const LocationMutation = addLocationByCoord();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchBarOpen, setSearchBarOpen] = useState(false);
@@ -248,6 +249,7 @@ export function Navbar() {
                   alt="Safe or Not"
                   width={180}
                   height={50}
+                  fetchPriority="high"
                 />
               </Link>
             </div>
@@ -280,9 +282,10 @@ export function Navbar() {
             </div>
 
             {/* Profile and Logout - visible on larger screens */}
-            <div className="hidden md:flex justify-center items-center space-x-6">
+            <div className="hidden md:flex justify-center items-center space-x-3">
               <Link
-                className="flex items-center gap-2 text-sm text-gray-700 hover:text-blue-600 hover:underline transition-all duration-200 group"
+                className={`flex items-center gap-2 text-sm hover:underline py-2 px-3 rounded-2xl  transition-all duration-200 group ${pathname === "/community" ? "bg-black text-white font-semibold" : "text-gray-700"
+                  }`}
                 href="/community"
               >
                 <Users className="w-4 h-4 group-hover:scale-110 transition-transform duration-200" />
@@ -291,17 +294,18 @@ export function Navbar() {
                 </span>
               </Link>
               {user?.id && !loading && (
-                   <Link
-                  className="flex items-center gap-2 text-sm text-gray-700 hover:text-blue-600 hover:underline transition-all duration-200 group"
+                <Link
+                  className={`flex items-center gap-2 text-sm hover:underline py-2 px-3 rounded-2xl  transition-all duration-200 group ${pathname === "/profile" ? "bg-black text-white  font-semibold" : "text-gray-700"
+                    }`}
                   href="/profile"
-                  onClick={()=>{setMobileMenuOpen(false)}}
+                  onClick={() => { setMobileMenuOpen(false) }}
                 >
                   <User className="w-4 h-4 group-hover:scale-110 transition-transform duration-200" />
                   <span className="group-hover:translate-x-1 transition-transform duration-200">
                     Profile
                   </span>
                 </Link>
-                )}
+              )}
               <LoginButton />
             </div>
           </div>
@@ -337,26 +341,28 @@ export function Navbar() {
             <div className="md:hidden px-2 pb-4 pt-1 transition-all duration-300 ease-in-out">
               <div className="flex flex-col space-y-3">
                 <Link
-                  className="flex items-center gap-2 text-sm text-gray-700 hover:text-blue-600 hover:underline transition-all duration-200 group"
-                  href="/community"
-                >
-                  <Users className="w-4 h-4 group-hover:scale-110 transition-transform duration-200" />
-                  <span className="group-hover:translate-x-1 transition-transform duration-200">
-                    Community
-                  </span>
-                </Link>
-                {user?.id && !loading && (
-                   <Link
-                  className="flex items-center gap-2 text-sm text-gray-700 hover:text-blue-600 hover:underline transition-all duration-200 group"
+                className={`flex items-center gap-2 text-sm hover:underline py-2 px-3 rounded-2xl  transition-all duration-200 group ${pathname === "/community" ? "bg-black text-white font-semibold" : "text-gray-700"
+                  }`}
+                href="/community"
+              >
+                <Users className="w-4 h-4 group-hover:scale-110 transition-transform duration-200" />
+                <span className="group-hover:translate-x-1 transition-transform duration-200">
+                  Community
+                </span>
+              </Link>
+              {user?.id && !loading && (
+                <Link
+                  className={`flex items-center gap-2 text-sm hover:underline py-2 px-3 rounded-2xl  transition-all duration-200 group ${pathname === "/profile" ? "bg-black text-white  font-semibold" : "text-gray-700"
+                    }`}
                   href="/profile"
-                  onClick={()=>{setMobileMenuOpen(false)}}
+                  onClick={() => { setMobileMenuOpen(false) }}
                 >
                   <User className="w-4 h-4 group-hover:scale-110 transition-transform duration-200" />
                   <span className="group-hover:translate-x-1 transition-transform duration-200">
                     Profile
                   </span>
                 </Link>
-                )}
+              )}
                 <div className="py-1">
                   <LoginButton />
                 </div>
