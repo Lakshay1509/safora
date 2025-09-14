@@ -28,9 +28,9 @@ export function Footer() {
         <div className="md:ml-auto ">
           <Link href="/" className="inline-flex items-center gap-2 group">
             <Image
-              src="/logo.png"
+              src="/logo.avif"
               alt="Safe or Not"
-              width={150}
+              width={180}
               height={50}
               className="transition-opacity duration-200 group-hover:opacity-80"
             />

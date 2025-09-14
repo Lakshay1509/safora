@@ -29,14 +29,14 @@ const Tabview = () => {
                         <ToggleGroupItem 
                             value="recent" 
                             aria-label="Recent"
-                            className="data-[state=on]:bg-blue-500 data-[state=on]:text-white hover:bg-blue-100"
+                            className="data-[state=on]:bg-[#FF3130] data-[state=on]:text-white hover:bg-blue-100"
                         >
                             Recent
                         </ToggleGroupItem>
                         {user && <ToggleGroupItem 
                             value="following" 
                             aria-label="Following"
-                            className="data-[state=on]:bg-blue-500 data-[state=on]:text-white hover:bg-blue-100 px-4"
+                            className="data-[state=on]:bg-[#FF3130] data-[state=on]:text-white hover:bg-blue-100 px-4"
                         >
                             Following
                         </ToggleGroupItem>}
