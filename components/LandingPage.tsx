@@ -7,6 +7,7 @@ import LoginButton from "./LoginLogoutButton";
 import { useGetDefaultUserLanding } from "@/features/user/use-get-user-landing";
 import Script from "next/script";
 import Image from "next/image";
+import CTA from "./CTA";
 
 export default function LandingPage() {
   const { user, loading } = useAuth();
@@ -37,12 +38,14 @@ export default function LandingPage() {
 
       {/* Hero Section */}
       <header className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        <h1 className="font-bold text-xl sm:text-2xl md:text-3xl lg:text-4xl dark:text-white text-black">
-          Your Everyday Safety Lens
+        <h1 className="font-bold text-3xl lg:text-4xl dark:text-white text-black">
+          Your Everyday <span className="italic text-red-500">Safety Lens</span>
         </h1>
-        <p className="text-sm sm:text-base md:text-lg text-neutral-500 max-w-xs sm:max-w-md md:max-w-2xl mx-auto py-2 sm:py-3 md:py-4">
+
+        {/* <p className="text-sm sm:text-base md:text-lg text-neutral-500 max-w-xs sm:max-w-md md:max-w-2xl mx-auto py-2 sm:py-3 md:py-4">
           Subtle safety insights — quick, simple, and reassuring.
-        </p>
+        </p> */}
+
       </header>
 
       {/* Why Section */}
@@ -57,9 +60,9 @@ export default function LandingPage() {
       </section>
 
       {/* CTA Section */}
-      <section className="mt-6 sm:mt-8 md:mt-10">
+      <section className="mt-6 ">
         {!user ? (
-          <LoginButton extraLoading={isLoading} />
+          <CTA extraLoading={isLoading} />
         ) : (
           <></>
         )}
