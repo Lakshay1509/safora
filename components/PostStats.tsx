@@ -9,7 +9,7 @@ import { useGetUpVotesByUser } from "@/features/votes/use-get-upvotes-byUser";
 import { addUpvotetoPost } from "@/features/votes/use-post-upvotes";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 interface Props {
   id: string,
@@ -27,6 +27,11 @@ const PostStats = ({ id ,upvotes_count,comments}: Props) => {
   const {user,loading} = useAuth();
 
   const [copied, setCopied] = useState(false);
+  const [optimisticUpvotes, setOptimisticUpvotes] = useState(upvotes_count || 0);
+
+  useEffect(() => {
+    setOptimisticUpvotes(upvotes_count || 0);
+  }, [upvotes_count]);
 
   const handleShare = () => {
     navigator.clipboard.writeText(`safeornot.space/post/${id}`); // copy current URL
@@ -45,19 +50,20 @@ const PostStats = ({ id ,upvotes_count,comments}: Props) => {
       return;
     }
 
-    if (upvotes?.upvotes === null || upvotes?.upvotes.vote_type ===-1) {
-      mutation.mutateAsync({
-        post_id: id,
-        vote_type: 1,
-      })
-    }
-    else {
-      mutation.mutateAsync({
-        post_id: id,
-        vote_type: -1,
-      })
+    const isUpvoted = upvotes?.upvotes && upvotes.upvotes.vote_type !== -1;
+    const newVoteType = isUpvoted ? -1 : 1;
 
-    }
+    setOptimisticUpvotes(prev => prev + newVoteType);
+
+    mutation.mutate({
+      post_id: id,
+      vote_type: newVoteType,
+    }, {
+      onError: () => {
+        // Revert optimistic update on error
+        setOptimisticUpvotes(prev => prev - newVoteType);
+      }
+    });
 
   }
 
@@ -75,7 +81,7 @@ const PostStats = ({ id ,upvotes_count,comments}: Props) => {
     onClick={handleClick}
   >
     <ArrowUp className="w-4 h-4" />
-    <span className="text-sm font-medium">{upvotes_count || 0}</span>
+    <span className="text-sm font-medium">{optimisticUpvotes}</span>
   </Button>
 
   <Button

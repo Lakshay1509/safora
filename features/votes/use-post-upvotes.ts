@@ -31,25 +31,9 @@ export const addUpvotetoPost = ()=>{
             return response.json();
         },
         onMutate: async (newVote) => {
-            await queryClient.cancelQueries({ queryKey: ["post-stats", newVote.post_id] });
             await queryClient.cancelQueries({ queryKey: ["upvotes-by-user", newVote.post_id] });
 
-            const previousStats = queryClient.getQueryData<PostStatsData>(["post-stats", newVote.post_id]);
             const previousUserVote = queryClient.getQueryData<UpvotesByUserData>(["upvotes-by-user", newVote.post_id]);
-
-            // Optimistically update post stats (upvote count)
-            queryClient.setQueryData<PostStatsData>(["post-stats", newVote.post_id], (old) => {
-                if (!old) return undefined;
-                const currentUpvotes = old.upvotes.upvotes || 0;
-                const newUpvotes = currentUpvotes + (newVote.vote_type === 1 ? 1 : -1);
-                return {
-                    ...old,
-                    upvotes: {
-                        ...old.upvotes,
-                        upvotes: newUpvotes,
-                    },
-                };
-            });
 
             // Optimistically update user's vote status
             queryClient.setQueryData<UpvotesByUserData>(["upvotes-by-user", newVote.post_id], (old) => {
@@ -63,13 +47,10 @@ export const addUpvotetoPost = ()=>{
                  }
             });
 
-            return { previousStats, previousUserVote };
+            return { previousUserVote };
         },
         onError:(err, newVote, context)=>{
             // Rollback on failure
-            if (context?.previousStats) {
-                queryClient.setQueryData(["post-stats", newVote.post_id], context.previousStats);
-            }
             if (context?.previousUserVote) {
                 queryClient.setQueryData(["upvotes-by-user", newVote.post_id], context.previousUserVote);
             }
@@ -80,6 +61,7 @@ export const addUpvotetoPost = ()=>{
             // Invalidate to refetch and sync with server state
             queryClient.invalidateQueries({queryKey:["upvotes-by-user", variables.post_id]})
             queryClient.invalidateQueries({queryKey:["post-stats",variables.post_id]})
+            queryClient.invalidateQueries({queryKey:["post",variables.post_id]})
         }
     })
 }
