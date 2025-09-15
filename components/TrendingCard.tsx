@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/card"
 import { useGetLocation } from "@/features/location/use-get-location";
 import Link from "next/link";
+import { Skeleton } from "./ui/skeleton";
 
 
 interface Props{
@@ -22,11 +23,7 @@ const TrendingCard = ({id}:Props) => {
 
     if (isLoading) {
         return (
-            <Card>
-                <CardContent>
-                    <p>Loading stats...</p>
-                </CardContent>
-            </Card>
+            <TrendingCard.Skeleton />
         )
     }
 
@@ -44,7 +41,7 @@ const TrendingCard = ({id}:Props) => {
     <Card>
         <CardContent>
             <Link href={`/location/${location_data?.location.id}`} className="hover:underline">
-            <div className="space-y-1 text-sm">
+            <div className="space-y-1 text-sm ">
                 <h1 className="font-bold">{location_data?.location.name}</h1>
                 <div className="flex items-center justify-between">
                     <p className="text-sm ">Posts</p>
@@ -63,6 +60,30 @@ const TrendingCard = ({id}:Props) => {
         </CardContent>
     </Card>
   )
+}
+
+TrendingCard.Skeleton = function TrendingCardSkeleton() {
+    return (
+        <Card>
+            <CardContent>
+                <div className="space-y-2 pt-6">
+                    <Skeleton className="h-5 w-3/4" />
+                    <div className="flex items-center justify-between pt-2">
+                        <Skeleton className="h-4 w-[50px]" />
+                        <Skeleton className="h-4 w-[20px]" />
+                    </div>
+                    <div className="flex items-center justify-between">
+                        <Skeleton className="h-4 w-[70px]" />
+                        <Skeleton className="h-4 w-[20px]" />
+                    </div>
+                    <div className="flex items-center justify-between">
+                        <Skeleton className="h-4 w-[60px]" />
+                        <Skeleton className="h-4 w-[20px]" />
+                    </div>
+                </div>
+            </CardContent>
+        </Card>
+    )
 }
 
 export default TrendingCard
