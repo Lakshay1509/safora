@@ -63,7 +63,7 @@ export function ProfilePostsCard() {
 
   return (
     <Card
-      className="w-full  bg-white border border-white/10 max-h-80 transition-colors duration-200 hover:shadow-lg overflow-x-auto"
+      className="w-full  bg-white border border-white/10 max-h-80 transition-colors duration-200 overflow-x-auto"
     >
       <CardHeader>
         <CardTitle className="text-lg font-bold" style={{ color: "#000000" }}>
