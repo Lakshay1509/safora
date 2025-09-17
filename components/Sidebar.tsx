@@ -70,7 +70,7 @@ export function Sidebar() {
       </div>
 
       {/* Mobile floating button - visible on sm/md screens */}
-      <div className="fixed right-6 bottom-20 lg:hidden">
+      <div className="fixed right-6 bottom-20 lg:hidden z-50">
         <Button 
           onClick={handleCreatePost}
           size="icon" 

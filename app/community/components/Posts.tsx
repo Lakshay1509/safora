@@ -8,6 +8,7 @@ import PostStats from "@/components/PostStats"
 import RightSidebar from "./RightSidebar"
 import PostSkeleton from "./PostsSkeleton"
 import AvatarCircle from "@/app/profile/components/AvatarCircle"
+import PostImage from "@/components/PostImage"
 
 export const Posts = () => {
   const { data, isLoading, isError } = useGetPostCommunity();
@@ -30,12 +31,12 @@ export const Posts = () => {
   };
 
   if (isLoading) {
-    return(
-    <div className="space-y-4 p-4">
-      {[1, 2, 3, 4, 5].map((item) => (
-        <PostSkeleton key={item} />
-      ))}
-    </div>)
+    return (
+      <div className="space-y-4 p-4">
+        {[1, 2, 3, 4, 5].map((item) => (
+          <PostSkeleton key={item} />
+        ))}
+      </div>)
   }
 
   if (isError) {
@@ -47,7 +48,7 @@ export const Posts = () => {
   }
 
   return (
-    <section className="flex flex-row justify-start w-full">
+    <section className="flex flex-row justify-start ">
       <div className="flex-1 max-w-4xl">
         <div className="p-4 rounded-lg w-full">
           <div className="flex flex-col gap-4">
@@ -56,7 +57,7 @@ export const Posts = () => {
                 {/* User and location info */}
                 <div className="flex items-center text-xs text-gray-500 mb-2">
                   {post.users && (
-                     <AvatarCircle url={post?.users?.profile_url} name={post?.users?.name} />
+                    <AvatarCircle url={post?.users?.profile_url} name={post?.users?.name} />
                   )}
 
                   {post.users && (
@@ -64,7 +65,7 @@ export const Posts = () => {
                       {post.users.name}
                     </span>
                   )}
-                  
+
 
                   {post.created_at && (
                     <span>
@@ -92,9 +93,15 @@ export const Posts = () => {
                   <h2 className="font-semibold text-lg">{truncateText(post.heading)}</h2>
                   <p className="text-gray-700 mt-2 break-words">{truncateText(post.body, true)}</p>
                 </Link>
+                  
+                <div className=" lg:pr-20">
+                {post.image_url && (
+                  <PostImage image_url={post.image_url}/>
+                )}
+                </div>
 
                 {/* Social interaction bar */}
-                <PostStats id={post.id} upvotes_count={post.upvotes} comments={post._count.posts_comments}/>
+                <PostStats id={post.id} upvotes_count={post.upvotes} comments={post._count.posts_comments} />
               </div>
             ))}
           </div>

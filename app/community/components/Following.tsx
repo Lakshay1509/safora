@@ -9,6 +9,7 @@ import RightSidebar from "./RightSidebar"
 import PostSkeleton from "./PostsSkeleton"
 import { useGetFollowingPost } from "@/features/community/use-get-post-folllowing"
 import { useAuth } from "@/contexts/AuthContext"
+import PostImage from "@/components/PostImage"
 
 export const Following = () => {
   const { data, isLoading, isError } = useGetFollowingPost({limit:"50"});
@@ -96,6 +97,12 @@ export const Following = () => {
                   <h2 className="font-semibold text-lg">{truncateText(post.heading)}</h2>
                   <p className="text-gray-700 mt-2 break-words">{truncateText(post.body, true)}</p>
                 </Link>
+
+                <div className=" lg:pr-20">
+                                {post.image_url && (
+                                  <PostImage image_url={post.image_url}/>
+                                )}
+                                </div>
 
                 {/* Social interaction bar */}
                 <PostStats id={post.id} upvotes_count={post.upvotes} comments={post.comment_count}/>

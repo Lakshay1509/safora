@@ -12,7 +12,8 @@ interface posts{
   id:string,
   slug:string,
   upvotes:number,
-  comment_count:number
+  comment_count:number,
+  image_url:string
 
 }
 
@@ -73,7 +74,7 @@ const app = new Hono()
     const maxLimit = Math.min(limit, 50);
 
     const posts = await db.$queryRaw<posts[]>`
-          SELECT p.id, p.user_id, p.location_id, p.heading, p.body, p.upvotes, p.created_at, p.slug,
+          SELECT p.id, p.user_id, p.location_id, p.heading, p.body, p.upvotes, p.created_at, p.slug, p.image_url,
                  COALESCE(c.comment_count, 0) AS comment_count
           FROM posts p
           INNER JOIN user_location_follows ulf ON p.location_id = ulf.location_id
