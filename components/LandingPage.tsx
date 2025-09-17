@@ -73,8 +73,8 @@ export default function LandingPage() {
         aria-label="Interactive World Safety Map"
         className="w-full max-w-7xl mx-auto mt-6 sm:mt-8 md:mt-10 px-2 sm:px-4"
       >
-        <div className="aspect-[16/9] sm:aspect-[16/8] md:aspect-[16/7] lg:aspect-[16/6]">
-          <WorldMap
+        <div className="aspect-[16/9] sm:aspect-[16/8] md:aspect-[16/7] lg:aspect-[16/6] flex justify-center items-center">
+          {/* <WorldMap
             dots={[
               {
                 start: { lat: 64.2008, lng: -149.4937 }, // Alaska
@@ -101,8 +101,10 @@ export default function LandingPage() {
                 end: { lat: -1.2921, lng: 36.8219 }, // Nairobi
               },
             ]}
-          />
-        </div>
+          /> */}
+          <Image src="/hero.avif" alt="hero" height='1200' width='1200'/>
+        </div> 
+
       </section>
 
       {/* Gender Selection */}
@@ -115,7 +117,7 @@ export default function LandingPage() {
       {/* Hero Support Section */}
       <section
         aria-labelledby="support-hero"
-        className="w-full flex justify-center items-center py-8 md:py-16 px-4 sm:px-6 lg:px-8"
+        className="w-full flex justify-center items-center pb-8 px-4  md:pb-16 sm:px-6 lg:px-8"
       >
         <div className="max-w-2xl mx-auto">
           <Image
