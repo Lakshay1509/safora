@@ -5,17 +5,20 @@ import { z } from "zod";
 import { randomUUID } from "crypto";
 import { createClient } from "@/utils/supabase/server";
 import { generateSlug } from "@/utils/slug";
+import cloudinaryService from "@/lib/cloudinary-service";
 
 const app = new Hono()
   .post(
     "/add/:location_id",
     zValidator(
-      "json",
+      "form",
       z.object({
         heading: z.string().min(10).max(250),
         body: z.string().min(10).max(1500),
+        image: z.instanceof(File).optional(),
       })
     ),
+
     async (ctx) => {
       const supabase = await createClient();
       const {
@@ -29,14 +32,35 @@ const app = new Hono()
         return ctx.json({ error: "Unauthorized" }, 401);
       }
 
-      const values = ctx.req.valid("json");
+      const values = ctx.req.valid("form");
+      const file = values.image;
+
+      let imageUrl: string | undefined;
+
+      if (file && file instanceof File && file.size > 0) {
+        try {
+          const fileBuffer = await file.arrayBuffer();
+          const buffer = Buffer.from(fileBuffer);
+
+          const uploadResult = await cloudinaryService.uploadPostImage(
+            buffer,
+            user.id
+          );
+          imageUrl = uploadResult.url;
+        } catch (uploadError) {
+          console.error("Image upload failed:", uploadError);
+          return ctx.json({ error: "Image upload failed" }, 500);
+        }
+      }
 
       const post = await db.posts.create({
         data: {
-          ...values,
+          heading:values.heading,
+          body:values.body,
           user_id: user.id,
           location_id: location_id,
-          slug: generateSlug(values.heading)
+          slug: generateSlug(values.heading),
+          image_url: imageUrl,
         },
       });
 
@@ -156,8 +180,9 @@ const app = new Hono()
     zValidator(
       "json",
       z.object({
-        heading: z.string().min(10).max(50),
+        heading: z.string().min(10).max(250),
         body: z.string().min(10).max(1500),
+        locationId:z.string()
       })
     ),
     async (ctx) => {
@@ -191,7 +216,9 @@ const app = new Hono()
           id: id,
         },
         data: {
-          ...values,
+          heading:values.heading,
+          body:values.body,
+          location_id:values.locationId
         },
       });
 

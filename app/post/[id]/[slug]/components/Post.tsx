@@ -41,7 +41,7 @@ const Post = () => {
     const isAuthor = user && post?.post.user_id === user.id;
 
     const handleEditClick = () => {
-        router.push(`/create-post?edit=true&post-id=${postId}`);
+        router.push(`/create-post?edit=true&post-id=${postId}&post-slug=${post?.post.slug}&location-id=${post?.post.location_id}`);
     };
 
     const handleDeleteClick=async ()=>{

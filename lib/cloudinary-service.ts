@@ -60,6 +60,23 @@ class CloudinaryService {
     }
   }
 
+  async uploadPostImage(buffer: Buffer, userId: string, folder = 'Post Image'): Promise<UploadResult> {
+    try {
+      const result = await this.uploadBuffer(buffer, {
+        folder,
+        overwrite: true,
+      });
+
+      return {
+        success: true,
+        url: result.secure_url,
+        publicId: result.public_id,
+      };
+    } catch (error: any) {
+      throw new Error(`Avatar upload failed: ${error.message}`);
+    }
+  }
+
   async deleteImage(publicId: string): Promise<any> {
     return await cloudinary.uploader.destroy(publicId);
   }

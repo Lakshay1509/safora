@@ -6,7 +6,7 @@ import { toast } from "sonner";
 type ResponseType = InferResponseType<(typeof client.api.post.update)[":id"]["$put"]>
 type RequestType = InferRequestType<(typeof client.api.post.update)[":id"]["$put"]>["json"]
 
-export const EditPostComment = (id:string)=>{
+export const EditPost = (id:string)=>{
 
     const queryClient = useQueryClient();
 
