@@ -1,9 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { ArrowUpRight, Plus } from "lucide-react";
+import { ArrowUpRight, Compass, Navigation, Plus, SquarePen } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useGetTrending } from "@/features/community/use-get-trending";
 import TrendingCard from "./TrendingCard";
@@ -11,6 +11,7 @@ import TrendingCard from "./TrendingCard";
 export function Sidebar() {
   const router = useRouter();
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const [isMounted, setIsMounted] = useState(false);
   const {user,loading} = useAuth();
   const {data,isLoading,isError} = useGetTrending();
@@ -22,6 +23,8 @@ export function Sidebar() {
 
   // Don't render anything on the server or during initial mount
   if (!isMounted) return null;
+
+  const view = searchParams.get('view') || 'feed';
 
   // Navigate to create post page
   const handleCreatePost = () => {
@@ -47,7 +50,25 @@ export function Sidebar() {
             Create Post
           </Button>
           {/* Add other sidebar items here */}
-          <div className="mt-10">
+
+          <div className="flex flex-col justify-center items-center space-y-2 mt-10">
+             <Button
+             className="w-full "
+             variant={view === 'feed' ? 'secondary' : 'outline'}
+             onClick={() => router.push('/community?view=feed')}
+             >
+            <Compass/>Feed
+          </Button>
+          <Button
+          className="w-full "
+          variant={view === 'article' ? 'secondary' : 'outline'}
+          onClick={() => router.push('/community?view=article')}
+          >
+            <SquarePen/> Articles
+          </Button>
+          </div>
+         
+          {/* <div className="mt-10">
            
             <h1 className="font-bold text-center flex items-center justify-center gap-1">
               Trending Places
@@ -64,7 +85,7 @@ export function Sidebar() {
               })}
             </div>
             
-          </div>
+          </div> */}
         </div>
         
       </div>

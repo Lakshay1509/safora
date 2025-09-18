@@ -20,6 +20,7 @@ interface posts{
 const app = new Hono()
   .get("/recent", async (ctx) => {
     const posts = await db.posts.findMany({
+      where:{is_article:0},
       orderBy: {
         created_at: "desc",
       },
@@ -50,7 +51,36 @@ const app = new Hono()
       return ctx.json({ error: "Error getting posts" }, 500);
     }
 
+    return ctx.json({ posts }, 200);
+  })
 
+  .get("/articles", async (ctx) => {
+    const posts = await db.posts.findMany({
+
+      where:{is_article:1},
+      orderBy: {
+        created_at: "desc",
+      },
+      take: 500,
+      include: {
+        users: {
+          select: {
+            id: true,
+            name: true,
+            profile_url:true
+          },
+        },
+        _count: {
+          select: {
+            posts_comments: true
+          }
+        }
+      },
+    });
+
+    if (!posts) {
+      return ctx.json({ error: "Error getting posts" }, 500);
+    }
 
     return ctx.json({ posts }, 200);
   })
