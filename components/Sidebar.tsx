@@ -13,8 +13,8 @@ export function Sidebar() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [isMounted, setIsMounted] = useState(false);
-  const {user,loading} = useAuth();
-  const {data,isLoading,isError} = useGetTrending();
+  const { user, loading } = useAuth();
+  const { data, isLoading, isError } = useGetTrending();
 
   // Handle client-side mounting
   useEffect(() => {
@@ -28,78 +28,82 @@ export function Sidebar() {
 
   // Navigate to create post page
   const handleCreatePost = () => {
-    if(user===null){
+    if (user === null) {
       router.push('/login')
     }
-    else{
+    else {
       router.push("/create-post");
     }
-    
+
   };
 
   return (
     <>
       {/* Desktop sidebar - visible on lg screens */}
-      <div className="fixed left-0 top-0 h-[90vh] w-64 bg-white border-r border-t rounded-xl border-gray-200 mt-22 hidden lg:block">
-        <div className="p-4">
-          <Button 
+      <div className="fixed left-0 top-0 h-[90vh] w-64 bg-white border-r border-t rounded-xl border-gray-200 mt-22 hidden lg:flex flex-col">
+        <div className="p-4 flex-1">
+          <Button
             onClick={handleCreatePost}
             className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
           >
             <Plus className="mr-2 h-4 w-4" />
             Create Post
           </Button>
-          {/* Add other sidebar items here */}
 
           <div className="flex flex-col justify-center items-center space-y-2 mt-10">
-             <Button
-             className="w-full "
-             variant={view === 'feed' ? 'secondary' : 'outline'}
-             onClick={() => router.push('/community?view=feed')}
-             >
-            <Compass/>Feed
-          </Button>
-          <Button
-          className="w-full "
-          variant={view === 'article' ? 'secondary' : 'outline'}
-          onClick={() => router.push('/community?view=article')}
-          >
-            <SquarePen/> Articles
-          </Button>
+            <Button
+              className={`w-full ${view === 'feed' ? 'bg-red-600 text-white hover:bg-red-700' : ''}`}
+              variant={view === 'feed' ? 'default' : 'outline'}
+              onClick={() => router.push('/community?view=feed')}
+            >
+              <Compass /> Feed
+            </Button>
+            <Button
+              className={`w-full ${view === 'article' ? 'bg-red-600 text-white hover:bg-red-700' : ''}`}
+              variant={view === 'article' ? 'default' : 'outline'}
+              onClick={() => router.push('/community?view=article')}
+            >
+              <SquarePen /> Articles
+            </Button>
           </div>
-         
-          {/* <div className="mt-10">
-           
-            <h1 className="font-bold text-center flex items-center justify-center gap-1">
-              Trending Places
-              <ArrowUpRight size={16}/>
-            </h1>
-            <div className="mt-4 space-y-4">
-              {isLoading && <p className="text-center text-sm">Loading trending places...</p>}
-              {isError && <p className="text-center text-sm text-red-500">Could not load trending places.</p>}
-              {data?.locations?.map((location) => {
-                if (location.location_id) {
-                  return <TrendingCard key={location.location_id} id={location.location_id} />;
-                }
-                return null;
-              })}
-            </div>
-            
-          </div> */}
         </div>
-        
+
+        <div className="p-4 text-xs text-gray-500 mt-auto">
+          <div className="flex flex-wrap gap-2 justify-center">
+            <a href="/privacy-policy" className="hover:underline">Privacy Policy</a>
+            <p>© 2025 SafeOrNot, Inc.</p>
+          </div>
+        </div>
       </div>
 
       {/* Mobile floating button - visible on sm/md screens */}
-      <div className="fixed right-6 bottom-20 lg:hidden z-50">
-        <Button 
-          onClick={handleCreatePost}
-          size="icon" 
-          className="h-14 w-14 rounded-full shadow-lg bg-primary text-primary-foreground hover:bg-primary/90"
-        >
-          <Plus className="h-6 w-6" />
-        </Button>
+
+
+      {/* Floating Mobile Dock */}
+      <div className="fixed bottom-0 z-50 left-0 w-full bg-white border-t border-gray-200 shadow-lg lg:hidden">
+        <div className="flex justify-around items-center py-2">
+          <button
+            className={`flex flex-col items-center text-sm pb-1 ${view === 'feed' ? 'text-red-600 border-b-2 border-red-600' : 'text-gray-600 hover:text-primary'}`}
+            onClick={() => router.push('/community?view=feed')}
+          >
+            <Compass className="h-5 w-5 mb-1" />
+            Feed
+          </button>
+          <button className="flex flex-col items-center text-xs rounded-full bg-gradient-to-r from-red-600 to-red-500 text-white px-4 py-1.5 shadow-md shadow-red-500/30 hover:scale-105 hover:shadow-red-500/50 transition-all duration-200" onClick={handleCreatePost}>
+            <Plus className="h-5 w-5 mb-0.5" />
+            Post
+          </button>
+          <button
+            className={`flex flex-col items-center text-sm pb-1 ${view === 'article' ? 'text-red-600 border-b-2 border-red-600' : 'text-gray-600 hover:text-primary'}`}
+            onClick={() => router.push('/community?view=article')}
+          >
+            <SquarePen className="h-5 w-5 mb-1" />
+            Articles
+          </button>
+        </div>
       </div>
+
+
     </>
   );
 }
