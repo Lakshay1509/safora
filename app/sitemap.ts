@@ -39,6 +39,21 @@ async function getPostsSitemap(): Promise<Posts[]>{
 
   try{
     return await db.posts.findMany({
+      where:{is_article:0},
+      select:{id:true,created_at:true,heading:true,body:true,upvotes:true,slug:true}
+    })
+  }
+  catch(error){
+    console.error("Failed to get posts for sitemap",error);
+    return []
+  }
+}
+
+async function getArticlesSitemap(): Promise<Posts[]>{
+
+  try{
+    return await db.posts.findMany({
+      where:{is_article:1},
       select:{id:true,created_at:true,heading:true,body:true,upvotes:true,slug:true}
     })
   }
@@ -51,6 +66,7 @@ async function getPostsSitemap(): Promise<Posts[]>{
 export default async function sitemap(): Promise<SitemapEntry[]> {
   const locations = await getLocationsSitemap();
   const posts = await getPostsSitemap();
+  const articles = await getArticlesSitemap();
 
   const staticEntries: SitemapEntry[] = [
     {
@@ -82,5 +98,13 @@ export default async function sitemap(): Promise<SitemapEntry[]> {
 
   }));
 
-  return [...staticEntries, ...locationEntries,...postEntries];
+   const articleEntries : SitemapEntry[] =articles.map((post)=>({
+    url :`https://www.safeornot.space/article/${post.id}/${post.slug}`,
+    lastModified:(post.created_at ?? new Date()).toISOString(),
+    changeFrequency:"weekly",
+    priority:0.8,
+
+  }));
+
+  return [...staticEntries, ...locationEntries,...postEntries,...articleEntries];
 }
