@@ -160,7 +160,7 @@ const CreatePost = () => {
   };
 
   return (
-    <div className="w-full md:mt-20 max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-md dark:bg-gray-800">
+    <div className="w-full md:mt-20 max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-md dark:bg-gray-800 pb-20 lg:pb-0">
       <h1 className="text-2xl font-bold mb-6 text-gray-800 dark:text-gray-100">
         {isEditMode ? 'Edit Post' : 'Create New Post'}
       </h1>

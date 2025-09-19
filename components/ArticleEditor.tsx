@@ -152,7 +152,7 @@ More content here...
   }
 
   return (
-    <form onSubmit={handleSubmit(handleSave)} className="max-w-6xl mr-auto py-6 px-6 lg:pl-10">
+    <form onSubmit={handleSubmit(handleSave)} className="max-w-6xl mr-auto py-6 px-6 lg:pl-10 pb-20 lg:pb-0">
       <div className="space-y-4 mb-6">
         <div>
           <Label htmlFor="heading" className="text-sm font-medium">
