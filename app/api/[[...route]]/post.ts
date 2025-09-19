@@ -15,7 +15,10 @@ const app = new Hono()
       z.object({
         heading: z.string().min(10).max(250),
         body: z.string().min(10).max(1500),
-        image: z.instanceof(File).optional(),
+        image: z.preprocess(
+          (arg) => (arg instanceof File && arg.size > 0 ? arg : undefined),
+          z.instanceof(File).optional()
+        ),
       })
     ),
 

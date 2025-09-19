@@ -31,6 +31,11 @@ class CloudinaryService {
         public_id: publicId,
         overwrite,
         resource_type: 'auto',
+        format: 'avif', 
+      transformation: [
+        { quality: 'auto' },  
+        { fetch_format: 'auto' } 
+      ]
       },
       (error: UploadApiErrorResponse | undefined, result?: UploadApiResponse) => {
         if (error) return reject(error);
@@ -61,21 +66,22 @@ class CloudinaryService {
   }
 
   async uploadPostImage(buffer: Buffer, userId: string, folder = 'Post Image'): Promise<UploadResult> {
-    try {
-      const result = await this.uploadBuffer(buffer, {
-        folder,
-        overwrite: true,
-      });
+  try {
+    const result = await this.uploadBuffer(buffer, {
+      folder,
+      overwrite: true,     
+    });
 
-      return {
-        success: true,
-        url: result.secure_url,
-        publicId: result.public_id,
-      };
-    } catch (error: any) {
-      throw new Error(`Avatar upload failed: ${error.message}`);
-    }
+    return {
+      success: true,
+      url: result.secure_url,
+      publicId: result.public_id,
+    };
+  } catch (error: any) {
+    throw new Error(`Avatar upload failed: ${error.message}`);
   }
+}
+
 
   async deleteImage(publicId: string): Promise<any> {
     return await cloudinary.uploader.destroy(publicId);

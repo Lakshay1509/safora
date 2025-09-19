@@ -3,23 +3,24 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { client } from "@/lib/hono";
 import { toast } from "sonner";
 
-type ResponseType = InferResponseType<(typeof client.api.article.add)["$post"]>;
-type RequestType = InferRequestType<(typeof client.api.article.add)["$post"]>["form"];
+type ResponseType = InferResponseType<(typeof client.api.article.update)[":id"]["$put"]>;
+type RequestType = InferRequestType<(typeof client.api.article.update)[":id"]["$put"]>["form"];
 
-export const addArticle = () => {
+export const updateArticle = (id:string) => {
   const queryClient = useQueryClient();
 
   return useMutation<ResponseType, Error, RequestType>({
     mutationFn: async (data) => {
 
       try {
-        const response = await client.api.article.add["$post"]({
-          form:data
+        const response = await client.api.article.update[":id"]["$put"]({
+          form:data,
+          param:{id}
         });
 
         if (!response.ok) {
           const errorData = await response.json();
-          throw new Error(errorData.error || "Failed to add article");
+          throw new Error(errorData.error || "Failed to update article");
         }
 
         return response.json();
@@ -29,16 +30,16 @@ export const addArticle = () => {
       }
     },
     onSuccess: () => {
-      toast.success("Article added successfully");
+      toast.success("Article updated successfully");
       queryClient.invalidateQueries({ queryKey: ["recent-article"] });
-    //   queryClient.invalidateQueries({ queryKey: ["post"] });
+      queryClient.invalidateQueries({ queryKey: ["post",id] });
     //   queryClient.invalidateQueries({ queryKey: ["recent-post"] });
     //   queryClient.invalidateQueries({ queryKey: ["location-stats"] });
       
     },
     onError: (error) => {
       console.log(error);
-      toast.error("Failed to post");
+      toast.error("Failed to update article");
     },
   });
 };

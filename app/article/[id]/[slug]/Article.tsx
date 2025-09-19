@@ -26,6 +26,8 @@ import Image from "next/image";
 import { useDominantColor } from "@/lib/useDominantColour";
 import ReactMarkdown from 'react-markdown'
 import { estimateReadingTime } from "@/utils/timetoread";
+import { headingsPlugin, imagePlugin, linkDialogPlugin, linkPlugin, listsPlugin, markdownShortcutPlugin, MDXEditor, quotePlugin, thematicBreakPlugin } from "@mdxeditor/editor";
+import { useDeleteArticle } from "@/features/article/use-delete-article";
 
 const Article = () => {
     const { user, loading } = useAuth();
@@ -36,14 +38,13 @@ const Article = () => {
 
     const { data: post, isLoading, error } = useGetPost(postId);
 
-    const { dominantColor, isLoading: colour_loading } = useDominantColor(post?.post.image_url ?? '');
 
-    const deletePostMutation = useDeletePost(postId);
+    const deletePostMutation = useDeleteArticle(postId);
 
     const isAuthor = user && post?.post.user_id === user.id;
 
     const handleEditClick = () => {
-        router.push(`/create-post?edit=true&post-id=${postId}&post-slug=${post?.post.slug}&location-id=${post?.post.location_id}`);
+        router.push(`/create-article?edit=true&post-id=${postId}&post-slug=${post?.post.slug}`);
     };
 
     const handleDeleteClick = async () => {
@@ -67,16 +68,16 @@ const Article = () => {
         <>
             <div className="flex justify-center max-w-4xl mx-auto relative">
                 {/* Floating action buttons on the right */}
-                
+
 
                 <div className="w-full max-w-4xl mx-auto py-8 px-4">
                     {/* Author section */}
                     <div className="flex items-center justify-center mb-4">
                         <div className="flex flex-col items-center">
-                            <AvatarCircle 
-                                url={post?.post.users?.profile_url} 
-                                name={post?.post.users?.name} 
-                                size="48" 
+                            <AvatarCircle
+                                url={post?.post.users?.profile_url}
+                                name={post?.post.users?.name}
+                                size="48"
                             />
                             <h3 className="mt-2 font-medium">{post?.post.users?.name || "Anonymous"}</h3>
                             <div className="flex items-center text-sm text-gray-500 mt-1">
@@ -112,9 +113,25 @@ const Article = () => {
 
                     {/* Article content */}
                     <div className="prose prose-lg max-w-none">
-                        <ReactMarkdown>{post?.post.body}</ReactMarkdown>
+                        <MDXEditor
+                            markdown={post?.post.body ?? ''}
+                            readOnly={true}
+                            plugins={[
+
+                                headingsPlugin(),
+                                listsPlugin(),
+                                quotePlugin(),
+                                thematicBreakPlugin(),
+                                markdownShortcutPlugin(),
+                                linkPlugin(),
+                                linkDialogPlugin(),
+                                imagePlugin()
+
+
+                            ]}
+                        />
                     </div>
-                    
+
                     {/* Author controls */}
                     {isAuthor && (
                         <div className="flex gap-2 mt-8 justify-start">
@@ -140,7 +157,7 @@ const Article = () => {
                     )}
 
                     <PostStats id={postId} upvotes_count={post?.post.upvotes} comments={post?.post._count.posts_comments} />
-                    
+
 
                     {/* Comments section */}
                     <div className="mt-12">

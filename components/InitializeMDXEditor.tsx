@@ -32,13 +32,13 @@ async function imageUploadHandler(image: File): Promise<string> {
   const formData = new FormData()
   formData.append('image', image)
   
-  const response = await fetch('/api/upload-image', {
+  const response = await fetch('/api/article/upload-image', {
     method: 'POST',
     body: formData
   })
   
-  const json = await response.json() as { url: string }
-  return json.url
+  const json = await response.json();
+  return json.imageUrl
 }
 
 export default function InitializedMDXEditor({
@@ -60,6 +60,7 @@ export default function InitializedMDXEditor({
         // Image plugin with upload support
         imagePlugin({
           imageUploadHandler,
+        
           
         }),
 

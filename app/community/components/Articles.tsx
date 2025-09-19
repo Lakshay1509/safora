@@ -7,8 +7,12 @@ import { MessageCircle, ThumbsUp, Bookmark, PenIcon } from "lucide-react";
 import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import RightSidebar from "./RightSidebar";
+
 
 const Articles = () => {
+    const router = useRouter();
     const {data, isLoading, isError} = useGetArticleCommunity();
 
     if(isLoading){
@@ -24,20 +28,21 @@ const Articles = () => {
     }
 
   return (
+    <>
     <section className="max-w-4xl py-4 px-4 sm:px-6">
-        <div className="w-full flex justify-end mb-10 pr-2">
-            <Button>
+        <div className="w-full flex justify-end mb-6 pr-2">
+            <Button onClick={()=>{router.push('/create-article')}}>
                 <PenIcon className="mr-1"/>Write 
             </Button>
         </div>
         
-        <div className="space-y-6 md:space-y-4">
+        <div className="space-y-10">
             {data.posts.map((post) => (
-                <Link href={`/article/${post.id}/${post.slug}`}>
+                <Link href={`/article/${post.id}/${post.slug}`} key={post.id}>
                 <article 
                     key={post.id} 
-                    className="flex border-b border-gray-200 dark:border-gray-700 pb-4 sm:pb-6
-                              md:hover:bg-gray-50 md:dark:hover:bg-gray-800 md:p-3 md:rounded-lg
+                    className="flex border-b border-gray-200 py-6 
+                              md:hover:bg-gray-50 md:px-3 md:rounded-lg
                               sm:flex-row flex-col"
                 >
                     <div className="flex-1 pr-0 sm:pr-4">
@@ -57,7 +62,7 @@ const Articles = () => {
                                {post.created_at ? format(new Date(post.created_at), "MMM dd, yyyy") : ""}
                             </span>
                         </div>
-                        <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+                        <h2 className="md:text-xl font-bold text-gray-900 dark:text-white mb-2">
                             {post.heading}
                         </h2>
                         
@@ -90,6 +95,10 @@ const Articles = () => {
             ))}
         </div>
     </section>
+    <div className="hidden lg:block w-80 p-4">
+                <RightSidebar/>
+            </div>
+    </>
   )
 }
 
