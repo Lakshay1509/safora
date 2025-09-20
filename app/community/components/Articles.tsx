@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import RightSidebar from "./RightSidebar";
+import AvatarCircle from "@/app/profile/components/AvatarCircle";
 
 
 const Articles = () => {
@@ -47,13 +48,13 @@ const Articles = () => {
                 >
                     <div className="flex-1 pr-0 sm:pr-4">
                         <div className="flex items-center mb-2">
-                            <Image 
-                                src={post.users?.profile_url || "/default-avatar.png"}
-                                alt={post.users?.name || "User"}
-                                width={24}
-                                height={24}
-                                className="rounded-full mr-2"
+                            <div className="mr-2">
+                            <AvatarCircle
+                                url={post.users?.profile_url??''}
+                                name={post.users?.name}
+                                size="24"
                             />
+                            </div>
                             <span className="text-sm font-medium text-gray-800 dark:text-gray-200">
                                 {post.users?.name}
                             </span>
