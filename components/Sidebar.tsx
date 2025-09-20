@@ -7,6 +7,11 @@ import { ArrowUpRight, Compass, Navigation, Plus, SquarePen } from "lucide-react
 import { useAuth } from "@/contexts/AuthContext";
 import { useGetTrending } from "@/features/community/use-get-trending";
 import TrendingCard from "./TrendingCard";
+import AvatarCircle from "@/app/profile/components/AvatarCircle";
+import { useGetDefaultUser } from "@/features/user/use-get-default";
+import { useGetUserLocationCount } from "@/features/user/use-get-locationCount";
+import Link from "next/link";
+import { toast } from "sonner";
 
 export function Sidebar() {
   const router = useRouter();
@@ -14,7 +19,8 @@ export function Sidebar() {
   const searchParams = useSearchParams();
   const [isMounted, setIsMounted] = useState(false);
   const { user, loading } = useAuth();
-  const { data, isLoading, isError } = useGetTrending();
+  const { data, isLoading, isError } = useGetDefaultUser();
+  const { data: user_data } = useGetUserLocationCount();
 
   // Handle client-side mounting
   useEffect(() => {
@@ -36,6 +42,14 @@ export function Sidebar() {
     }
 
   };
+
+  const handleClick =()=>{
+    if(!user){
+      return toast.error("Login to view profile");
+
+    }
+    router.push('/profile');
+  }
 
   return (
     <>
@@ -68,7 +82,30 @@ export function Sidebar() {
           </div>
         </div>
 
+
         <div className="p-4 text-xs text-gray-500 mt-auto">
+          {user &&
+          <Link href='/profile' >
+           <div className="flex items-center space-x-3 mb-4 hover:bg-gray-300 transition-all rounded-2xl p-3">
+            {/* Avatar */}
+            <AvatarCircle url={data?.userData.profile_url} name={data?.userData.name ?? ''} />
+
+            {/* User Info */}
+            <div className="flex flex-col">
+              <span className="font-semibold text-gray-900">{data?.userData.name}</span>
+              <div className="flex items-center space-x-1 text-sm text-gray-600">
+                <span className="font-semibold">{data?.userData.following_locations_count}</span>
+                <span>following</span>
+                <span className="mx-1">•</span>
+                <span className="font-semibold">{user_data?.count}</span>
+                <span>visited</span>
+                <span className="ml-1">→</span>
+              </div>
+            </div>
+          </div>
+          </Link>
+          }
+
           <div className="flex flex-wrap gap-2 justify-center">
             <a href="/privacy-policy" className="hover:underline">Privacy Policy</a>
             <p>© 2025 SafeOrNot, Inc.</p>
@@ -82,6 +119,10 @@ export function Sidebar() {
       {/* Floating Mobile Dock */}
       <div className="fixed bottom-0 z-50 left-0 w-full bg-white border-t border-gray-200 shadow-lg lg:hidden">
         <div className="flex justify-around items-center py-2">
+          <button className="flex flex-col items-center text-xs rounded-full bg-gradient-to-r from-red-600 to-red-500 text-white px-4 py-1.5 shadow-md shadow-red-500/30 hover:scale-105 hover:shadow-red-500/50 transition-all duration-200" onClick={handleCreatePost}>
+            <Plus className="h-5 w-5 mb-0.5" />
+            Post
+          </button>
           <button
             className={`flex flex-col items-center text-sm pb-1 ${view === 'feed' ? 'text-red-600 border-b-2 border-red-600' : 'text-gray-600 hover:text-primary'}`}
             onClick={() => router.push('/community?view=feed')}
@@ -89,16 +130,16 @@ export function Sidebar() {
             <Compass className="h-5 w-5 mb-1" />
             Feed
           </button>
-          <button className="flex flex-col items-center text-xs rounded-full bg-gradient-to-r from-red-600 to-red-500 text-white px-4 py-1.5 shadow-md shadow-red-500/30 hover:scale-105 hover:shadow-red-500/50 transition-all duration-200" onClick={handleCreatePost}>
-            <Plus className="h-5 w-5 mb-0.5" />
-            Post
-          </button>
           <button
             className={`flex flex-col items-center text-sm pb-1 ${view === 'article' ? 'text-red-600 border-b-2 border-red-600' : 'text-gray-600 hover:text-primary'}`}
             onClick={() => router.push('/community?view=article')}
           >
             <SquarePen className="h-5 w-5 mb-1" />
             Articles
+          </button>
+          <button onClick={handleClick}>
+             <AvatarCircle url={data?.userData.profile_url} name={data?.userData.name ?? ''} size="40"/>
+            
           </button>
         </div>
       </div>
