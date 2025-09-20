@@ -114,45 +114,44 @@ More content here...
     }
   }, [isEditMode, postData, setValue]);
 
-  const handleSave = (data: ArticleFormData) => {
-    const content = ref.current?.getMarkdown()
+  const onPublish = (data: ArticleFormData) => {
+    const content = ref.current?.getMarkdown();
     if (content === undefined || content.length <= 10) {
-      toast.error("Body should be greater than 10")
+      toast.error("Body should be greater than 10");
       return;
     }
 
-    if (!isEditMode && postData) {
+    mutation.mutateAsync({
+      heading: data.heading,
+      image: data.image && data.image.length > 0 ? data.image[0] : undefined,
+      body: content
+    }, {
+      onSuccess: () => {
+        router.push('/community?view=article');
+      }
+    });
+  };
 
-
-      mutation.mutateAsync({
-        heading: data.heading,
-        image: data.image && data.image.length > 0 ? data.image[0] : undefined,
-        body: content
-      }, {
-        onSuccess: () => {
-          router.push('/community?view=article')
-
-        }
-      })
+  const onUpdate = (data: ArticleFormData) => {
+    const content = ref.current?.getMarkdown();
+    if (content === undefined || content.length <= 10) {
+      toast.error("Body should be greater than 10");
+      return;
     }
-    else{
-      console.log(data,"update")
-      updateMutation.mutateAsync({
-        heading: data.heading,
-        image: data.image && data.image.length > 0 ? data.image[0] : undefined,
-        body: content
-      }, {
-        
-          onSuccess: () => {
-          router.push(`/article/${postId}/${post_slug}`);
-        },
 
-      })
-    }
-  }
+    updateMutation.mutateAsync({
+      heading: data.heading,
+      image: data.image && data.image.length > 0 ? data.image[0] : undefined,
+      body: content
+    }, {
+      onSuccess: () => {
+        router.push(`/article/${postId}/${post_slug}`);
+      },
+    });
+  };
 
   return (
-    <form onSubmit={handleSubmit(handleSave)} className="max-w-6xl mr-auto py-6 px-6 lg:pl-10 pb-20 lg:pb-0">
+    <form onSubmit={handleSubmit(isEditMode ? onUpdate : onPublish)} className="max-w-6xl mr-auto py-6 px-6 lg:pl-10 pb-20 lg:pb-0">
       <div className="space-y-4 mb-6">
         <div>
           <Label htmlFor="heading" className="text-sm font-medium">
