@@ -10,15 +10,22 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import RightSidebar from "./RightSidebar";
 import AvatarCircle from "@/app/profile/components/AvatarCircle";
+import { useAuth } from "@/contexts/AuthContext";
 
 
 const Articles = () => {
     const router = useRouter();
+    const {user} = useAuth()
     const {data, isLoading, isError} = useGetArticleCommunity();
 
-    if(isLoading){
-       return <PostSkeleton/>
-    }
+    if (isLoading) {
+        return (
+          <div className="space-y-4 p-4">
+            {[1, 2, 3, 4, 5].map((item) => (
+              <PostSkeleton key={item} />
+            ))}
+          </div>)
+      }
 
     if(isError || !data){
         return (
@@ -28,11 +35,21 @@ const Articles = () => {
         )
     }
 
+    const handleCreatePost = () => {
+    if (user === null) {
+      router.push('/login')
+    }
+    else {
+      router.push("/create-article");
+    }
+
+  };
+
   return (
     <>
     <section className="max-w-4xl py-4 px-4 sm:px-6">
         <div className="w-full flex justify-end mb-6 pr-2">
-            <Button onClick={()=>{router.push('/create-article')}}>
+            <Button onClick={handleCreatePost}>
                 <PenIcon className="mr-1"/>Write 
             </Button>
         </div>
