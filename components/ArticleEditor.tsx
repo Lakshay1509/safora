@@ -214,7 +214,7 @@ More content here...
         </div>
       </div>
 
-      <div className="border rounded-lg overflow-hidden prose prose-lg max-w-none">
+      <div className="border rounded-lg  prose prose-lg max-w-none h-[500px] overflow-auto">
         <ForwardRefEditor
           ref={ref}
           markdown={markdown}
