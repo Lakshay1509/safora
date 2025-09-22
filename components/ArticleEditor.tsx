@@ -39,7 +39,7 @@ type ArticleFormData = z.infer<typeof articleSchema>
 
 export default function ArticleEditor() {
   const searchParams = useSearchParams();
-  const [charCount, setCharCount] = useState({ heading: 0 });
+  const [charCount, setCharCount] = useState({ heading: 0, body: 0 });
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const router = useRouter()
@@ -109,7 +109,7 @@ More content here...
       setMarkdown(postData.post.body);
       setCharCount({
         heading: postData.post.heading.length,
-
+        body: postData.post.body.length
       });
     }
   }, [isEditMode, postData, setValue]);
@@ -118,6 +118,10 @@ More content here...
     const content = ref.current?.getMarkdown();
     if (content === undefined || content.length <= 10) {
       toast.error("Body should be greater than 10");
+      return;
+    }
+    if (content.length > 15000) {
+      toast.error("Body must be less than 15,000 characters");
       return;
     }
 
@@ -136,6 +140,10 @@ More content here...
     const content = ref.current?.getMarkdown();
     if (content === undefined || content.length <= 10) {
       toast.error("Body should be greater than 10");
+      return;
+    }
+    if (content.length > 15000) {
+      toast.error("Body must be less than 15,000 characters");
       return;
     }
 
@@ -214,6 +222,11 @@ More content here...
         </div>
       </div>
 
+      <div className="flex justify-end">
+        <span className={`text-sm ${charCount.body > 15000 ? 'text-red-500' : 'text-muted-foreground'}`}>
+          {charCount.body}/15000
+        </span>
+      </div>
       <div className="border rounded-lg  prose prose-lg max-w-none h-[500px] overflow-auto">
         <ForwardRefEditor
           ref={ref}
@@ -221,6 +234,7 @@ More content here...
           onChange={(newMarkdown) => {
             if (isMounted.current) {
               setMarkdown(newMarkdown)
+              setCharCount(prev => ({ ...prev, body: newMarkdown.length }))
             }
           }}
         />
