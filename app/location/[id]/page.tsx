@@ -55,6 +55,7 @@ const page = () => {
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Top Area Card - Full Width */}
         <AreaCard  />
+        
 
         {/* Middle Row - Map and Reviews Cards */}
         {/* <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -62,6 +63,8 @@ const page = () => {
           <PrecautionCard  />
         </div> */}
         <ReviewsCard/>
+        <PrecautionCard/>
+
 
         {/* Tabbed Interface for Comments and Posts */}
         <TabView />

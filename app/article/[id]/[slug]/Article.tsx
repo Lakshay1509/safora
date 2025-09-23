@@ -70,7 +70,7 @@ const Article = () => {
                 {/* Floating action buttons on the right */}
 
 
-                <div className="w-full max-w-4xl mx-auto py-8 px-4">
+                <div className="w-full max-w-4xl mx-auto py-8 px-4 pb-24">
                     {/* Author section */}
                     <div className="flex items-center justify-center mb-4">
                         <div className="flex flex-col items-center">

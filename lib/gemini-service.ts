@@ -41,16 +41,16 @@ export async function generateLocationPrecautions(
 **Task**:
 1. Search the web for the **latest** safety guidance and incidents about \`place\`.
    * Use **credible sources**: government/police/transport advisories, local authorities, major news outlets, and official operators.
-   * Only use sources **published/updated within the last 6 months**.
-2. Generate **exactly 8 tips**, each on **one line** (no line breaks) and should be strictly in English .
-   * **At least 5** tips must be **women-focused** (e.g., women-only transit options, helplines, harassment reporting, late-night travel practices).
+   * Only use sources **published/updated within the last 2 months**.
+2. Generate **exactly 5 tips**, each on **one line** (no line breaks) and should be strictly in English .
+   * **At least 3** tips must be **women-focused** (e.g., women-only transit options, helplines, harassment reporting, late-night travel practices).
    * Keep language clear, non-alarmist, and non-victim-blaming.
    * Tailor to local context (transit, neighborhoods, hours, scams, events).
 3. Append **numeric citation indices** in square brackets to each tip, e.g., \`[1, 3]\`.
    * Indices refer to your **internally compiled, recency-sorted source list** (not part of the output).
    * Prefer 2-3 sources per tip when possible; 1 is acceptable if strongly authoritative.
 **Output**:
-* Return **only** a JSON array of 8 objects, **no extra text**.
+* Return **only** a JSON array of 5 objects, **no extra text**.
 * Each object has the shape: \`{ "tip": "..." }\`.
 * Do **not** include the sources list in the output.
 * If you cannot find **≥3** credible recent sources overall, return:
@@ -58,8 +58,8 @@ export async function generateLocationPrecautions(
   []
   \`\`\`
 **Validation Rules**:
-* Exactly 8 tips.
-* ≥5 tips clearly **for women** (mention women/women-only options/harassment reporting/etc.).
+* Exactly 5 tips.
+* ≥3 tips clearly **for women** (mention women/women-only options/harassment reporting/etc.).
 * Each tip is **one line** (no newline), concise, and location-specific.
 * Every tip ends with bracketed numeric citations like \`[2]\` or \`[1, 4]\`.
 * No duplicate tips.
