@@ -54,7 +54,7 @@ export function ProfileCard() {
         {/* Profile Header */}
         <div className="flex flex-col items-center text-center space-y-4">
           <div>
-            <h2 className="text-xl font-bold" style={{ color: "#111827" }}>
+            <h2 className="text-xl font-bold mb-6" style={{ color: "#111827" }}>
               {UserData?.userData.name}
             </h2>
           </div>
