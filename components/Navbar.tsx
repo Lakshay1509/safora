@@ -250,6 +250,20 @@ export function Navbar() {
                   width={180}
                   height={50}
                   fetchPriority="high"
+                  className="hidden md:block"
+                />
+              </Link>
+               <Link href="/">
+                {/* <h1 className="text-xl font-bold text-black">
+                  Safe or Not
+                </h1> */}
+                <Image
+                  src="/logo.avif"
+                  alt="Safe or Not"
+                  width={140}
+                  height={50}
+                  fetchPriority="high"
+                  className="block md:hidden"
                 />
               </Link>
             </div>
