@@ -113,7 +113,7 @@ const Post = () => {
 
                     </div>
 
-                    <div className="prose mb-8">
+                    <div className="prose prose-lg max-w-none mb-8 text-base">
                         {post?.post.body}
                     </div>
 

@@ -53,7 +53,7 @@ const RightSidebar = ({id}:Props) => {
             <div className="text-sm text-red-500">Error loading posts</div>
           ) : post?.post && post.post.length > 0 ? (
             <div className="space-y-4">
-              {post.post.slice(0, 6).map((item) => (
+              {post.post.slice(0, 5).map((item) => (
                 
                 <div key={item.id} className="border border-gray-200 rounded-lg p-3 hover:bg-gray-50 cursor-pointer">
                   <Link href={`/post/${item.id}/${item.slug}`}>

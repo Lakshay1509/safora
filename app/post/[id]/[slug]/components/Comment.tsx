@@ -149,7 +149,7 @@ const Comment = ({ postId }: Props) => {
                                 </div>
                             )}
                         </div>
-                        <p className="text-gray-800">{comment.text}</p>
+                        <p className="text-gray-800 text-[14px]">{comment.text}</p>
                         <div className="mt-2 flex items-center justify-between">
                             <button
                                 onClick={() => toggleReplySection(comment.id)}
