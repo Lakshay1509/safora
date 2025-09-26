@@ -8,6 +8,7 @@ import PostSkeleton from "./PostsSkeleton";
 import AvatarCircle from "@/app/profile/components/AvatarCircle";
 import PostImage from "@/components/PostImage";
 import React, { useRef, useEffect } from "react";
+import { LoaderOne } from "@/components/ui/loader";
 
 export const Posts = () => {
   const {
@@ -158,9 +159,9 @@ export const Posts = () => {
             ))}
           </div>
           <div ref={lastPostRef} />
-          {/* <div className="flex justify-center mt-4 w-full">
-            {!isFetchingNextPage && <PostSkeleton />}
-          </div> */}
+          <div className="flex justify-center my-4 w-full">
+            {isFetchingNextPage && <LoaderOne />}
+          </div>
         </div>
       </div>
     </section>
