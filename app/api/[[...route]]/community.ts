@@ -18,41 +18,59 @@ interface posts{
 }
 
 const app = new Hono()
-  .get("/recent", async (ctx) => {
-    const posts = await db.posts.findMany({
-      where:{is_article:0},
-      orderBy: {
-        created_at: "desc",
-      },
-      take: 500,
-      include: {
-        users: {
-          select: {
-            id: true,
-            name: true,
-            profile_url:true
-          },
-        },
-        locations: {
-          select: {
-            name: true,
-            id: true,
-          },
-        },
-        _count: {
-          select: {
-            posts_comments: true
-          }
-        }
-      },
-    });
+  .get(
+    "/recent",
+    zValidator(
+      "query",
+      z.object({
+        page: z.string().optional().default("1"),
+        limit: z.string().optional().default("10"),
+      })
+    ),
+    async (ctx) => {
+      const { page, limit } = ctx.req.valid("query");
+      const pageNum = parseInt(page, 10);
+      const limitNum = parseInt(limit, 10);
+      const skip = (pageNum - 1) * limitNum;
 
-    if (!posts) {
-      return ctx.json({ error: "Error getting posts" }, 500);
+      const posts = await db.posts.findMany({
+        where: { is_article: 0 },
+        orderBy: {
+          created_at: "desc",
+        },
+        skip: skip,
+        take: limitNum,
+        include: {
+          users: {
+            select: {
+              id: true,
+              name: true,
+              profile_url: true,
+            },
+          },
+          locations: {
+            select: {
+              name: true,
+              id: true,
+            },
+          },
+          _count: {
+            select: {
+              posts_comments: true,
+            },
+          },
+        },
+      });
+
+      if (!posts) {
+        return ctx.json({ error: "Error getting posts" }, 500);
+      }
+
+      const totalPosts = await db.posts.count({ where: { is_article: 0 } });
+
+      return ctx.json({ posts, hasMore: skip + limitNum < totalPosts }, 200);
     }
-
-    return ctx.json({ posts }, 200);
-  })
+  )
 
   .get("/articles", async (ctx) => {
     const posts = await db.posts.findMany({
