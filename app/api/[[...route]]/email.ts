@@ -1,4 +1,4 @@
-// /api/mail/route.ts (App Router)
+
 import { EmailTemplate } from "@/components/EmailTemplate";
 import { db } from "@/lib/prisma";
 import { Resend } from 'resend';
