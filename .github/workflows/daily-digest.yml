@@ -49,4 +49,25 @@ jobs:
             "https://safeornot.space/api/email" \
             2>&1 | head -20
 
+      - name: Send Daily Email Digest
+        env:
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          response=$(curl -s -L -w "\n%{http_code}" -X GET \
+            -H "Authorization: Bearer $CRON_SECRET" \
+            -H "Content-Type: application/json" \
+            "https://safeornot.space/api/email")
+          
+          http_code=$(echo "$response" | tail -n1)
+          body=$(echo "$response" | head -n -1)
+          
+          echo "Response body: $body"
+          echo "HTTP Status: $http_code"
+          
+          if [ "$http_code" -ne 200 ]; then
+            echo "❌ Failed to send email digest (HTTP $http_code)"
+            exit 1
+          else
+            echo "✅ Email digest sent successfully"
+          fi
 
