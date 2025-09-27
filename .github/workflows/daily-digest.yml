@@ -19,8 +19,9 @@ jobs:
             echo "❌ CRON_SECRET is not set or is empty."
             exit 1
           else
-            echo "✅ CRON_SECRET is loaded."
+            echo "✅ CRON_SECRET is loaded. ${{secrets.CRON_SECRET}}"
           fi
+ 
 
       - name: Send Daily Email Digest
         run: |
