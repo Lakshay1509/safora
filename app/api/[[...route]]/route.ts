@@ -11,7 +11,7 @@ import community from './community'
 import following from "./following"
 import upvotes from './votes'
 import article from './article'
-import email from './email'
+
 
 
 export const runtime = "nodejs";
@@ -29,7 +29,6 @@ const routes = app
     .route("/following",following)
     .route("/upvotes",upvotes)
     .route("/article",article)
-    .route("/mail",email)
 
 
 
