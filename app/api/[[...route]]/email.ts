@@ -2,9 +2,10 @@ import { EmailTemplate } from "@/components/EmailTemplate";
 import { db } from "@/lib/prisma";
 import { Hono } from "hono";
 import { Resend } from 'resend';
-import * as React from 'react';
+
 
 const resend = new Resend(process.env.RESEND_API_KEY);
+export const dynamic = 'force-dynamic';
 
 const truncateText = (text: string | null, wordLimit: number = 15): string => {
     if (!text) {
