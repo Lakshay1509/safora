@@ -20,6 +20,9 @@ const truncateText = (text: string | null, wordLimit: number = 15): string => {
 
 export async function GET(request: NextRequest) {
     const authHeader = request.headers.get('authorization');
+    console.log('Expected:', process.env.CRON_SECRET);
+    console.log('Received:', authHeader);
+    console.log(authHeader === `Bearer ${process.env.CRON_SECRET}`)
     if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
         return Response.json({ error: 'Unauthorized' }, { status: 401 });
     }

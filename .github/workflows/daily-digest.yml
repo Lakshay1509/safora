@@ -13,15 +13,24 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-      - name: Send Daily Email Digest
-      
+      - name: Check if secret is set
         run: |
           if [ -z "${{ secrets.CRON_SECRET }}" ]; then
-            echo "❌ CRON_SECRET is not available or empty"
+            echo "❌ CRON_SECRET is not set or is empty."
             exit 1
           else
-            echo "✅ CRON_SECRET is available"
-      
+            echo "✅ CRON_SECRET is loaded. ${{secrets.CRON_SECRET}}"
+          fi
+    
+      - name: Debug Secret Characters (REMOVE AFTER DEBUG)
+        run: |
+            secret="${{ secrets.CRON_SECRET }}"
+            for (( i=0; i<${#secret}; i++ )); do
+              echo "Char $i: ${secret:$i:1}"
+            done
+
+      - name: Send Daily Email Digest
+        run: |
           response=$(curl -s -L -w "\n%{http_code}" -X GET \
             -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
             -H "Content-Type: application/json" \
