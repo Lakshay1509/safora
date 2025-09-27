@@ -19,7 +19,7 @@ const truncateText = (text: string | null, wordLimit: number = 15): string => {
 };
 
 export async function GET(request: NextRequest) {
-    const authHeader = request.headers.get('authorization');
+    const authHeader = request.headers.get('authorization') || request.headers.get('Authorization');
     console.log('Expected:', process.env.CRON_SECRET);
     console.log('Received:', authHeader);
     console.log(authHeader === `Bearer ${process.env.CRON_SECRET}`)

@@ -29,12 +29,34 @@ jobs:
               echo "Char $i: ${secret:$i:1}"
             done
 
+      
+
+      - name: Complete Debug
+        env:
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          echo "=== SECRET DEBUG ==="
+          echo "Secret exists: $([[ -n "$CRON_SECRET" ]] && echo "YES" || echo "NO")"
+          echo "Secret length: ${#CRON_SECRET}"
+          echo "Secret value (first 10 chars): ${CRON_SECRET:0:10}..."
+          
+          echo "=== CURL DEBUG ==="
+          echo "About to run curl with verbose output..."
+          
+          curl -v -X GET \
+            -H "Authorization: Bearer $CRON_SECRET" \
+            -H "Content-Type: application/json" \
+            "https://safeornot.space/api/email" \
+            2>&1 | head -20
+
       - name: Send Daily Email Digest
+        env:
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
         run: |
           response=$(curl -s -L -w "\n%{http_code}" -X GET \
-            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+            -H "Authorization: Bearer $CRON_SECRET" \
             -H "Content-Type: application/json" \
-            https://safeornot.space/api/email)
+            "https://safeornot.space/api/email")
           
           http_code=$(echo "$response" | tail -n1)
           body=$(echo "$response" | head -n -1)
@@ -48,3 +70,4 @@ jobs:
           else
             echo "✅ Email digest sent successfully"
           fi
+
