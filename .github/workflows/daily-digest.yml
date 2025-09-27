@@ -14,7 +14,14 @@ jobs:
     
     steps:
       - name: Send Daily Email Digest
+      
         run: |
+          if [ -z "${{ secrets.CRON_SECRET }}" ]; then
+            echo "❌ CRON_SECRET is not available or empty"
+            exit 1
+          else
+            echo "✅ CRON_SECRET is available"
+      
           response=$(curl -s -L -w "\n%{http_code}" -X GET \
             -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
             -H "Content-Type: application/json" \
