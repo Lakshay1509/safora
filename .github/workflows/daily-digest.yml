@@ -30,9 +30,11 @@ jobs:
             done
 
       - name: Send Daily Email Digest
+        env:
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
         run: |
           response=$(curl -s -L -w "\n%{http_code}" -X GET \
-            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+            -H "Authorization: Bearer $CRON_SECRET" \
             -H "Content-Type: application/json" \
             "https://safeornot.space/api/email")
           
@@ -48,3 +50,4 @@ jobs:
           else
             echo "✅ Email digest sent successfully"
           fi
+
