@@ -19,12 +19,10 @@ const truncateText = (text: string | null, wordLimit: number = 15): string => {
 };
 
 export async function GET(request: NextRequest) {
-    console.log('Headers as object:', Object.fromEntries(request.headers.entries()));
+    
     const authHeader = request.headers.get("x-authorization");
 
-    console.log('Expected:', process.env.CRON_SECRET);
-    console.log('Received:', authHeader);
-    console.log(authHeader === `Bearer ${process.env.CRON_SECRET}`)
+   
     if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
         return Response.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -55,7 +53,7 @@ export async function GET(request: NextRequest) {
 
         const { data, error } = await resend.emails.send({
             from: 'SafeOrNot <noreply@safeornot.space>',
-            to: ['gupta15.lakshay@gmail.com'],
+            to: ['lakshay.gupta.ug23@nsut.ac.in'],
             subject: 'Your Daily Digest from Safe or Not',
             react: EmailTemplate({
                 firstName: 'Lakshay',
