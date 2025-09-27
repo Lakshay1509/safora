@@ -21,7 +21,13 @@ jobs:
           else
             echo "✅ CRON_SECRET is loaded. ${{secrets.CRON_SECRET}}"
           fi
- 
+    
+      - name: Debug Secret Characters (REMOVE AFTER DEBUG)
+        run: |
+            secret="${{ secrets.CRON_SECRET }}"
+            for (( i=0; i<${#secret}; i++ )); do
+              echo "Char $i: ${secret:$i:1}"
+            done
 
       - name: Send Daily Email Digest
         run: |
