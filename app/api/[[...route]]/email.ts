@@ -1,17 +1,15 @@
+// /api/mail/route.ts (App Router)
 import { EmailTemplate } from "@/components/EmailTemplate";
 import { db } from "@/lib/prisma";
-import { Hono } from "hono";
 import { Resend } from 'resend';
-
+import { NextRequest } from 'next/server';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
+
 export const dynamic = 'force-dynamic';
 
 const truncateText = (text: string | null, wordLimit: number = 15): string => {
-    if (!text) {
-        return '';
-    }
-    // Remove HTML tags and extra whitespace
+    if (!text) return '';
     const cleanText = text.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim();
     const words = cleanText.split(' ');
     if (words.length > wordLimit) {
@@ -20,14 +18,13 @@ const truncateText = (text: string | null, wordLimit: number = 15): string => {
     return cleanText;
 };
 
+export async function GET(request: NextRequest) {
+    const authHeader = request.headers.get('authorization');
+    if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+        return Response.json({ error: 'Unauthorized' }, { status: 401 });
+    }
 
-const app = new Hono()
-    .post('/send-mail', async (ctx) => {
-        const authHeader = ctx.req.header('authorization');
-        if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-            return ctx.json({ error: 'Unauthorized' }, 401);
-        }
-
+    try {
         const posts = await db.posts.findMany({
             where: { is_article: 0 },
             take: 3,
@@ -37,7 +34,7 @@ const app = new Hono()
         const articles = await db.posts.findMany({
             where: { is_article: 1 },
             take: 2,
-            orderBy: {created_at: 'desc' }
+            orderBy: { created_at: 'desc' }
         });
 
         const allContent = [...articles, ...posts];
@@ -53,10 +50,10 @@ const app = new Hono()
 
         const { data, error } = await resend.emails.send({
             from: 'SafeOrNot <noreply@safeornot.space>',
-            to: ['gupta15.lakshay@gmail.com'], 
+            to: ['gupta15.lakshay@gmail.com'],
             subject: 'Your Daily Digest from Safe or Not',
             react: EmailTemplate({
-                firstName: 'Lakshay', // Replace with dynamic user name
+                firstName: 'Lakshay',
                 logoUrl: 'https://safeornot.space/logo.avif',
                 highlights: highlights
             }),
@@ -64,10 +61,12 @@ const app = new Hono()
 
         if (error) {
             console.error({ error });
-            return ctx.json({ error: 'Failed to send email' }, 500);
+            return Response.json({ error: 'Failed to send email' }, { status: 500 });
         }
 
-        return ctx.json({ message: 'Email sent successfully', data });
-    });
-
-export default app;
+        return Response.json({ message: 'Email sent successfully', data });
+    } catch (error) {
+        console.error('Cron job error:', error);
+        return Response.json({ error: 'Internal server error' }, { status: 500 });
+    }
+}
