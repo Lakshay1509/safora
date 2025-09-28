@@ -27,12 +27,26 @@ export async function GET(request: NextRequest) {
     try {
         const posts = await db.posts.findMany({
             where: { is_article: 0 },
+            include:{
+                users:{
+                    select:{
+                        name:true
+                    }
+                }
+            },
             take: 3,
             orderBy: { created_at: 'desc' }
         });
 
         const articles = await db.posts.findMany({
             where: { is_article: 1 },
+             include:{
+                users:{
+                    select:{
+                        name:true
+                    }
+                }
+            },
             take: 2,
             orderBy: { created_at: 'desc' }
         });
@@ -49,9 +63,9 @@ export async function GET(request: NextRequest) {
         }));
 
         const { data, error } = await resend.emails.send({
-            from: 'SafeOrNot <noreply@safeornot.space>',
+            from: 'SafeOrNot Daily Digest <noreply@safeornot.space>',
             to: ['gupta15.lakshay@gmail.com'],
-            subject: 'Your Daily Digest from Safe or Not',
+            subject: `${allContent[0].heading} | ${allContent[0].users?.name || 'SafeOrNot'}`,
             react: EmailTemplate({
                 firstName: 'Lakshay',
                 logoUrl: 'https://safeornot.space/logo.avif',

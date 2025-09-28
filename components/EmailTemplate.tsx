@@ -28,9 +28,9 @@ export function EmailTemplate({
                         alt="Brand Logo"
                         style={{ height: '3rem', margin: '0 auto 2rem auto' }}
                     />
-                    <h1 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#1f2937' }}>Your Daily Digest</h1>
+                    <p style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#1f2937' }}>Your Daily Digest</p>
                     <p style={{ fontSize: '0.875rem', color: '#6b7280' }}>
-                        Hello {firstName}, here’s what’s new today 👇
+                        Hello {firstName}, here's what's new today 👇
                     </p>
                 </div>
 
@@ -68,7 +68,7 @@ export function EmailTemplate({
                 {/* Footer */}
                 <div style={{ backgroundColor: '#f9fafb', padding: '1rem 1.5rem', textAlign: 'center', fontSize: '0.875rem', color: '#6b7280' }}>
                     <p>
-                        You’re receiving this email because you subscribed to Daily Digest.
+                        You're receiving this email because you subscribed to Daily Digest.
                     </p>
                     <p style={{ marginTop: '0.25rem' }}>
                         <a href="#" style={{ color: '#4f46e5', textDecoration: 'none' }}>

@@ -1,9 +1,9 @@
 name: Daily Email Digest
 
 on:
-  schedule:
+  # schedule:
    
-    - cron: '08 16 * * *'
+  #   - cron: '08 16 * * *'
   
   # Allows manual triggering from Actions tab
   workflow_dispatch:
