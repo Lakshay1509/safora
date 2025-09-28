@@ -15,7 +15,7 @@ const RightSidebar = ({id}:Props) => {
     const{data:stats,isLoading:stats_loading,isError:stats_error} = useGetLocationStats(id);
     const { data:post, isLoading:post_Loading, isError:post_error } = useGetLocationPost(id);
   return (
-    <div className="fixed right-0 top-0 h-[90vh] w-80 bg-white border-l border-t border-r rounded-xl border-gray-200 mt-22 mr-4 py-10 px-6 hidden lg:block overflow-y-auto">
+    <div className="fixed right-0 top-0 h-[90vh] w-80 bg-white border-l border-t border-r rounded-xl border-gray-200 mt-22  py-10 px-6 hidden lg:block overflow-y-auto">
 
       <Link href={`/location/${data?.location.id}`} className="hover:underline">
         <h2 className="flex items-center gap-x-2 text-xl  font-semibold">

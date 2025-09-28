@@ -71,7 +71,7 @@ const Post = () => {
         <>
             <div className="flex justify-center">
 
-                <div className="w-full max-w-3xl mx-4 p-4 bg-white rounded-lg mt-6 lg:mx-10 lg:mr-[22rem]">
+                <div className="w-full max-w-3xl mx-4 p-4 bg-white rounded-lg mt-6 lg:mx-10 lg:mr-[22rem] pb-22">
                     <div className="flex space-x-2 items-start mb-2">
                         <AvatarCircle url={post?.post.users?.profile_url} name={post?.post.users?.name} size="40" />
                         <h1 className="text-2xl font-bold">{post?.post.heading}</h1>
@@ -153,11 +153,11 @@ const Post = () => {
 
                     <PostStats id={postId} upvotes_count={post?.post.upvotes} comments={post?.post._count.posts_comments} />
 
-
+                    <ExploreMore id={post?.post.location_id ? post.post.location_id : ''} />
 
                     {/* Comments section */}
                     <Comment postId={postId} />
-                    <ExploreMore id={post?.post.location_id ? post.post.location_id : ''} />
+                    
                 </div>
                 {post?.post.location_id && <RightSidebar id={post?.post.location_id} />}
             </div>
