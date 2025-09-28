@@ -3,20 +3,31 @@
 import { Card, CardContent } from "@/components/ui/card"
 import { useGetDefaultUser } from "@/features/user/use-get-default"
 import { useGetUserComments } from "@/features/user/use-get-user-comment";
-import { MapPin, Calendar, Star } from "lucide-react"
+import { MapPin, Calendar, Star, Settings } from "lucide-react"
 import { format, parseISO } from "date-fns"
 import { useGetUserLocationCount } from "@/features/user/use-get-locationCount";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import SelectGender from "@/components/SelectGender";
 import AvatarUpload from "./AvatarUpload";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/contexts/AuthContext";
+
 
 export function ProfileCard() {
+  const {user,loading} = useAuth()
+  const router = useRouter();
   const [currentAvatar, setCurrentAvatar] = useState<string>('');
+
+  useEffect(() => {
+          if (!loading && !user) {
+              router.push('/login');
+          }
+      }, [user, loading, router]);
 
   const handleUploadSuccess = (newAvatarUrl: string) => {
     setCurrentAvatar(newAvatarUrl);
-    console.log('Avatar uploaded successfully:', newAvatarUrl);
+    // console.log('Avatar uploaded successfully:', newAvatarUrl);
     // You can also update your global state, show a toast notification, etc.
   };
 
@@ -50,8 +61,10 @@ export function ProfileCard() {
 
   return (
     <Card className="rounded-xl border min-h-120 shadow-sm" style={{ backgroundColor: "#FFFFFF" }}>
-      <CardContent className="p-6">
+      <CardContent className="p-6 pt-0">
         {/* Profile Header */}
+        <div className="w-full  flex justify-end">
+          <button className="p-2 rounded-full hover:bg-gray-300 hover:cursor-pointer" onClick={()=>{router.push('/profile/settings')}}><Settings/></button></div>
         <div className="flex flex-col items-center text-center space-y-4">
           <div>
             <h2 className="text-xl font-bold mb-6" style={{ color: "#111827" }}>
