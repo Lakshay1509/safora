@@ -1,0 +1,34 @@
+import { InferRequestType, InferResponseType } from "hono";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { client } from "@/lib/hono";
+import { toast } from "sonner";
+
+type ResponseType = InferResponseType<(typeof client.api.user.updateEmailPreference)["$put"]>
+type RequestType = InferRequestType<(typeof client.api.user.updateEmailPreference)["$put"]>["json"]
+
+export const useUpdateUserPreference = () => {
+    const queryClient = useQueryClient();
+
+    return useMutation<ResponseType, Error, RequestType>({
+        mutationFn: async(json) => {
+            const response = await client.api.user.updateEmailPreference["$put"]({
+                json,
+            });
+
+            if(!response.ok){
+
+                throw new Error("Failed to update preference");
+            }
+
+            return response.json();
+        },
+        onSuccess: () => {
+            // queryClient.invalidateQueries({ queryKey: ["user"] });
+            toast.success("Preference updated successfully");
+        },
+        onError: (error) => {
+            console.log(error);
+            toast.error("Failed to update preference");
+        }
+    });
+}

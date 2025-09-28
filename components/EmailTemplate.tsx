@@ -71,11 +71,8 @@ export function EmailTemplate({
                         You're receiving this email because you subscribed to Daily Digest.
                     </p>
                     <p style={{ marginTop: '0.25rem' }}>
-                        <a href="#" style={{ color: '#4f46e5', textDecoration: 'none' }}>
-                            Unsubscribe
-                        </a>{" "}
-                        •{" "}
-                        <a href="#" style={{ color: '#4f46e5', textDecoration: 'none' }}>
+                       
+                        <a href="https://safeornot.space/profile/settings" style={{ color: '#4f46e5', textDecoration: 'none' }}>
                             Manage Preferences
                         </a>
                     </p>

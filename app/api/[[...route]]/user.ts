@@ -1,7 +1,7 @@
 import { Hono } from "hono";
 import { db } from "@/lib/prisma";
 import { zValidator } from "@hono/zod-validator";
-import { z } from "zod";
+import { number, z } from "zod";
 import { randomUUID } from "crypto";
 import { createClient } from "@/utils/supabase/server";
 import cloudinaryService from "@/lib/cloudinary-service";
@@ -249,6 +249,34 @@ const app = new Hono()
     return ctx.json({data},200);
 
 
+
+  })
+  .put('/updateEmailPreference',zValidator("json",z.object({
+     daily_digest: z.union([z.literal(0), z.literal(1)]),
+  })),async(ctx)=>{
+    const supabase = await createClient();
+      const {
+        data: { user },
+        error,
+      } = await supabase.auth.getUser();
+      if (error || !user) {
+        return ctx.json({ error: "Unauthorized" }, 401);
+      }
+
+      const { daily_digest } = ctx.req.valid("json");
+
+      const update = await db.public_users.update({
+        where:{id:user.id},
+        data:{
+          daily_digest: daily_digest
+        }
+      })
+
+      if(!update){
+        return ctx.json({error:"Error updating preference"},500);
+      }
+
+      return ctx.json({update},200);
 
   })
 
