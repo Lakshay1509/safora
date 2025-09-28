@@ -159,7 +159,7 @@ More content here...
   };
 
   return (
-    <form onSubmit={handleSubmit(isEditMode ? onUpdate : onPublish)} className="max-w-6xl mr-auto py-6 px-6 lg:pl-10 pb-20 lg:pb-0">
+    <form onSubmit={handleSubmit(isEditMode ? onUpdate : onPublish)} className="max-w-6xl mr-auto py-6 px-6 lg:pl-10 pb-20 lg:pb-8 ">
       <div className="space-y-4 mb-6">
         <div>
           <Label htmlFor="heading" className="text-sm font-medium">
@@ -227,7 +227,7 @@ More content here...
           {charCount.body}/15000
         </span>
       </div>
-      <div className="border rounded-lg  prose prose-lg max-w-none h-[500px] overflow-auto">
+      <div className="border rounded-lg  prose prose-lg max-w-none h-[500px] lg:h-[650px] overflow-auto">
         <ForwardRefEditor
           ref={ref}
           markdown={markdown}

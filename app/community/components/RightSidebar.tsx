@@ -14,7 +14,7 @@ const RightSidebar = () => {
 
     
   return (
-    <div className="fixed right-0 top-0 h-[90vh] w-70 bg-white border-l border-t border-r rounded-xl border-gray-200 mt-22 mr-4 py-10 px-6 hidden lg:block overflow-y-auto">
+    <div className="fixed right-0 top-0 h-[90vh] w-70 bg-white border-l border-t border-r rounded-xl border-gray-200 mt-22  py-10 px-6 hidden lg:block overflow-y-auto">
 
         <h1 className="font-bold ">Recent's from your following</h1>
 
