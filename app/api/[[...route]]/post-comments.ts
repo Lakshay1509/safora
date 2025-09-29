@@ -65,6 +65,33 @@ const app = new Hono()
         })
     
         if(comment){
+          const post = await db.posts.findUnique({
+            where:{id:id},
+            include:{
+              users:{
+                select:{
+                  name:true,
+                  id:true
+                }
+              }
+            }
+          })
+          const userData = await db.public_users.findUnique({
+            where:{id:user.id}
+          })
+
+          if(!userData || !post){
+            return ctx.json({error : "Post or user not found"},500);
+          }
+          
+
+          const notification = await db.notifications.create({
+            data:{
+              user_id:post?.users?.id,
+              sender_id:userData?.id,
+              text: `${userData?.name} commented on your post ${post?.heading}`
+            }
+          })
           return ctx.json({comment},200);
         }
     
@@ -113,6 +140,44 @@ const app = new Hono()
         })
     
         if(comment){
+
+          const commentData = await db.posts_comments.findUnique({
+            where:{id:parentCommentId},
+            include:{
+              users:{
+                select:{
+                  name:true,
+                  id:true
+                }
+                
+              },
+              posts:{
+                select:{
+                  heading:true
+                }
+              }
+            }
+            
+          })
+
+
+
+          const userData = await db.public_users.findUnique({
+            where:{id:user.id}
+          })
+
+          if(!commentData || !userData){
+            return ctx.json({error:"Error finding comment or user"},500)
+          }
+
+          const notification = await db.notifications.create({
+            data:{
+              user_id:commentData?.users?.id,
+              sender_id:user.id,
+              text:`${userData.name} replied to your comment on post ${commentData.posts?.heading}`
+            }
+          })
+
           return ctx.json({comment},200);
         }
     
