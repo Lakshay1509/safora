@@ -15,6 +15,7 @@ import { addLocationByCoord } from "@/features/location/use-add-location-coord"
 import { useAuth } from "@/contexts/AuthContext"
 import Link from "next/link"
 import Image from "next/image"
+import { NotificationBell } from "./NotificationBell"
 
 interface LocationResult {
   formatted: string
@@ -290,6 +291,7 @@ export function Navbar() {
               <Button variant="ghost" size="sm" className="p-2 mr-2" onClick={toggleSearchBar}>
                 <Search className="w-5 h-5 text-black" />
               </Button>
+              <NotificationBell/>
               <Button variant="ghost" size="sm" className="p-2" onClick={toggleMobileMenu}>
                 {mobileMenuOpen ? <X className="w-5 h-5 text-black" /> : <Menu className="w-5 h-5 text-black" />}
               </Button>
@@ -307,7 +309,9 @@ export function Navbar() {
                   Community
                 </span>
               </Link>
+              
               {user?.id && !loading && (
+                <>
                 <Link
                   className={`flex items-center gap-2 text-sm hover:underline py-2 px-3 rounded-2xl  transition-all duration-200 group ${pathname === "/profile" ? "bg-black text-white  font-semibold" : "text-gray-700"
                     }`}
@@ -319,6 +323,8 @@ export function Navbar() {
                     Profile
                   </span>
                 </Link>
+                <NotificationBell/>
+                </>
               )}
               <LoginButton />
             </div>
