@@ -100,7 +100,7 @@ const app = new Hono()
           data: {
             user_id: data?.users?.id,
             sender_id: user.id,
-            text: `${userData?.name} upvoted your post`,
+            text: `**${userData?.name}** upvoted your post **${data.heading}**`,
           },
         });
       }

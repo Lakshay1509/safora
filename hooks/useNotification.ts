@@ -14,6 +14,12 @@ export interface Notification {
   text: string;
   is_read: number;
   created_at: string;
+  sender?: {
+    id: string;
+    name: string;
+    profile_url?:string
+    
+  };
 } 
 
 export function useNotifications() {
@@ -30,7 +36,14 @@ export function useNotifications() {
     
     const { data, error } = await supabase
       .from("notifications")
-      .select("*")
+      .select(`
+    *,
+    sender:users!notifications_sender_id_fkey(
+      id,
+      name,
+      profile_url
+    )
+  `)
       .eq("user_id", user.id)
       .order("created_at", { ascending: false })
       .limit(50);

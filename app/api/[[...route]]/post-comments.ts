@@ -89,7 +89,7 @@ const app = new Hono()
             data:{
               user_id:post?.users?.id,
               sender_id:userData?.id,
-              text: `${userData?.name} commented on your post ${post?.heading}`
+              text: `**${userData?.name}** commented on your post **${post?.heading}**`
             }
           })
           return ctx.json({comment},200);
@@ -174,7 +174,7 @@ const app = new Hono()
             data:{
               user_id:commentData?.users?.id,
               sender_id:user.id,
-              text:`${userData.name} replied to your comment on post ${commentData.posts?.heading}`
+              text:`**${userData.name}** replied to your comment on post **${commentData.posts?.heading}**`
             }
           })
 

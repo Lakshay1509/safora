@@ -3,18 +3,20 @@
 
 import { useNotifications } from '@/hooks/useNotification'; 
 import { Bell } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 export function NotificationBell() {
   const { notifications, unreadCount, loading, markAsRead, markAllAsRead } = useNotifications();
   const [isOpen, setIsOpen] = useState(false);
+  const router = useRouter();
 
   
 
   return (
     <div className="relative">
       <button 
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={() => router.push('/community?view=notification')}
         className="relative p-2 hover:bg-gray-100 rounded-full"
       >
         <Bell className="h-5 w-5" />
@@ -25,7 +27,7 @@ export function NotificationBell() {
         )}
       </button>
 
-      {isOpen && (
+      {/* {isOpen && (
         <div className="absolute right-[-25px] lg:right-0 mt-2 w-80 bg-white border rounded-lg shadow-lg z-50">
   
           <div className="p-4 border-b flex justify-between items-center">
@@ -63,7 +65,7 @@ export function NotificationBell() {
             )}
           </div>
         </div>
-      )}
+      )} */}
     </div>
   );
 }
