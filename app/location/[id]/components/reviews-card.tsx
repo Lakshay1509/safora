@@ -21,7 +21,6 @@ import {
 } from "@/components/ui/alert-dialog";
 import { createClient } from "@/utils/supabase/client";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useGetReview1 } from "@/features/reviews/use-get-review1";
 
 export function ReviewsCard() {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
