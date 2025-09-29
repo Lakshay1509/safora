@@ -62,9 +62,9 @@ export default function LandingPage() {
       {/* CTA Section */}
       <section className="mt-6 ">
         {!user ? (
-          <CTA extraLoading={isLoading} />
+          <CTA extraLoading={isLoading} userPresent={false}/>
         ) : (
-          <></>
+          <CTA extraLoading={isLoading} userPresent={true}/>
         )}
       </section>
 
