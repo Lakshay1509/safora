@@ -30,7 +30,7 @@ export function useNotifications() {
 
     const { data, error } = await supabase
       .from("notifications")
-      .select("*, sender:users!sender_id(id, name, profile_url)")
+      .select("*")
       .eq("user_id", user.id)
       .order("created_at", { ascending: false })
       .limit(50);
@@ -65,9 +65,7 @@ export function useNotifications() {
           filter: `user_id=eq.${user.id}`,
         },
         () => {
-          // Don't use the payload directly, as it's incomplete.
-          // Refetch the entire list to ensure data consistency.
-          console.log("Insert received, refetching notifications...");
+         
           fetchNotifications();
         }
       )
@@ -80,8 +78,6 @@ export function useNotifications() {
           filter: `user_id=eq.${user.id}`,
         },
         () => {
-          // Refetch on update as well to keep all data fresh.
-          console.log("Update received, refetching notifications...");
           fetchNotifications();
         }
       )
@@ -93,7 +89,7 @@ export function useNotifications() {
   }, [user]);
 
   const markAsRead = async (notificationId: string) => {
-    // First, update the backend
+    
     const { error } = await supabase
       .from("notifications")
       .update({ is_read: 1 })
@@ -102,7 +98,7 @@ export function useNotifications() {
     if (error) {
       console.error("Error marking notification as read:", error);
     } else {
-      // On success, refetch the data to ensure UI consistency
+      
       fetchNotifications();
     }
   };
@@ -110,7 +106,7 @@ export function useNotifications() {
   const markAllAsRead = async () => {
     if (!user) return;
 
-    // First, update the backend
+   
     const { error } = await supabase
       .from("notifications")
       .update({ is_read: 1 })
@@ -120,7 +116,7 @@ export function useNotifications() {
     if (error) {
       console.error("Error marking all notifications as read:", error);
     } else {
-      // On success, refetch the data
+     
       fetchNotifications();
     }
   };
