@@ -36,14 +36,7 @@ export function useNotifications() {
     
     const { data, error } = await supabase
       .from("notifications")
-      .select(`
-    *,
-    sender:users!notifications_sender_id_fkey(
-      id,
-      name,
-      profile_url
-    )
-  `)
+      .select("*")
       .eq("user_id", user.id)
       .order("created_at", { ascending: false })
       .limit(50);

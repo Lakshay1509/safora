@@ -40,7 +40,7 @@ const Notification = () => {
                 onClick={() => markAsRead(notification.id)}
               >
                 <div className='flex justify-start items-center space-x-2'>
-                <AvatarCircle url={notification.sender?.profile_url} name={notification.sender?.name} size='40'/>
+                {/* <AvatarCircle url={notification.sender?.profile_url} name={notification.sender?.name} size='40'/> */}
 
                 <MDXEditor
                   markdown={notification.text}
