@@ -14,16 +14,10 @@ export interface Notification {
   text: string;
   is_read: number;
   created_at: string;
-  sender?: {
-    id: string;
-    name: string;
-    profile_url?:string
-    
-  };
-} 
+}
 
 export function useNotifications() {
-  const [notifications, setNotifications] = useState<Notification[]>([]); 
+  const [notifications, setNotifications] = useState<Notification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const supabase = createClient();
@@ -31,12 +25,12 @@ export function useNotifications() {
 
   const fetchNotifications = async () => {
     if (!user) return setLoading(false);
-    
+
     setLoading(true);
-    
+
     const { data, error } = await supabase
       .from("notifications")
-      .select("*")
+      .select("*, sender:users!sender_id(id, name, profile_url)")
       .eq("user_id", user.id)
       .order("created_at", { ascending: false })
       .limit(50);
@@ -48,7 +42,7 @@ export function useNotifications() {
     }
 
     setLoading(false);
-  }; 
+  };
 
   useEffect(() => {
     if (!user) {
@@ -64,28 +58,31 @@ export function useNotifications() {
       .channel(`notifications:${user.id}`)
       .on(
         "postgres_changes",
-        { event: "INSERT", schema: "public", table: "notifications", filter: `user_id=eq.${user.id}` },
-        (payload) => {
-          const newNotification = payload.new as Notification;
-          setNotifications((prev) => [newNotification, ...prev]);
-          if (newNotification.is_read === 0) setUnreadCount((prev) => prev + 1);
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "notifications",
+          filter: `user_id=eq.${user.id}`,
+        },
+        () => {
+          // Don't use the payload directly, as it's incomplete.
+          // Refetch the entire list to ensure data consistency.
+          console.log("Insert received, refetching notifications...");
+          fetchNotifications();
         }
       )
       .on(
         "postgres_changes",
-        { event: "UPDATE", schema: "public", table: "notifications", filter: `user_id=eq.${user.id}` },
-        (payload) => {
-          const updatedNotification = payload.new as Notification;
-          setNotifications((prev) =>
-            prev.map((n) => (n.id === updatedNotification.id ? updatedNotification : n))
-          );
-         
-          setUnreadCount((prev) => {
-            const currentNotifications = notifications.map((n) => 
-              n.id === updatedNotification.id ? updatedNotification : n
-            );
-            return currentNotifications.filter((n) => n.is_read === 0).length;
-          });
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "notifications",
+          filter: `user_id=eq.${user.id}`,
+        },
+        () => {
+          // Refetch on update as well to keep all data fresh.
+          console.log("Update received, refetching notifications...");
+          fetchNotifications();
         }
       )
       .subscribe();
@@ -96,28 +93,36 @@ export function useNotifications() {
   }, [user]);
 
   const markAsRead = async (notificationId: string) => {
-    setNotifications((prev) =>
-      prev.map((n) => (n.id === notificationId ? { ...n, is_read: 1 } : n))
-    );
-    setUnreadCount((prev) => Math.max(prev - 1, 0));
+    // First, update the backend
+    const { error } = await supabase
+      .from("notifications")
+      .update({ is_read: 1 })
+      .eq("id", notificationId);
 
-    const { error } = await supabase.from("notifications").update({ is_read: 1 }).eq("id", notificationId);
-    if (error) console.error("Error marking notification as read:", error);
+    if (error) {
+      console.error("Error marking notification as read:", error);
+    } else {
+      // On success, refetch the data to ensure UI consistency
+      fetchNotifications();
+    }
   };
 
   const markAllAsRead = async () => {
-    setNotifications((prev) => prev.map((n) => ({ ...n, is_read: 1 })));
-    setUnreadCount(0);
-
     if (!user) return;
 
+    // First, update the backend
     const { error } = await supabase
       .from("notifications")
       .update({ is_read: 1 })
       .eq("user_id", user.id)
       .eq("is_read", 0);
 
-    if (error) console.error("Error marking all notifications as read:", error);
+    if (error) {
+      console.error("Error marking all notifications as read:", error);
+    } else {
+      // On success, refetch the data
+      fetchNotifications();
+    }
   };
 
   return { notifications, unreadCount, loading, markAsRead, markAllAsRead };
