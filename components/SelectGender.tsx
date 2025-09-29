@@ -18,14 +18,14 @@ import {
 } from "@/components/ui/select";
 import { useState, useEffect } from "react";
 import { useUpdateUserGender } from "@/features/user/use-update-user-gender";
-
+import { useRouter } from "next/navigation";
 interface Props{
     DialogOpen: boolean,
     onClose?: () => void,
 }
 
 const SelectGender = ({DialogOpen, onClose}:Props) => {
-    
+    const router  = useRouter();
     const [isDialogOpen, setIsDialogOpen] = useState(DialogOpen);
     const [selectedGender, setSelectedGender] = useState<"male" | "female" | "other">("male");
     
@@ -43,6 +43,8 @@ const SelectGender = ({DialogOpen, onClose}:Props) => {
                 onSuccess: () => {
                     setIsDialogOpen(false);
                     if (onClose) onClose();
+                    router.push('/community')
+
                 },
                 onError:(err)=>{
                     setIsDialogOpen(true);
