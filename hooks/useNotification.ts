@@ -1,8 +1,7 @@
 // hooks/useNotifications.ts
-
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import type { RealtimeChannel } from "@supabase/supabase-js";
 import { createClient } from "@/utils/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -16,6 +15,14 @@ export interface Notification {
   created_at: string;
 }
 
+
+let globalNotifications: Notification[] = [];
+let globalUnreadCount = 0;
+let globalChannel: RealtimeChannel | null = null;
+let currentUserId: string | null = null;
+let subscribers = 0;
+let stateUpdateCallbacks: Array<() => void> = [];
+
 export function useNotifications() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
@@ -23,25 +30,47 @@ export function useNotifications() {
   const supabase = createClient();
   const { user } = useAuth();
 
-  const fetchNotifications = async () => {
-    if (!user) return setLoading(false);
+  
+  const updateLocalState = useCallback(() => {
+    setNotifications([...globalNotifications]);
+    setUnreadCount(globalUnreadCount);
+    setLoading(false);
+  }, []);
 
+  const fetchNotifications = async () => {
+    if (!user) {
+      setLoading(false);
+      return;
+    }
+
+    //console.log("Fetching notifications for user:", user.id);
     setLoading(true);
 
     const { data, error } = await supabase
       .from("notifications")
-      .select("*")
+      .select("*, sender:users!sender_id(id, name, profile_url)")
       .eq("user_id", user.id)
       .order("created_at", { ascending: false })
       .limit(50);
 
-    if (error) console.error("Error fetching notifications:", error);
-    else {
-      setNotifications(data || []);
-      setUnreadCount(data?.filter((n) => n.is_read === 0).length || 0);
+    if (error) {
+      console.error("Error fetching notifications:", error);
+      setLoading(false);
+      return;
     }
-
-    setLoading(false);
+    
+    //console.log("Fetched notifications:", data?.length || 0);
+    
+    // Update global state
+    globalNotifications = data || [];
+    
+    // Calculate unread count
+    const unreadItems = globalNotifications.filter(n => n.is_read === 0 );
+    console.log("Unread notifications count:", unreadItems.length);
+    globalUnreadCount = unreadItems.length;
+    
+    // Update all components using this hook
+    stateUpdateCallbacks.forEach(callback => callback());
   };
 
   useEffect(() => {
@@ -52,43 +81,87 @@ export function useNotifications() {
       return;
     }
 
-    fetchNotifications();
+    // Add this component's state update function to the callback list
+    stateUpdateCallbacks.push(updateLocalState);
+    
+    // If we already have notifications and same user, use them immediately
+    if (globalNotifications.length > 0 && currentUserId === user.id) {
+      updateLocalState();
+    } else {
+      // Otherwise fetch fresh data
+      fetchNotifications();
+    }
 
-    const channel: RealtimeChannel = supabase
-      .channel(`notifications:${user.id}`)
-      .on(
-        "postgres_changes",
-        {
-          event: "INSERT",
-          schema: "public",
-          table: "notifications",
-          filter: `user_id=eq.${user.id}`,
-        },
-        () => {
-         
-          fetchNotifications();
-        }
-      )
-      .on(
-        "postgres_changes",
-        {
-          event: "UPDATE",
-          schema: "public",
-          table: "notifications",
-          filter: `user_id=eq.${user.id}`,
-        },
-        () => {
-          fetchNotifications();
-        }
-      )
-      .subscribe();
+    // Setup a global persistent subscription
+    if (!globalChannel || currentUserId !== user.id) {
+      // Clean up existing channel if user changed
+      if (globalChannel && currentUserId !== user.id) {
+        console.log("User changed, removing old channel");
+        supabase.removeChannel(globalChannel);
+        globalChannel = null;
+        globalNotifications = [];
+        globalUnreadCount = 0;
+      }
 
+      currentUserId = user.id;
+      
+      globalChannel = supabase
+        .channel(`notifications:${user.id}`)
+        .on(
+          "postgres_changes",
+          {
+            event: "INSERT",
+            schema: "public",
+            table: "notifications",
+            filter: `user_id=eq.${user.id}`,
+          },
+          (payload) => {
+            console.log("Notification INSERT detected:", payload);
+            fetchNotifications();
+          }
+        )
+        .on(
+          "postgres_changes",
+          {
+            event: "UPDATE",
+            schema: "public",
+            table: "notifications",
+            filter: `user_id=eq.${user.id}`,
+          },
+          (payload) => {
+            console.log("Notification UPDATE detected:", payload);
+            fetchNotifications();
+          }
+        )
+        .subscribe((status) => {
+          console.log(`Realtime subscription status: ${status}`);
+        });
+    }
+    
+    // Increment subscriber count
+    subscribers++;
+    
     return () => {
-      supabase.removeChannel(channel);
+      // Remove this component's callback when unmounting
+      stateUpdateCallbacks = stateUpdateCallbacks.filter(cb => cb !== updateLocalState);
+      
+      // Only remove the channel when all subscribers are gone
+      subscribers--;
+      //console.log(`Component unmounted. Remaining subscribers: ${subscribers}`);
+      
+      if (subscribers === 0 && globalChannel) {
+        console.log("All subscribers gone, cleaning up notification channel");
+        supabase.removeChannel(globalChannel);
+        globalChannel = null;
+        currentUserId = null;
+        globalNotifications = [];
+        globalUnreadCount = 0;
+      }
     };
-  }, [user]);
+  }, [user, updateLocalState]);
 
   const markAsRead = async (notificationId: string) => {
+    //console.log(`Marking notification ${notificationId} as read`);
     
     const { error } = await supabase
       .from("notifications")
@@ -98,14 +171,15 @@ export function useNotifications() {
     if (error) {
       console.error("Error marking notification as read:", error);
     } else {
-      
-      fetchNotifications();
+      console.log("Successfully marked as read, refreshing data");
+      await fetchNotifications();
     }
   };
 
   const markAllAsRead = async () => {
     if (!user) return;
-
+    
+    //console.log("Marking all notifications as read");
    
     const { error } = await supabase
       .from("notifications")
@@ -116,8 +190,8 @@ export function useNotifications() {
     if (error) {
       console.error("Error marking all notifications as read:", error);
     } else {
-     
-      fetchNotifications();
+      console.log("Successfully marked all as read, refreshing data");
+      await fetchNotifications();
     }
   };
 
