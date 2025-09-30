@@ -19,58 +19,82 @@ interface posts{
 
 const app = new Hono()
   .get(
-    "/recent",
-    zValidator(
-      "query",
-      z.object({
-        page: z.string().optional().default("1"),
-        limit: z.string().optional().default("10"),
-      })
-    ),
-    async (ctx) => {
-      const { page, limit } = ctx.req.valid("query");
-      const pageNum = parseInt(page, 10);
-      const limitNum = parseInt(limit, 10);
-      const skip = (pageNum - 1) * limitNum;
+  "/recent",
+  zValidator(
+    "query",
+    z.object({
+      page: z.string().optional().default("1"),
+      limit: z.string().optional().default("10"),
+    })
+  ),
+  async (ctx) => {
+    const { page, limit } = ctx.req.valid("query");
+    const pageNum = parseInt(page, 10);
+    const limitNum = parseInt(limit, 10);
+    const skip = (pageNum - 1) * limitNum;
 
-      const posts = await db.posts.findMany({
-        where: { is_article: 0 },
-        orderBy: {
-          created_at: "desc",
-        },
-        skip: skip,
-        take: limitNum,
-        include: {
-          users: {
-            select: {
-              id: true,
-              name: true,
-              profile_url: true,
-            },
-          },
-          locations: {
-            select: {
-              name: true,
-              id: true,
-            },
-          },
-          _count: {
-            select: {
-              posts_comments: true,
-            },
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    // fetch posts with +1 for hasMore detection
+    const posts = await db.posts.findMany({
+      where: { is_article: 0 },
+      orderBy: {
+        created_at: "desc",
+      },
+      skip,
+      take: limitNum + 1,
+      include: {
+        users: {
+          select: {
+            id: true,
+            name: true,
+            profile_url: true,
           },
         },
+        locations: {
+          select: {
+            name: true,
+            id: true,
+          },
+        },
+        _count: {
+          select: {
+            posts_comments: true,
+          },
+        },
+      },
+    });
+
+    const hasMore = posts.length > limitNum;
+    const paginatedPosts = posts.slice(0, limitNum);
+
+    // fetch all user votes for these posts in one query
+    let userVotes: { post_id: string; vote_type: number }[] = [];
+    if (user) {
+      userVotes = await db.votes.findMany({
+        where: {
+          user_id: user.id,
+          post_id: { in: paginatedPosts.map((p) => p.id) },
+        },
+        select: { post_id: true, vote_type: true }, // make sure your votes table has "value"
       });
-
-      if (!posts) {
-        return ctx.json({ error: "Error getting posts" }, 500);
-      }
-
-      const totalPosts = await db.posts.count({ where: { is_article: 0 } });
-
-      return ctx.json({ posts, hasMore: skip + limitNum < totalPosts }, 200);
     }
-  )
+
+    const voteMap = new Map(
+      userVotes.map((v) => [v.post_id, v.vote_type]) // e.g. { "123": 1 }
+    );
+
+    const data = paginatedPosts.map((post) => ({
+      ...post,
+      upvote: voteMap.get(post.id) ?? -1, // 1 if upvoted, -1 otherwise
+    }));
+
+    return ctx.json({ data, hasMore }, 200);
+  }
+)
 
   .get("/articles", async (ctx) => {
     const posts = await db.posts.findMany({

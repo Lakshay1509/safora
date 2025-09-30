@@ -9,6 +9,7 @@ import AvatarCircle from "@/app/profile/components/AvatarCircle";
 import PostImage from "@/components/PostImage";
 import React, { useRef, useEffect } from "react";
 import { LoaderOne } from "@/components/ui/loader";
+import PostStatsFeed from "@/components/PostsStatsFeed";
 
 export const Posts = () => {
   const {
@@ -75,7 +76,7 @@ export const Posts = () => {
     );
   }
 
-  if (!data || !data.pages || data.pages.length === 0 || data.pages[0].posts.length === 0) {
+  if (!data || !data.pages || data.pages.length === 0 || data.pages[0].data.length === 0) {
     return <div className="p-4 text-center">No posts available.</div>;
   }
 
@@ -86,7 +87,7 @@ export const Posts = () => {
           <div className="flex flex-col gap-4">
             {data.pages.map((page, i) => (
               <React.Fragment key={i}>
-                {page.posts.map((post) => (
+                {page.data.map((post) => (
                   <div
                     key={post.id}
                     className="p-4 border-b border-gray-200 rounded-lg transition-colors duration-200 hover:bg-gray-50 text-sm"
@@ -148,10 +149,11 @@ export const Posts = () => {
                     </div>
 
                     {/* Social interaction bar */}
-                    <PostStats
+                    <PostStatsFeed
                       id={post.id}
                       upvotes_count={post.upvotes}
                       comments={post._count.posts_comments}
+                      upvoted={post.upvote===1 }
                     />
                   </div>
                 ))}
