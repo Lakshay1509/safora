@@ -119,23 +119,23 @@ export function Sidebar() {
       {/* Floating Mobile Dock */}
       <div className="fixed bottom-0 z-50 left-0 w-full bg-white border-t border-gray-200 shadow-lg lg:hidden">
         <div className="flex justify-around items-center py-2">
-          <button className="flex flex-col items-center text-xs rounded-full bg-gradient-to-r from-red-600 to-red-500 text-white px-4 py-1.5 shadow-md shadow-red-500/30 hover:scale-105 hover:shadow-red-500/50 transition-all duration-200" onClick={handleCreatePost}>
-            <Plus className="h-5 w-5 mb-0.5" />
-            Post
+          <button className="flex flex-col items-center text-xs rounded-full bg-gradient-to-r from-red-600 to-red-500 text-white p-2  shadow-md shadow-red-500/30 hover:scale-105 hover:shadow-red-500/50 transition-all duration-200" onClick={handleCreatePost}>
+            <Plus className="h-6 w-6 mb-0.5" />
+            
           </button>
           <button
             className={`flex flex-col items-center text-sm pb-1 ${view === 'feed' ? 'text-red-600 border-b-2 border-red-600' : 'text-gray-600 hover:text-primary'}`}
             onClick={() => router.push('/community?view=feed')}
           >
-            <Compass className="h-5 w-5 mb-1" />
-            Feed
+            <Compass className="h-6 w-6 mb-1" />
+            
           </button>
           <button
             className={`flex flex-col items-center text-sm pb-1 ${view === 'article' ? 'text-red-600 border-b-2 border-red-600' : 'text-gray-600 hover:text-primary'}`}
             onClick={() => router.push('/community?view=article')}
           >
-            <SquarePen className="h-5 w-5 mb-1" />
-            Articles
+            <SquarePen className="h-6 w-6 mb-1" />
+            
           </button>
           <button onClick={handleClick}>
              <AvatarCircle url={data?.userData.profile_url} name={data?.userData.name ?? ''} size="40"/>
