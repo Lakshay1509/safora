@@ -15,7 +15,8 @@ const app = new Hono()
     include:{
             users:{
               select:{
-                name:true
+                name:true,
+                profile_url:true
               }
             }
           }
