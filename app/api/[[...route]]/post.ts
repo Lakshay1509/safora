@@ -145,6 +145,11 @@ const app = new Hono()
             profile_url:true
           },
         },
+        _count: {
+        select: {
+          other_posts_comments: true, 
+        },
+      },
       },
     });
 

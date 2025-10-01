@@ -157,6 +157,8 @@ const Comment = ({ postId }: Props) => {
                             >
                                 <MessageCircle className="h-4 w-4 mr-1" />
                                 {openReplies.includes(comment.id) ? "Hide replies" : "Reply"}
+                                
+                                <span className="ml-2">({comment._count.other_posts_comments})</span>
                             </button>
                         </div>
 
