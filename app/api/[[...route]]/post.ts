@@ -106,30 +106,55 @@ const app = new Hono()
   .get("/by-locationId/:id", async (ctx) => {
     const id = ctx.req.param("id");
 
-    const post = await db.posts.findMany({
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    const posts = await db.posts.findMany({
       where: { location_id: id },
       include: {
         users: {
           select: {
             id: true,
             name: true,
-            profile_url:true
+            profile_url: true,
           },
         },
-        _count:{
-          select:{
-            posts_comments:true
-          }
-        }
+        _count: {
+          select: {
+            posts_comments: true,
+          },
+        },
       },
-      
     });
 
-    if (!post) {
+    if (!posts) {
       return ctx.json({ error: "Error getting post" }, 500);
     }
 
-    return ctx.json({ post }, 200);
+    // Fetch all user votes for these posts in one query (same pattern as community.ts)
+    let userVotes: { post_id: string; vote_type: number }[] = [];
+    if (user) {
+      userVotes = await db.votes.findMany({
+        where: {
+          user_id: user.id,
+          post_id: { in: posts.map((p) => p.id) },
+        },
+        select: { post_id: true, vote_type: true },
+      });
+    }
+
+    const voteMap = new Map(
+      userVotes.map((v) => [v.post_id, v.vote_type])
+    );
+
+    const data = posts.map((post) => ({
+      ...post,
+      upvote: voteMap.get(post.id) ?? -1, // 1 if upvoted, -1 otherwise
+    }));
+
+    return ctx.json({ post: data }, 200);
   })
 
   .get("/comments/:id", async (ctx) => {
