@@ -19,7 +19,7 @@ import AvatarCircle from "@/app/profile/components/AvatarCircle";
 
 // Comment schema with validation
 const commentSchema = z.object({
-    text: z.string().min(3, "Comment must be at least 3 characters").max(500, "Comment must be less than 500 characters"),
+    text: z.string().min(3, "Comment must be at least 3 characters").max(1500, "Comment must be less than 1500 characters"),
 });
 
 type CommentFormValues = z.infer<typeof commentSchema>;

@@ -36,7 +36,7 @@ const app = new Hono()
   zValidator(
     "json",
     z.object({
-      text: z.string().max(500),
+      text: z.string().max(1500),
     })
   ),
   async (ctx) => {
