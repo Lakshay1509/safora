@@ -7,6 +7,7 @@ import { addUpvotetoPost } from "@/features/votes/use-post-upvotes";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import { useEffect, useState } from "react";
+import { BiUpvote } from "react-icons/bi";
 
 interface Props {
   id: string,
@@ -70,7 +71,7 @@ const PostStatsFeed = ({ id, upvotes_count, comments, upvoted }: Props) => {
         } flex items-center gap-2 rounded-xl px-3 py-2 shadow-sm transition-all duration-200`}
         onClick={handleClick}
       >
-        <ArrowUp className="w-4 h-4" />
+        <BiUpvote className="w-4 h-4" />
         <span className="text-sm font-medium">{optimisticUpvotes}</span>
       </Button>
 

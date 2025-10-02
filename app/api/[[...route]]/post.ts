@@ -176,6 +176,7 @@ const app = new Hono()
         },
       },
       },
+      orderBy:{created_at:'asc'}
     });
 
     if (!post_comments) {

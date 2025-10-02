@@ -2,8 +2,9 @@
 
 
 
-import { useGetPostStats } from "@/features/post/use-get-stats";
+
 import { ArrowUp, Check, MessageCircle, Share } from "lucide-react"
+import { BiUpvote } from "react-icons/bi";
 import { Button } from "./ui/button";
 import { useGetUpVotesByUser } from "@/features/votes/use-get-upvotes-byUser";
 import { addUpvotetoPost } from "@/features/votes/use-post-upvotes";
@@ -21,7 +22,7 @@ const PostStats = ({ id ,upvotes_count,comments}: Props) => {
 
 
 
-  // const { data, isLoading, isError } = useGetPostStats(id);
+  
   const { data: upvotes, isLoading: upvotes_loading, isError: upvotes_error } = useGetUpVotesByUser(id);
 
   const {user,loading} = useAuth();
@@ -80,7 +81,7 @@ const PostStats = ({ id ,upvotes_count,comments}: Props) => {
       } flex items-center gap-2 rounded-xl px-3 py-2 shadow-sm transition-all duration-200`}
     onClick={handleClick}
   >
-    <ArrowUp className="w-4 h-4" />
+    <BiUpvote className="w-4 h-4" />
     <span className="text-sm font-medium">{optimisticUpvotes}</span>
   </Button>
 
