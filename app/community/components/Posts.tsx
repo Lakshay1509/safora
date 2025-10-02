@@ -10,8 +10,13 @@ import PostImage from "@/components/PostImage";
 import React, { useRef, useEffect } from "react";
 import { LoaderOne } from "@/components/ui/loader";
 import PostStatsFeed from "@/components/PostsStatsFeed";
+import { useAuth } from "@/contexts/AuthContext";
+import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
 
 export const Posts = () => {
+  const { user, loading: authLoading } = useAuth();
+  const router = useRouter();
   const {
     data,
     isLoading,
@@ -27,7 +32,8 @@ export const Posts = () => {
     if (!lastPostRef.current) return;
 
     const observer = new IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
+      // Only allow infinite scroll if user is logged in
+      if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage && user) {
         fetchNextPage();
       }
     });
@@ -39,7 +45,7 @@ export const Posts = () => {
         observer.unobserve(lastPostRef.current);
       }
     };
-  }, [isLoading, hasNextPage, isFetchingNextPage, fetchNextPage]);
+  }, [isLoading, hasNextPage, isFetchingNextPage, fetchNextPage, user]);
 
   // Function to truncate text to first 2 lines
   const truncateText = (text: string, isBody: boolean = false) => {
@@ -58,7 +64,7 @@ export const Posts = () => {
     return text;
   };
 
-  if (isLoading) {
+  if (isLoading || authLoading) {
     return (
       <div className="space-y-4 p-4">
         {[1, 2, 3, 4, 5].map((item) => (
@@ -79,6 +85,9 @@ export const Posts = () => {
   if (!data || !data.pages || data.pages.length === 0 || data.pages[0].data.length === 0) {
     return <div className="p-4 text-center">No posts available.</div>;
   }
+
+  // Show only first page for non-logged-in users
+  const shouldShowLoginPrompt = !user && data.pages.length >= 1;
 
   return (
     <section className="flex flex-row justify-start ">
@@ -160,10 +169,46 @@ export const Posts = () => {
               </React.Fragment>
             ))}
           </div>
-          <div ref={lastPostRef} />
-          <div className="flex justify-center my-4 w-full">
-            {isFetchingNextPage && <LoaderOne />}
-          </div>
+
+          {/* Login prompt for non-authenticated users */}
+          {shouldShowLoginPrompt && (
+            <div className="my-8 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-8 text-center">
+              <div className="max-w-md mx-auto space-y-4">
+                <h3 className="text-2xl font-bold text-gray-900">
+                  Want to see more?
+                </h3>
+                <p className="text-gray-600">
+                  Sign in to access more posts, join discussions, and connect with the community.
+                </p>
+                <div className="flex gap-3 justify-center">
+                  <Button 
+                    size="lg" 
+                    className="bg-blue-600 hover:bg-blue-700"
+                    onClick={() => router.push('/login')}
+                  >
+                    Sign In
+                  </Button>
+                  <Button 
+                    size="lg" 
+                    variant="outline"
+                    onClick={() => router.push('/login')}
+                  >
+                    Create Account
+                  </Button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Show loader or ref for logged-in users */}
+          {user && (
+            <>
+              <div ref={lastPostRef} />
+              <div className="flex justify-center my-4 w-full">
+                {isFetchingNextPage && <LoaderOne />}
+              </div>
+            </>
+          )}
         </div>
       </div>
     </section>

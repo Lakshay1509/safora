@@ -4,6 +4,9 @@ import { ReviewsCard } from "./components/reviews-card";
 import TabView from "./components/TabView";
 import { Metadata} from "next";
 import { db } from "@/lib/prisma";
+import { createClient } from "@/utils/supabase/server";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 type Props = {
   params: Promise<{ id: string }>;
@@ -48,26 +51,52 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-const page = () => {
+const page = async ({ params }: Props) => {
+  const { id } = await params;
+  
+  // Check if user is authenticated (server-side)
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
   
   return (
     <div className="min-h-screen bg-white p-4 pb-20 md:p-6 lg:p-8">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Top Area Card - Full Width */}
-        <AreaCard  />
+        <AreaCard />
+        
         
 
-        {/* Middle Row - Map and Reviews Cards */}
-        {/* <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <ReviewsCard  />
-          <PrecautionCard  />
-        </div> */}
-        <ReviewsCard/>
-        <PrecautionCard/>
-
-
-        {/* Tabbed Interface for Comments and Posts */}
-        <TabView />
+        {/* Show TabView only if user is logged in */}
+        {user ? (
+          <>
+          <ReviewsCard />
+        <PrecautionCard />
+          <TabView />
+          </>
+        ) : (
+          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-8 text-center">
+            <div className="max-w-md mx-auto space-y-4">
+              <h3 className="text-2xl font-bold text-gray-900">
+                Sign in to unlock more
+              </h3>
+              <p className="text-gray-600">
+                Create an account to access detailed safety insights, community discussions, and contribute your own experiences.
+              </p>
+              <div className="flex gap-3 justify-center">
+                <Link href="/login">
+                  <Button size="lg" className="bg-blue-600 hover:bg-blue-700">
+                    Sign In
+                  </Button>
+                </Link>
+                <Link href="/login">
+                  <Button size="lg" variant="outline">
+                    Create Account
+                  </Button>
+                </Link>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
