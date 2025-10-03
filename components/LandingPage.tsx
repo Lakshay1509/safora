@@ -31,7 +31,7 @@ export default function LandingPage() {
             name: "SafeOrNot",
             url: "https://safeornot.space",
             description:
-              "Community-driven and AI-generated real-time safety tips.",
+              "Community-driven and real-time safety tips.",
           }),
         }}
       />
@@ -54,7 +54,7 @@ export default function LandingPage() {
         className="w-full max-w-4xl text-center px-4 sm:px-6 lg:px-8"
       >
         <p className="mt-2 text-sm sm:text-base md:text-lg text-neutral-500 mx-auto py-2 sm:py-3 md:py-4">
-          Get community-driven and AI-generated real-time tips for safer
+          Get community-driven and real-time tips for safer
           decisions wherever you go.
         </p>
       </section>
