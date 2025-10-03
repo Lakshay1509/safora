@@ -25,7 +25,7 @@ export const metadata: Metadata = {
     template: "%s | Safe or Not",
   },
   description:
-    "Safe or Not: Get AI-powered community insights, ratings, and tips to travel and explore safely",
+    "Safe or Not: Get community insights, ratings, and tips to travel and explore safely",
   keywords: [
   "safety insights",
   "safe or not",
@@ -57,7 +57,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Safe or Not | Community-Driven Safety Insights",
     description:
-      "Get real safety ratings and AI-powered insights before you go. A platform built by the community, for the community.",
+      "Get real safety ratings and insights before you go. A platform built by the community, for the community.",
     url: "https://safeornot.space",
     siteName: "Safe or Not",
     images: [
@@ -75,7 +75,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Safe or Not | Community-Driven Safety Insights",
     description:
-      "Check subtle safety insights powered by real experiences and AI before you travel or explore.",
+      "Check subtle safety insights powered by real experiences before you travel or explore.",
     images: ["/og.webp"],
   },
 };
