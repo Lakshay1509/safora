@@ -37,7 +37,7 @@ const app = new Hono()
       "json",
       z.object({
         post_id: z.string().uuid(),
-        vote_type: z.number().int(),
+        vote_type: z.number().int().refine(val => val === -1 || val === 1),
       })
     ),
     async (ctx) => {

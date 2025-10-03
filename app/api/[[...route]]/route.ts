@@ -10,6 +10,7 @@ import community from './community'
 import following from "./following"
 import upvotes from './votes'
 import article from './article'
+import feedback from './feedback'
 
 
 
@@ -27,6 +28,7 @@ const routes = app
     .route("/following",following)
     .route("/upvotes",upvotes)
     .route("/article",article)
+    .route("/feedback",feedback)
 
 
 
