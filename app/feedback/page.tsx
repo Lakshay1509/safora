@@ -25,7 +25,6 @@ const feedbackSchema = z.object({
   rating: z.number().int().min(1).max(5, "Please select a rating"),
   feedback: z
     .string()
-    .min(10, "Feedback must be at least 10 characters")
     .max(1500, "Feedback must be less than 1500 characters"),
 });
 
@@ -81,7 +80,7 @@ const Page = () => {
 
 
   return (
-    <div className="min-h-screen  py-12 px-4 sm:px-6 lg:px-8">
+    <div className="py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto">
         <div className="bg-white rounded-lg shadow-lg p-8">
           {/* Header */}
