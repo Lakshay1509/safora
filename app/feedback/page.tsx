@@ -32,7 +32,7 @@ const feedbackSchema = z.object({
 type FeedbackFormValues = z.infer<typeof feedbackSchema>;
 
 const Page = () => {
-  const { user, loading } = useAuth();
+ 
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -45,11 +45,7 @@ const Page = () => {
   });
 
   const onSubmit = async (values: FeedbackFormValues) => {
-    if (!user) {
-      toast.error("Please sign in to submit feedback");
-      router.push("/login");
-      return;
-    }
+   
 
     setIsSubmitting(true);
 
@@ -83,13 +79,6 @@ const Page = () => {
     }
   };
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-gray-900"></div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen  py-12 px-4 sm:px-6 lg:px-8">

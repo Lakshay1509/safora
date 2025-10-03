@@ -14,23 +14,7 @@ const app = new Hono().post(
     })
   ),
   async (ctx) => {
-    const supabase = await createClient();
-    const {
-      data: { user },
-      error,
-    } = await supabase.auth.getUser();
-
-    if (error || !user) {
-      return ctx.json({ error: "Unauthorized" }, 401);
-    }
-
-    const Userdata = await db.public_users.findUnique({
-      where: { id: user.id },
-    });
-
-    if (!Userdata) {
-      return ctx.json({ error: "Error getting user data " }, 500);
-    }
+    
 
     const values = ctx.req.valid("json");
     const url = `https://sheetdb.io/api/v1/${process.env.DB_SHEET}`
@@ -45,8 +29,6 @@ const app = new Hono().post(
         body: JSON.stringify({
           data: [
             {
-              name: Userdata.name,
-              email: user.email,
               rating: values.rating,
               feedback: values.feedback,
               timestamp: new Date().toISOString(),
