@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { createClient } from "@/utils/supabase/client";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useGetLocation } from "@/features/location/use-get-location";
 
 export function ReviewsCard() {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
@@ -44,16 +45,16 @@ export function ReviewsCard() {
     getCurrentUser();
   }, []);
 
+  //review1
+  const {data:review1,isLoading:review1_loading} = useGetLocation(id)
+
+
   const {
     data,
     isLoading,
     isError
   } = useGetLocationReview(id, timeMode);
 
-  // const {
-  //   data: Review1,
-
-  // } = useGetReview1(id);
 
   // Get the user's review for this location
   const {
@@ -125,7 +126,7 @@ export function ReviewsCard() {
     );
   };
 
-  if (isLoading) {
+  if (isLoading || review1_loading) {
     return (
       <Card className="w-full text-black bg-white border border-white/10 min-h-[20rem]">
         <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -163,7 +164,7 @@ export function ReviewsCard() {
           <div className="flex flex-col sm:flex-row sm:items-center gap-4 w-full sm:w-auto">
 
             <CardTitle className="text-lg sm:text-xl font-bold" style={{ color: "#000000" }}>
-              Reviews ({(data?.review_count || 0)})
+              Reviews ({((data?.review_count ?? 0) + Number(review1?.location?.reviews1 ?? 0))})
             </CardTitle>
 
 
