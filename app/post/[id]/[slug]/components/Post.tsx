@@ -27,6 +27,7 @@ import ExploreMore from "./ExploreMore";
 import AvatarCircle from "@/app/profile/components/AvatarCircle";
 import Image from "next/image";
 import { useDominantColor } from "@/lib/useDominantColour";
+import { MDXEditor } from "@mdxeditor/editor";
 
 const Post = () => {
     const { user, loading } = useAuth();
@@ -114,8 +115,14 @@ const Post = () => {
                     </div>
 
                     <div className="prose prose-lg max-w-none mb-8 text-base">
-                        {post?.post.body}
+                        <MDXEditor
+                            markdown={post?.post.body ?? ''}
+                            readOnly={true}
+
+                        />
+
                     </div>
+
 
                     {post?.post.image_url && (
                         <div className="my-4 -mx-4 sm:mx-0 rounded-lg overflow-hidden relative">
@@ -157,7 +164,7 @@ const Post = () => {
 
                     {/* Comments section */}
                     <Comment postId={postId} />
-                    
+
                 </div>
                 {post?.post.location_id && <RightSidebar id={post?.post.location_id} />}
             </div>
