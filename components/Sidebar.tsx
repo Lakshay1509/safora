@@ -12,6 +12,7 @@ import { useGetDefaultUser } from "@/features/user/use-get-default";
 import { useGetUserLocationCount } from "@/features/user/use-get-locationCount";
 import Link from "next/link";
 import { toast } from "sonner";
+import { RecentLocations } from "./RecentLocations";
 
 export function Sidebar() {
   const router = useRouter();
@@ -79,8 +80,17 @@ export function Sidebar() {
             >
               <SquarePen /> Articles
             </Button>
+            
           </div>
+          <div className="mt-10">
+
+          <RecentLocations />
+
+          </div>
+           
         </div>
+
+        
 
 
         <div className="p-4 text-xs text-gray-500 mt-auto">

@@ -7,6 +7,7 @@ import { db } from "@/lib/prisma";
 import { createClient } from "@/utils/supabase/server";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { LocationTracker } from "./components/LocationTracker";
 
 type Props = {
   params: Promise<{ id: string }>;
@@ -58,21 +59,31 @@ const page = async ({ params }: Props) => {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   
+  // Get location details
+  const location = await db.locations.findUnique({
+    where: { id: id },
+    select: { name: true },
+  });
+
+  if (!location) {
+    return <div>Location not found</div>;
+  }
+  
   return (
     <div className="min-h-screen bg-white p-4 pb-20 md:p-6 lg:p-8">
+      {/* Client component to track the visit */}
+      <LocationTracker locationId={id} locationName={location.name} />
+      
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Top Area Card - Full Width */}
         <AreaCard />
         
-        
+        <ReviewsCard />
+        <PrecautionCard />
 
         {/* Show TabView only if user is logged in */}
         {user ? (
-          <>
-          <ReviewsCard />
-        <PrecautionCard />
           <TabView />
-          </>
         ) : (
           <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-8 text-center">
             <div className="max-w-md mx-auto space-y-4">
