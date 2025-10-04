@@ -1,14 +1,17 @@
 "use client"
 
 import { useGetLocationPost } from "@/features/post/use-get-by-locationId";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import AvatarCircle from "@/app/profile/components/AvatarCircle";
 import PostStatsFeed from "@/components/PostsStatsFeed";
+import Image from "next/image";
+import { Button } from "@/components/ui/button";
 
 const Posts = () => {
     const params = useParams();
     const location_Id = params.id as string;
+    const router = useRouter();
 
     const { data, isLoading, isError } = useGetLocationPost(location_Id);
 
@@ -34,11 +37,28 @@ const Posts = () => {
     }
 
     if (isError) {
-        return <div className="p-4 text-center text-red-500">Error loading posts</div>;
+        return <div className="p-4 flex justify-center items-center text-red-500">Error loading posts</div>;
     }
 
     if (!data || data.post.length === 0) {
-        return <div className="p-4 text-center">No posts found for this location</div>;
+        return (
+  <div className="p-6 flex flex-col lg:flex-row items-center justify-center gap-6 text-center lg:text-left">
+    <Image 
+      src="/create-first.png" 
+      alt="first-image" 
+      height={150} 
+      width={150} 
+      className="flex-shrink-0"
+    />
+    <div className="flex-col space-y-2 ">
+    <p className="text-gray-700 text-base sm:text-lg font-medium max-w-md">
+      Start the conversation. <span className="text-blue-600 font-semibold">Be the first to contribute!</span>
+    </p>
+    <Button onClick={()=>{router.push('/create-post')}} >Create Post</Button>
+    </div>
+  </div>
+);
+
     }
 
     return (
