@@ -62,6 +62,7 @@ export const addUpvotetoPost = ()=>{
             queryClient.invalidateQueries({queryKey:["upvotes-by-user", variables.post_id]})
             queryClient.invalidateQueries({queryKey:["post-stats",variables.post_id]})
             queryClient.invalidateQueries({queryKey:["post",variables.post_id]})
+            queryClient.invalidateQueries({queryKey:["recent-post"]})
         }
     })
 }

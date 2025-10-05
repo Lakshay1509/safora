@@ -15,6 +15,7 @@ import { useState } from "react";
 import { useDeleteCommentPost } from "@/features/post-comment.ts/use-delete-comment";
 import { useAuth } from "@/contexts/AuthContext";
 import AvatarCircle from "@/app/profile/components/AvatarCircle";
+import { MDXEditor } from "@mdxeditor/editor";
 
 
 // Comment schema with validation
@@ -149,7 +150,13 @@ const Comment = ({ postId }: Props) => {
                                 </div>
                             )}
                         </div>
-                        <p className="text-gray-800 text-[14px]">{comment.text}</p>
+                        <div className="text-gray-800 text-[14px]">
+                            <MDXEditor
+                                                        markdown={comment.text ?? ''}
+                                                        readOnly={true}
+                            
+                                                    />
+                        </div>
                         <div className="mt-2 flex items-center justify-between">
                             <button
                                 onClick={() => toggleReplySection(comment.id)}

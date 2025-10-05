@@ -46,8 +46,9 @@ const Articles = () => {
   };
 
   return (
-    <>
-    <section className="max-w-4xl py-4 px-4 sm:px-6">
+    <div className="flex flex-row justify-start w-full">
+      {/* Main content area */}
+      <section className="flex-1 max-w-4xl py-4 px-4 sm:px-6 min-w-0">
         <div className="w-full flex justify-end mb-6 pr-2">
             <Button onClick={handleCreatePost}>
                 <PenIcon className="mr-1"/>Write 
@@ -63,7 +64,7 @@ const Articles = () => {
                               md:hover:bg-gray-50 md:px-3 md:rounded-lg
                               sm:flex-row flex-col"
                 >
-                    <div className="flex-1 pr-0 sm:pr-4">
+                    <div className="flex-1 pr-0 sm:pr-4 min-w-0">
                         <div className="flex items-center mb-2">
                             <div className="mr-2">
                             <AvatarCircle
@@ -80,7 +81,7 @@ const Articles = () => {
                                {post.created_at ? format(new Date(post.created_at), "MMM dd, yyyy") : ""}
                             </span>
                         </div>
-                        <h2 className="md:text-xl font-bold text-gray-900 dark:text-white mb-2">
+                        <h2 className="md:text-xl font-bold text-gray-900 dark:text-white mb-2 break-words">
                             {post.heading}
                         </h2>
                         
@@ -112,11 +113,15 @@ const Articles = () => {
                 </Link>
             ))}
         </div>
-    </section>
-    <div className="hidden lg:block w-80 p-4">
-                <RightSidebar/>
-            </div>
-    </>
+      </section>
+
+      {/* Sidebar - fixed width */}
+      <aside className="hidden lg:block w-80 flex-shrink-0 p-4">
+        <div className="sticky top-4">
+          <RightSidebar/>
+        </div>
+      </aside>
+    </div>
   )
 }
 
