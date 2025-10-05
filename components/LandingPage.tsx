@@ -62,9 +62,9 @@ export default function LandingPage() {
       {/* CTA Section */}
       <section className="mt-6 ">
         {!user ? (
-          <CTA extraLoading={isLoading} userPresent={false}/>
+          <CTA extraLoading={isLoading} userPresent={false} />
         ) : (
-          <CTA extraLoading={isLoading} userPresent={true}/>
+          <CTA extraLoading={isLoading} userPresent={true} />
         )}
       </section>
 
@@ -102,8 +102,8 @@ export default function LandingPage() {
               },
             ]}
           /> */}
-          <Image src="/hero.avif" alt="hero" height='1200' width='1200'/>
-        </div> 
+          <Image src="/hero.avif" alt="hero" height='1200' width='1200' />
+        </div>
 
       </section>
 
@@ -120,15 +120,51 @@ export default function LandingPage() {
         className="w-full flex justify-center items-center pb-8 px-4  md:pb-16 sm:px-6 lg:px-8"
       >
         <div className="max-w-2xl mx-auto">
-          <Image
-            src="/peerlist.avif"
-            alt="Peerlist community support"
-            width={550}
-            height={550}
-            className="w-full h-auto max-w-md md:max-w-lg mx-auto"
-            priority
-          />
-        </div>
+  {/* Badges Container - Centered horizontally at top */}
+  <div className="flex justify-center items-center gap-2 mb-6">
+    <a 
+  href="https://startupfa.me/s/safeornot?utm_source=safeornot.space" 
+  target="_blank"
+  rel="noopener noreferrer"
+>
+  <img 
+    src="https://startupfa.me/badges/featured-badge.webp" 
+    alt="SafeOrNot - Featured on Startup Fame" 
+    width={171} 
+    height={54}
+    className="w-auto h-auto max-w-[140px] sm:max-w-[171px]"
+  />
+</a>
+
+<a
+  href="https://peerpush.net/p/safe-or-not"
+  target="_blank"
+  rel="noopener noreferrer"
+>
+  <img
+    src="https://peerpush.net/p/safe-or-not/badge"
+    alt="Safe or Not badge"
+    width={171} 
+    height={54}
+    className="w-auto h-auto max-w-[140px] sm:max-w-[171px]"
+  />
+</a>
+
+  </div>
+
+  {/* Peerlist Image - Centered below badges */}
+  <div className="flex justify-center">
+    <Image
+      src="/peerlist.avif"
+      alt="Peerlist community support"
+      width={550}
+      height={550}
+      className="w-full h-auto max-w-md md:max-w-lg"
+      priority
+    />
+  </div>
+</div>
+
       </section>
 
       {/* Community Description Section */}
