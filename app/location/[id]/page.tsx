@@ -75,11 +75,12 @@ const page = async ({ params }: Props) => {
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Top Area Card - Full Width */}
         <AreaCard />
+        <ReviewsCard />
 
         {/* Show TabView only if user is logged in */}
         {user ? (
           <>
-          <ReviewsCard />
+          
         <PrecautionCard />
           <TabView />
           </>
