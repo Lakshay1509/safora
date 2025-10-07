@@ -51,15 +51,11 @@ export const Posts = () => {
   // Function to truncate text to first 2 lines
   const truncateText = (text: string, isBody: boolean = false) => {
     if (isBody) {
-      // For body text, limit to first 2 lines
-      const lines = text.split('\n');
-      if (lines.length > 2) {
-        return lines.slice(0, 2).join('\n') + '...';
-      }
+      
 
       // If no newlines, limit by character length (approx. 2 lines)
-      if (text.length > 160) {
-        return text.substring(0, 160) + '...';
+      if (text.length > 450) {
+        return text.substring(0, 450) + '...';
       }
     }
     return text;
@@ -147,7 +143,7 @@ export const Posts = () => {
                       <h2 className="font-semibold text-lg">
                         {truncateText(post.heading)}
                       </h2>
-                      <div className="text-gray-700 mt-2 break-words">
+                      <div className="text-gray-700 mt-2 text-[15px]">
                         <MDXEditor markdown={truncateText(post.body, true)} readOnly={true}/>
                       </div>
                     </Link>
