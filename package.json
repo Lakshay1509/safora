@@ -11,6 +11,8 @@
     "db:seed": "bun ./script/generate-slug.ts"
   },
   "dependencies": {
+    "@emoji-mart/data": "^1.2.1",
+    "@emoji-mart/react": "^1.1.1",
     "@geoapify/geocoder-autocomplete": "^2.2.1",
     "@google/genai": "^1.16.0",
     "@hono/zod-validator": "^0.7.2",
@@ -42,6 +44,7 @@
     "colorthief": "^2.6.0",
     "date-fns": "^4.1.0",
     "dotted-map": "^2.2.3",
+    "emoji-mart": "^5.6.0",
     "hono": "^4.9.2",
     "install": "^0.13.0",
     "lucide-react": "^0.539.0",

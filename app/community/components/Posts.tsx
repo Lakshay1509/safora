@@ -13,6 +13,7 @@ import PostStatsFeed from "@/components/PostsStatsFeed";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
+import { MDXEditor } from "@mdxeditor/editor";
 
 export const Posts = () => {
   const { user, loading: authLoading } = useAuth();
@@ -146,9 +147,9 @@ export const Posts = () => {
                       <h2 className="font-semibold text-lg">
                         {truncateText(post.heading)}
                       </h2>
-                      <p className="text-gray-700 mt-2 break-words">
-                        {truncateText(post.body, true)}
-                      </p>
+                      <div className="text-gray-700 mt-2 break-words">
+                        <MDXEditor markdown={truncateText(post.body, true)} readOnly={true}/>
+                      </div>
                     </Link>
 
                     <div className=" lg:pr-20">

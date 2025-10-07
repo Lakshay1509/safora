@@ -1,12 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { addPost } from "@/features/post/use-add-post";
 import { EditPost} from "@/features/post/use-update-post";
-import { Loader2 } from "lucide-react";
+import { Loader2, Smile } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
@@ -17,6 +17,8 @@ import { useGetPost } from "@/features/post/use-get-byId";
 import ChangeLocation from "./change_location";
 import { toast } from "sonner";
 import { useImagePreview } from "@/lib/imagePreview";
+import data from '@emoji-mart/data'
+import Picker from '@emoji-mart/react'
 
 // Schema should match backend validation
 const postSchema = z.object({
@@ -44,6 +46,10 @@ type PostFormValues = z.infer<typeof postSchema>;
 
 const CreatePost = () => {
   const [charCount, setCharCount] = useState({ heading: 0, body: 0 });
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const emojiPickerRef = useRef<HTMLDivElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  
   const searchParams = useSearchParams();
   const router = useRouter();
 
@@ -51,7 +57,6 @@ const CreatePost = () => {
   const postId = searchParams.get('post-id');
   const post_slug = searchParams.get('post-slug')
   
-
   const initialLocationId = searchParams.get('location-id');
   const [locationId, setLocationId] = useState<string | null>(initialLocationId);
 
@@ -66,6 +71,7 @@ const CreatePost = () => {
     reset,
     control,
     setValue,
+    getValues,
     formState: { errors },
   } = useForm<PostFormValues>({
     resolver: zodResolver(postSchema),
@@ -74,6 +80,23 @@ const CreatePost = () => {
       body: '',
     },
   });
+
+  // Close emoji picker when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (emojiPickerRef.current && !emojiPickerRef.current.contains(event.target as Node)) {
+        setShowEmojiPicker(false);
+      }
+    };
+
+    if (showEmojiPicker) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showEmojiPicker]);
 
   // Set form values when post data is loaded
   useEffect(() => {
@@ -87,8 +110,7 @@ const CreatePost = () => {
     }
   }, [isEditMode, postData, setValue]);
 
-  //Image Preview
-
+  // Image Preview
   const { preview, createPreview, clearPreview } = useImagePreview();
   
   // Watch the image field
@@ -113,6 +135,34 @@ const CreatePost = () => {
     // Clear the file input
     const input = document.getElementById('image') as HTMLInputElement;
     if (input) input.value = '';
+  };
+
+  // Handle emoji selection
+  const handleEmojiSelect = (emoji: any) => {
+    const currentBody = getValues('body');
+    const textarea = textareaRef.current;
+    
+    if (textarea) {
+      const start = textarea.selectionStart;
+      const end = textarea.selectionEnd;
+      const newText = currentBody.substring(0, start) + emoji.native + currentBody.substring(end);
+      
+      setValue('body', newText);
+      setCharCount(prev => ({ ...prev, body: newText.length }));
+      
+      // Set cursor position after emoji
+      setTimeout(() => {
+        textarea.selectionStart = textarea.selectionEnd = start + emoji.native.length;
+        textarea.focus();
+      }, 0);
+    } else {
+      // Fallback: append to end
+      const newText = currentBody + emoji.native;
+      setValue('body', newText);
+      setCharCount(prev => ({ ...prev, body: newText.length }));
+    }
+    
+    setShowEmojiPicker(false);
   };
 
   const {data: LocationData, isLoading: isLoadingLocation} = useGetLocation(locationId?locationId : '');
@@ -144,7 +194,6 @@ const CreatePost = () => {
       });
     } else {
       if (!locationId) {
-        // Optionally, handle the case where location is not selected
         toast.error("Please select a location before creating a post.");
         return;
       }
@@ -153,24 +202,21 @@ const CreatePost = () => {
           reset();
           setCharCount({ heading: 0, body: 0 });
           router.push(`/community`);
-
         },
       });
     }
   };
 
   return (
-    <div className="w-full  max-w-2xl mx-auto p-6  pb-20 ">
+    <div className="w-full max-w-2xl mx-auto p-6 pb-20">
       <h1 className="text-2xl font-bold mb-6 text-gray-800 dark:text-gray-100">
         {isEditMode ? 'Edit Post' : 'Create New Post'}
       </h1>
     
-  
-        <ChangeLocation 
-          onLocationSelect={setLocationId} 
-          currentLocationName={LocationData?.location?.name}
-        />
-      
+      <ChangeLocation 
+        onLocationSelect={setLocationId} 
+        currentLocationName={LocationData?.location?.name}
+      />
       
       {isLoading ? (
         <div className="flex justify-center py-8">
@@ -205,14 +251,48 @@ const CreatePost = () => {
             <Label htmlFor="body" className="text-sm font-medium">
               Body
             </Label>
-            <Textarea
-              {...register("body")}
-              id="body"
-              rows={5}
-              className={errors.body ? "border-red-500" : ""}
-              disabled={isPending}
-              onChange={(e) => setCharCount(prev => ({ ...prev, body: e.target.value.length }))}
-            />
+            <div className="relative">
+              <Textarea
+                {...register("body")}
+                ref={(e) => {
+                  register("body").ref(e);
+                  textareaRef.current = e;
+                }}
+                id="body"
+                rows={5}
+                className={errors.body ? "border-red-500" : ""}
+                disabled={isPending}
+                onChange={(e) => setCharCount(prev => ({ ...prev, body: e.target.value.length }))}
+              />
+              
+              {/* Emoji Picker Button */}
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                className="absolute bottom-2 right-2 h-8 w-8 p-0"
+                onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+                disabled={isPending}
+              >
+                <Smile className="h-5 w-5 text-gray-500 hover:text-gray-700" />
+              </Button>
+              
+              {/* Emoji Picker Popup */}
+              {showEmojiPicker && (
+                <div 
+                  ref={emojiPickerRef}
+                  className="absolute top-25 right-[-12] z-50 shadow-lg rounded-lg"
+                >
+                  <Picker 
+                    data={data} 
+                    onEmojiSelect={handleEmojiSelect}
+                    theme="light"
+                    previewPosition="none"
+                  />
+                </div>
+              )}
+            </div>
+            
             <div className="flex justify-between">
               {errors.body ? (
                 <p className="text-sm text-red-500">{errors.body.message}</p>
@@ -225,43 +305,45 @@ const CreatePost = () => {
             </div>
           </div>
 
-          {!isEditMode && <div className="space-y-2">
-            <Label htmlFor="image" className="text-sm font-medium">
-              Image (Optional)
-            </Label>
-            <p className="text-[12px]">Image cannot be edited after posting</p>
-            <Input
-              {...register("image")}
-              id="image"
-              type="file"
-              accept="image/jpeg,image/jpg,image/png"
-              className="file:text-sm file:font-medium file:text-gray-700 dark:file:text-gray-300"
-              disabled={isPending}
-            />
-            {preview && (
-          <div className="mt-4">
-            <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">Preview:</p>
-            <div className="relative w-full max-w-md">
-              <img
-                src={preview}
-                alt="Image preview"
-                className="w-full h-full object-cover rounded-lg border border-gray-200 dark:border-gray-700"
+          {!isEditMode && (
+            <div className="space-y-2">
+              <Label htmlFor="image" className="text-sm font-medium">
+                Image (Optional)
+              </Label>
+              <p className="text-[12px]">Image cannot be edited after posting</p>
+              <Input
+                {...register("image")}
+                id="image"
+                type="file"
+                accept="image/jpeg,image/jpg,image/png"
+                className="file:text-sm file:font-medium file:text-gray-700 dark:file:text-gray-300"
+                disabled={isPending}
               />
-              <button
-                type="button"
-                onClick={handleRemoveImage}
-                className="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold shadow-lg transition-colors"
-                aria-label="Remove image"
-              >
-                ×
-              </button>
+              {preview && (
+                <div className="mt-4">
+                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">Preview:</p>
+                  <div className="relative w-full max-w-md">
+                    <img
+                      src={preview}
+                      alt="Image preview"
+                      className="w-full h-full object-cover rounded-lg border border-gray-200 dark:border-gray-700"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleRemoveImage}
+                      className="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold shadow-lg transition-colors"
+                      aria-label="Remove image"
+                    >
+                      ×
+                    </button>
+                  </div>
+                </div>
+              )}
+              {errors.image && (
+                <p className="text-sm text-red-500">{errors.image.message as string}</p>
+              )}
             </div>
-          </div>
-        )}
-            {errors.image && (
-              <p className="text-sm text-red-500">{errors.image.message as string}</p>
-            )}
-          </div>}
+          )}
           
           <div className="flex gap-2">
             {isEditMode && (
