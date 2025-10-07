@@ -75,7 +75,20 @@ const Post = () => {
                 <div className="w-full max-w-3xl mx-4 p-4 bg-white rounded-lg mt-6 lg:mx-10 lg:mr-[22rem] pb-22">
                     <div className="flex space-x-2 items-start mb-2">
                         <AvatarCircle url={post?.post.users?.profile_url} name={post?.post.users?.name} size="40" />
-                        <h1 className="text-2xl font-bold">{post?.post.heading}</h1>
+                        <div>
+                            <h1 className="text-2xl font-bold">{post?.post.heading}</h1>
+                            <div className="flex items-center text-sm text-gray-600 my-1">
+                                <span className="mr-2">By {post?.post.users?.name || "Anonymous"}</span>
+                                <span className="mx-2">•</span>
+                                <span>
+                                    {post?.post.created_at
+                                        ? format(new Date(post.post.created_at), 'MMM d, yyyy')
+                                        : "Unknown date"}
+                                </span>
+
+
+                            </div>
+                        </div>
                         <div className="flex flex-col justify-center items-center space-x-2 lg:flex-row">
                             {isAuthor && (
                                 <Button
@@ -100,19 +113,10 @@ const Post = () => {
                                 </Button>
                             )}
                         </div>
-                    </div>
-
-                    <div className="flex items-center text-sm text-gray-600 my-4 ">
-                        <span className="mr-2">By {post?.post.users?.name || "Anonymous"}</span>
-                        <span className="mx-2">•</span>
-                        <span>
-                            {post?.post.created_at
-                                ? format(new Date(post.post.created_at), 'MMM d, yyyy')
-                                : "Unknown date"}
-                        </span>
-
 
                     </div>
+
+
 
                     <div className="prose prose-lg max-w-none mb-8 text-base">
                         <MDXEditor
