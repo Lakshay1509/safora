@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { ArrowUpRight, Compass, Navigation, Plus, SquarePen } from "lucide-react";
+import { ArrowUpRight, Compass, LogIn, Navigation, Plus, SquarePen } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useGetTrending } from "@/features/community/use-get-trending";
 import TrendingCard from "./TrendingCard";
@@ -44,8 +44,8 @@ export function Sidebar() {
 
   };
 
-  const handleClick =()=>{
-    if(!user){
+  const handleClick = () => {
+    if (!user) {
       return toast.error("Login to view profile");
 
     }
@@ -80,41 +80,56 @@ export function Sidebar() {
             >
               <SquarePen /> Articles
             </Button>
-            
+
           </div>
           <div className="mt-10">
 
-          <RecentLocations />
+            <RecentLocations />
 
           </div>
-           
+
         </div>
 
-        
+
 
 
         <div className="p-4 text-xs text-gray-500 mt-auto">
-          {user &&
-          <Link href='/profile' >
-           <div className="flex items-center space-x-3 mb-4 hover:bg-gray-300 transition-all rounded-2xl p-3">
-            {/* Avatar */}
-            <AvatarCircle url={data?.userData.profile_url} name={data?.userData.name ?? ''} />
+          {user ?(
+            <Link href='/profile' >
+              <div className="flex items-center space-x-3 mb-4 hover:bg-gray-300 transition-all rounded-2xl p-3">
+                {/* Avatar */}
+                <AvatarCircle url={data?.userData.profile_url} name={data?.userData.name ?? ''} />
 
-            {/* User Info */}
-            <div className="flex flex-col">
-              <span className="font-semibold text-gray-900">{data?.userData.name}</span>
-              <div className="flex items-center space-x-1 text-sm text-gray-600">
-                <span className="font-semibold">{data?.userData.following_locations_count}</span>
-                <span>following</span>
-                <span className="mx-1">•</span>
-                <span className="font-semibold">{user_data?.count}</span>
-                <span>visited</span>
-                <span className="ml-1">→</span>
+                {/* User Info */}
+                <div className="flex flex-col">
+                  <span className="font-semibold text-gray-900">{data?.userData.name}</span>
+                  <div className="flex items-center space-x-1 text-sm text-gray-600">
+                    <span className="font-semibold">{data?.userData.following_locations_count}</span>
+                    <span>following</span>
+                    <span className="mx-1">•</span>
+                    <span className="font-semibold">{user_data?.count}</span>
+                    <span>visited</span>
+                    <span className="ml-1">→</span>
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
-          </Link>
-          }
+            </Link>)
+          :(
+
+          <div className="bg-black text-white rounded-2xl border border-red-600 p-4 space-y-3 shadow-md transition-all hover:shadow-red-500/20 mb-4">
+            {/* Text */}
+            <p className="text-sm text-gray-200 leading-relaxed">
+              Log in to share your first travel experience and join the community.
+            </p>
+
+            {/* Button */}
+            <Link href="/login">
+              <button className="w-full flex items-center justify-center space-x-2 bg-red-600 hover:bg-red-700 text-white font-medium py-2 rounded-xl transition-all">
+                <LogIn size={18} />
+                <span>Log In</span>
+              </button>
+            </Link>
+          </div>)}
 
           <div className="flex flex-wrap gap-2 justify-center">
             <a href="/privacy-policy" className="hover:underline">Privacy Policy</a>
@@ -131,25 +146,25 @@ export function Sidebar() {
         <div className="flex justify-around items-center py-2">
           <button className="flex flex-col items-center text-xs rounded-full bg-gradient-to-r from-red-600 to-red-500 text-white p-2  shadow-md shadow-red-500/30 hover:scale-105 hover:shadow-red-500/50 transition-all duration-200" onClick={handleCreatePost}>
             <Plus className="h-6 w-6 mb-0.5" />
-            
+
           </button>
           <button
             className={`flex flex-col items-center text-sm pb-1 ${view === 'feed' ? 'text-red-600 border-b-2 border-red-600' : 'text-gray-600 hover:text-primary'}`}
             onClick={() => router.push('/community?view=feed')}
           >
             <Compass className="h-6 w-6 mb-1" />
-            
+
           </button>
           <button
             className={`flex flex-col items-center text-sm pb-1 ${view === 'article' ? 'text-red-600 border-b-2 border-red-600' : 'text-gray-600 hover:text-primary'}`}
             onClick={() => router.push('/community?view=article')}
           >
             <SquarePen className="h-6 w-6 mb-1" />
-            
+
           </button>
           <button onClick={handleClick}>
-             <AvatarCircle url={data?.userData.profile_url} name={data?.userData.name ?? ''} size="40"/>
-            
+            <AvatarCircle url={data?.userData.profile_url} name={data?.userData.name ?? ''} size="40" />
+
           </button>
         </div>
       </div>
