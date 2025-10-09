@@ -20,10 +20,10 @@ const PostImage = ({ image_url }: Props) => {
     };
     
     return (
-        <div className="my-4 mx-0 rounded-lg overflow-hidden relative w-full max-w-3xl">
+        <div className="my-4 mx-0 rounded-lg overflow-hidden relative w-full max-w-xl">
             {/* Blurred background layer */}
             <div
-                className="absolute inset-0 scale-110 blur-lg opacity-60"
+                className="absolute inset-0 scale-110 blur-lg opacity-50"
                 style={{
                     backgroundImage: `url(${image_url})`,
                     backgroundSize: 'cover',
@@ -42,7 +42,7 @@ const PostImage = ({ image_url }: Props) => {
 
             {/* Main image container with conditional styling */}
             <div 
-                className={`relative w-full ${isVertical ? 'aspect-square max-h-[100vw] md:w-100 md:h-100 mx-auto' : 'aspect-video'}`}
+                className={`relative w-full ${isVertical ? 'aspect-square max-h-[80vw] md:max-h-96 mx-auto' : 'aspect-video'}`}
             >
                 <Image
                     src={image_url}
