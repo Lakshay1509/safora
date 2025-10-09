@@ -91,6 +91,7 @@ const Posts = () => {
                                 upvotes_count={post.upvotes}
                                 comments={post._count.posts_comments}
                                 upvoted={post.upvote === 1}
+                                slug={post.slug ?? ''}
                             />
 
                             <div className="text-xs text-gray-500 mt-2">

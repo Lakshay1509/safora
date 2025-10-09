@@ -8,20 +8,23 @@ import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import { useEffect, useState } from "react";
 import { BiUpvote } from "react-icons/bi";
+import { useRouter } from "next/navigation";
 
 interface Props {
   id: string,
   upvotes_count?:number,
   comments?:number,
-  upvoted:boolean
+  upvoted:boolean,
+  slug:string
 }
 
-const PostStatsFeed = ({ id, upvotes_count, comments, upvoted }: Props) => {
+const PostStatsFeed = ({ id, upvotes_count, comments, upvoted,slug }: Props) => {
   const { user, loading } = useAuth();
   const [copied, setCopied] = useState(false);
   const [optimisticUpvotes, setOptimisticUpvotes] = useState(upvotes_count || 0);
   // Track upvote state locally to handle optimistic updates
   const [isUpvoted, setIsUpvoted] = useState(upvoted);
+  const router = useRouter();
 
   // Update local state when prop changes
   useEffect(() => {
@@ -30,7 +33,7 @@ const PostStatsFeed = ({ id, upvotes_count, comments, upvoted }: Props) => {
   }, [upvotes_count, upvoted]);
 
   const handleShare = () => {
-    navigator.clipboard.writeText(`safeornot.space/post/${id}`);
+    navigator.clipboard.writeText(`safeornot.space/post/${id}/${slug}`);
     setCopied(true);
     setTimeout(() => setCopied(false), 1500);
   };
@@ -77,6 +80,8 @@ const PostStatsFeed = ({ id, upvotes_count, comments, upvoted }: Props) => {
 
       <Button
         className="flex items-center gap-2 bg-gray-100 text-gray-700 hover:bg-gray-200 rounded-xl px-3 py-2 shadow-sm transition-all duration-200"
+        onClick={() => router.push(`/post/${id}/${slug}`)}
+
       >
         <MessageCircle className="w-4 h-4" />
         <span className="text-sm font-medium">{comments || 0}</span>

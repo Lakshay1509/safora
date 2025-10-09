@@ -171,6 +171,7 @@ export const Posts = () => {
                         upvotes_count={post.upvotes}
                         comments={post._count.posts_comments}
                         upvoted={post.upvote===1 }
+                        slug={post.slug??''}
                       />
                     </div>
                   );

@@ -12,7 +12,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const {id} = await params;
   const post = await db.posts.findUnique({
     where: { id: id },
-    select: { heading: true,body:true },
+    select: { heading: true,body:true,slug:true },
   });
 
   if (!post) {
@@ -25,7 +25,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   openGraph: {
     title: `${post.heading} | Safe or Not`,
     description: `${post.body}. Discover safety ratings, traveler reviews, and precautions shared by the community about ${post.heading}.`,
-    url: `https://www.safeornot.space/location/${id}`,
+    url: `https://www.safeornot.space/article/${id}/${post.slug}`,
     siteName: "Safe or Not",
     images: [
       {
