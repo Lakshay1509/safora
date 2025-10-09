@@ -10,7 +10,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const {id} = await params;
   const post = await db.posts.findUnique({
     where: { id: id },
-    select: { heading: true,body:true,slug:true },
+    select: { heading: true,body:true,slug:true,image_url:true },
   });
 
   if (!post) {
@@ -27,7 +27,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     siteName: "Safe or Not",
     images: [
       {
-        url: "/og.webp",
+        url: post.image_url ?? "/og.webp" ,
         width: 1200,
         height: 630,
         alt: `${post.heading} - Safe or Not`,
@@ -39,7 +39,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     card: "summary_large_image",
     title: `${post.heading} | Safe or Not`,
     description: `${post.body}. Insights, tips, and safety reviews from travelers about ${post.heading}.`,
-    images: ["/og.webp"],
+    images: [post.image_url ?? "/og.webp"],
   },
 };
 
