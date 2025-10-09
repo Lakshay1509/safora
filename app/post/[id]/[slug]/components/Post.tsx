@@ -28,6 +28,8 @@ import AvatarCircle from "@/app/profile/components/AvatarCircle";
 import Image from "next/image";
 import { useDominantColor } from "@/lib/useDominantColour";
 import { MDXEditor } from "@mdxeditor/editor";
+import { extractUrls } from "@/lib/url-utils";
+import { LinkPreview } from "@/components/LinkPreview";
 
 const Post = () => {
     const { user, loading } = useAuth();
@@ -67,6 +69,7 @@ const Post = () => {
             </div>
         );
     }
+    const urls = extractUrls(post?.post.body ?? '');
 
     return (
         <>
@@ -89,30 +92,7 @@ const Post = () => {
 
                             </div>
                         </div>
-                        <div className="flex flex-col justify-center items-center space-x-2 lg:flex-row">
-                            {isAuthor && (
-                                <Button
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={handleEditClick}
-                                    className="flex items-center gap-1"
-                                >
-                                    <PenIcon size={16} />
-                                    Edit
-                                </Button>
-                            )}
-                            {isAuthor && (
-                                <Button
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={() => { setIsDeleteDialogOpen(true) }}
-                                    className="flex items-center gap-1"
-                                >
-                                    <Trash size={16} />
-                                    Delete
-                                </Button>
-                            )}
-                        </div>
+
 
                     </div>
 
@@ -125,7 +105,16 @@ const Post = () => {
 
                         />
 
+
+
                     </div>
+                    {post?.post.image_url === null && urls.length > 0 && (
+                        <div className="mt-3">
+                            {urls.slice(0, 1).map((url, index) => (
+                                <LinkPreview key={index} url={url} />
+                            ))}
+                        </div>
+                    )}
 
 
                     {post?.post.image_url && (
@@ -161,6 +150,30 @@ const Post = () => {
                             </div>
                         </div>
                     )}
+                    <div className="flex flex-row justify-start items-center space-x-2 ">
+                        {isAuthor && (
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={handleEditClick}
+                                className="flex items-center gap-1"
+                            >
+                                <PenIcon size={16} />
+                                Edit
+                            </Button>
+                        )}
+                        {isAuthor && (
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => { setIsDeleteDialogOpen(true) }}
+                                className="flex items-center gap-1"
+                            >
+                                <Trash size={16} />
+                                Delete
+                            </Button>
+                        )}
+                    </div>
 
                     <PostStats id={postId} upvotes_count={post?.post.upvotes} comments={post?.post._count.posts_comments} />
 
