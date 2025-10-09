@@ -11,6 +11,7 @@ import following from "./following"
 import upvotes from './votes'
 import article from './article'
 import feedback from './feedback'
+import linkPreview from './link-preview'
 
 
 
@@ -29,6 +30,7 @@ const routes = app
     .route("/upvotes",upvotes)
     .route("/article",article)
     .route("/feedback",feedback)
+    .route('/link-preview', linkPreview)
 
 
 

@@ -13,7 +13,9 @@ import PostStatsFeed from "@/components/PostsStatsFeed";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
+import { LinkPreview } from "@/components/LinkPreview";
 import { MDXEditor } from "@mdxeditor/editor";
+import { extractUrls } from "@/lib/url-utils";
 
 export const Posts = () => {
   const { user, loading: authLoading } = useAuth();
@@ -33,7 +35,6 @@ export const Posts = () => {
     if (!lastPostRef.current) return;
 
     const observer = new IntersectionObserver((entries) => {
-      // Only allow infinite scroll if user is logged in
       if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage && user) {
         fetchNextPage();
       }
@@ -48,14 +49,14 @@ export const Posts = () => {
     };
   }, [isLoading, hasNextPage, isFetchingNextPage, fetchNextPage, user]);
 
-  // Function to truncate text to first 2 lines
   const truncateText = (text: string, isBody: boolean = false) => {
     if (isBody) {
-      
-
-      // If no newlines, limit by character length (approx. 2 lines)
-      if (text.length > 450) {
-        return text.substring(0, 450) + '...';
+      const lines = text.split('\n');
+      if (lines.length > 2) {
+        return lines.slice(0, 2).join('\n') + '...';
+      }
+      if (text.length > 160) {
+        return text.substring(0, 160) + '...';
       }
     }
     return text;
@@ -83,7 +84,6 @@ export const Posts = () => {
     return <div className="p-4 text-center">No posts available.</div>;
   }
 
-  // Show only first page for non-logged-in users
   const shouldShowLoginPrompt = !user && data.pages.length >= 1;
 
   return (
@@ -93,81 +93,92 @@ export const Posts = () => {
           <div className="flex flex-col gap-4">
             {data.pages.map((page, i) => (
               <React.Fragment key={i}>
-                {page.data.map((post) => (
-                  <div
-                    key={post.id}
-                    className="p-4 border-b border-gray-200 rounded-lg transition-colors duration-200 hover:bg-gray-50 text-sm"
-                  >
-                    {/* User and location info */}
-                    <div className="flex items-center text-xs text-gray-500 mb-2">
-                      {post.users && (
-                        <AvatarCircle
-                          url={post?.users?.profile_url}
-                          name={post?.users?.name}
-                        />
-                      )}
+                {page.data.map((post) => {
+                  const urls = extractUrls(post.body);
+                  
+                  return (
+                    <div
+                      key={post.id}
+                      className="p-4 border-b border-gray-200 rounded-lg transition-colors duration-200 hover:bg-gray-50 text-sm"
+                    >
+                      {/* User and location info */}
+                      <div className="flex items-center text-xs text-gray-500 mb-2">
+                        {post.users && (
+                          <AvatarCircle
+                            url={post?.users?.profile_url}
+                            name={post?.users?.name}
+                          />
+                        )}
 
-                      {post.users && (
-                        <span className="font-medium mx-2">
-                          {post.users.name}
-                        </span>
-                      )}
-
-                      {post.created_at && (
-                        <span>
-                          • {new Date(post.created_at).toLocaleDateString()}
-                        </span>
-                      )}
-                    </div>
-
-                    <div>
-                      <Link
-                        href={`location/${
-                          post.locations?.id ? post.locations.id : ""
-                        }`}
-                        className="hover:underline"
-                      >
-                        {post.locations && (
-                          <span className="mr-2 bg-blue-200 px-2 py-1 inline-flex items-center gap-1 rounded text-[10px] ">
-                            <Tag size={10} />
-                            <span>{post.locations.name}</span>
+                        {post.users && (
+                          <span className="font-medium mx-2">
+                            {post.users.name}
                           </span>
                         )}
-                      </Link>
-                    </div>
 
-                    <Link
-                      href={`/post/${post.id}/${post.slug}`}
-                      className="block text-black hover:text-gray-500"
-                    >
-                      <h2 className="font-semibold text-lg">
-                        {truncateText(post.heading)}
-                      </h2>
-                      <div className="text-gray-700 mt-2 text-[15px]">
-                        <MDXEditor markdown={truncateText(post.body, true)} readOnly={true}/>
+                        {post.created_at && (
+                          <span>
+                            • {new Date(post.created_at).toLocaleDateString()}
+                          </span>
+                        )}
                       </div>
-                    </Link>
 
-                    <div className=" lg:pr-20">
-                      {post.image_url && (
-                        <PostImage image_url={post.image_url} />
+                      <div>
+                        <Link
+                          href={`location/${
+                            post.locations?.id ? post.locations.id : ""
+                          }`}
+                          className="hover:underline"
+                        >
+                          {post.locations && (
+                            <span className="mr-2 bg-blue-200 px-2 py-1 inline-flex items-center gap-1 rounded text-[10px] ">
+                              <Tag size={10} />
+                              <span>{post.locations.name}</span>
+                            </span>
+                          )}
+                        </Link>
+                      </div>
+
+                      <Link
+                        href={`/post/${post.id}/${post.slug}`}
+                        className="block text-black hover:text-gray-500"
+                      >
+                        <h2 className="font-semibold text-lg">
+                          {truncateText(post.heading)}
+                        </h2>
+                        <div className="text-gray-700 mt-2 text-[15px]">
+                          <MDXEditor markdown={truncateText(post.body, true)} readOnly={true}/>
+                        </div>
+                      </Link>
+
+                      {/* Show link previews */}
+                      {post.image_url===null && urls.length > 0 && (
+                        <div className="mt-3">
+                          {urls.slice(0, 1).map((url, index) => (
+                            <LinkPreview key={index} url={url} />
+                          ))}
+                        </div>
                       )}
-                    </div>
 
-                    {/* Social interaction bar */}
-                    <PostStatsFeed
-                      id={post.id}
-                      upvotes_count={post.upvotes}
-                      comments={post._count.posts_comments}
-                      upvoted={post.upvote===1 }
-                    />
-                  </div>
-                ))}
+                      <div className=" lg:pr-20">
+                        {post.image_url && (
+                          <PostImage image_url={post.image_url} />
+                        )}
+                      </div>
+
+                      <PostStatsFeed
+                        id={post.id}
+                        upvotes_count={post.upvotes}
+                        comments={post._count.posts_comments}
+                        upvoted={post.upvote===1 }
+                      />
+                    </div>
+                  );
+                })}
               </React.Fragment>
             ))}
           </div>
 
-          {/* Login prompt for non-authenticated users */}
           {shouldShowLoginPrompt && (
             <div className="my-8 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-8 text-center">
               <div className="max-w-md mx-auto space-y-4">
@@ -197,7 +208,6 @@ export const Posts = () => {
             </div>
           )}
 
-          {/* Show loader or ref for logged-in users */}
           {user && (
             <>
               <div ref={lastPostRef} />
