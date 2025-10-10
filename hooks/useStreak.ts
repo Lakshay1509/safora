@@ -7,6 +7,7 @@ import type { RealtimeChannel } from "@supabase/supabase-js"
 export interface StreakData {
     id: string,
     count: number,
+    active_today:boolean,
     created_at?: string,
     updated_at?: string 
 }
