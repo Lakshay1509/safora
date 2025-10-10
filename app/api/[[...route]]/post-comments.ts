@@ -107,7 +107,7 @@ const app = new Hono()
             count: {
               increment: 1,
             },
-            updated_at: new Date().toISOString(),
+            updated_at: new Date(),
           },
         });
           return ctx.json({comment},200);
@@ -210,7 +210,7 @@ const app = new Hono()
             count: {
               increment: 1,
             },
-            updated_at: new Date().toISOString(),
+            updated_at: new Date(),
           },
         });
 

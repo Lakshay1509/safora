@@ -120,7 +120,7 @@ const app = new Hono()
             count: {
               increment: 1,
             },
-            updated_at: new Date().toISOString(),
+            updated_at: new Date(),
           },
         });
           return ctx.json({ review }, 200);
