@@ -2,6 +2,7 @@ import { ProfileCard } from "./components/profile-card";
 import { ProfileCommentsCard } from "./components/profile-comment";
 import { ProfileFollowingCard } from "./components/profile-following";
 import { ProfilePostsCard } from "./components/profile-posts";
+import { ProfileTabView } from "./components/Tabview";
 
 
 
@@ -17,9 +18,12 @@ export default function ProfilePage() {
               <ProfileCard />
               {/* <ProfileFollowingCard/> */}
             </div>
-            <div className="lg:col-span-2 space-y-5">
-              <ProfileCommentsCard />
-              <ProfilePostsCard/>
+            <div className="lg:col-span-2 ">
+              <ProfileTabView 
+              commentsContent={<ProfileCommentsCard />}
+              postsContent={<ProfilePostsCard />}
+              followingContent={<ProfileFollowingCard/>}
+            />
             </div>
           </div>
         </div>

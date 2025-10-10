@@ -6,6 +6,7 @@ import { useState, useEffect } from "react";
 import { createClient } from "@/utils/supabase/client";
 import { useGetUserPosts } from "@/features/user/use-get-post";
 import Link from "next/link";
+import { MDXEditor } from "@mdxeditor/editor";
 
 export function ProfilePostsCard() {
   const [userId, setUserId] = useState<string | null>(null);
@@ -63,7 +64,7 @@ export function ProfilePostsCard() {
 
   return (
     <Card
-      className="w-full  bg-white border border-white/10 max-h-80 transition-colors duration-200 overflow-x-auto"
+      className="w-full  bg-white border border-white/10  transition-colors duration-200 overflow-x-auto"
     >
       <CardHeader>
         <CardTitle className="text-lg font-bold" style={{ color: "#000000" }}>
@@ -83,9 +84,9 @@ export function ProfilePostsCard() {
                 </Link>}
                 {post.is_article===1 && <Link href={`/article/${post.id}/${post.slug}`} className="block p-4 rounded-md bg-[#F8F4EF] ">
                     <h3 className="font-semibold text-gray-900 truncate">{post.heading}</h3>
-                    <p className="text-sm text-gray-600 line-clamp-2">
-                      {post.body}
-                    </p>
+                    <div className="text-sm text-gray-600 line-clamp-2">
+                      <MDXEditor markdown={post.body} readOnly={true}/>
+                    </div>
                 </Link>}
               </li>
             ))}
