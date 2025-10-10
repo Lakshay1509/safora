@@ -33,7 +33,7 @@ function LocationBadge({ name }: { name: string }) {
 
   return (
     <div
-      className="w-8 h-8 flex items-center justify-center rounded-full text-white font-semibold text-xs shrink-0"
+      className="w-6 h-6 flex items-center justify-center rounded-full text-white font-semibold text-xs shrink-0"
       style={{ backgroundColor: color }}
     >
       {initials}
@@ -95,8 +95,8 @@ export function RecentLocations() {
         <h3 className="font-semibold text-gray-900">Recently Viewed</h3>
       </div>
 
-      <div className="space-y-2">
-        {history.slice(0, 3).map((location) => (
+      <div className="space-y-1">
+        {history.slice(0, 5).map((location) => (
           <Link
             key={location.id}
             href={`/location/${location.id}`}
@@ -104,14 +104,14 @@ export function RecentLocations() {
           >
             <LocationBadge name={location.name} />
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-gray-900 truncate">
+              <p className="text-sm  text-gray-900 truncate">
                 {location.name}
               </p>
-              <p className="text-xs text-gray-500">
+              {/* <p className="text-xs text-gray-500">
                 {formatDistanceToNow(new Date(location.visitedAt), {
                   addSuffix: true,
                 })}
-              </p>
+              </p> */}
             </div>
           </Link>
         ))}
