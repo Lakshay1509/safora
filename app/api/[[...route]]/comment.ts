@@ -39,11 +39,14 @@ const app = new Hono()
     })
 
     if(comment){
-      await db.streak.updateMany({
+      const startOfToday = new Date();
+        startOfToday.setHours(0, 0, 0, 0);
+
+        await db.streak.updateMany({
           where: {
             user_id: user.id,
             updated_at: {
-              lt: new Date(Date.now() - 24 * 60 * 60 * 1000),
+              lt: startOfToday,
             },
           },
           data: {
@@ -53,7 +56,6 @@ const app = new Hono()
             updated_at: new Date().toISOString(),
           },
         });
-      return ctx.json({comment},200);
     }
 
     return ctx.json({error:"Error creating comment"},500)

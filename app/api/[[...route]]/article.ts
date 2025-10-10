@@ -68,11 +68,14 @@ const app = new Hono()
       });
 
       if (article) {
+        const startOfToday = new Date();
+        startOfToday.setHours(0, 0, 0, 0);
+
         await db.streak.updateMany({
           where: {
             user_id: user.id,
             updated_at: {
-              lt: new Date(Date.now() - 24 * 60 * 60 * 1000),
+              lt: startOfToday,
             },
           },
           data: {
