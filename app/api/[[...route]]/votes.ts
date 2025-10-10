@@ -37,7 +37,10 @@ const app = new Hono()
       "json",
       z.object({
         post_id: z.string().uuid(),
-        vote_type: z.number().int().refine(val => val === -1 || val === 1),
+        vote_type: z
+          .number()
+          .int()
+          .refine((val) => val === -1 || val === 1),
       })
     ),
     async (ctx) => {
@@ -101,6 +104,21 @@ const app = new Hono()
             user_id: data?.users?.id,
             sender_id: user.id,
             text: `**${userData?.name}** upvoted your post **${data.heading}**`,
+          },
+        });
+
+        await db.streak.updateMany({
+          where: {
+            user_id: user.id,
+            updated_at: {
+              lt: new Date(Date.now() - 24 * 60 * 60 * 1000),
+            },
+          },
+          data: {
+            count: {
+              increment: 1,
+            },
+            updated_at: new Date().toISOString(),
           },
         });
       }

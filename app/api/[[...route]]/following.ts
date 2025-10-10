@@ -59,6 +59,21 @@ const app = new Hono()
     if(!follow){
         return ctx.json({error:"Error creating follow"},500);
     }
+
+    await db.streak.updateMany({
+          where: {
+            user_id: user.id,
+            updated_at: {
+              lt: new Date(Date.now() - 24 * 60 * 60 * 1000),
+            },
+          },
+          data: {
+            count: {
+              increment: 1,
+            },
+            updated_at: new Date().toISOString(),
+          },
+        });
     return ctx.json({follow},200);
 })
 

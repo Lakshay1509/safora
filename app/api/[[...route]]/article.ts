@@ -68,6 +68,20 @@ const app = new Hono()
       });
 
       if (article) {
+        await db.streak.updateMany({
+          where: {
+            user_id: user.id,
+            updated_at: {
+              lt: new Date(Date.now() - 24 * 60 * 60 * 1000),
+            },
+          },
+          data: {
+            count: {
+              increment: 1,
+            },
+            updated_at: new Date().toISOString(),
+          },
+        });
         return ctx.json({ article }, 200);
       }
 

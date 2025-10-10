@@ -1,18 +1,18 @@
 'use client'
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, useRef } from "react"
 import { createClient } from "@/utils/supabase/client"
 import type { RealtimeChannel } from "@supabase/supabase-js"
 
 export interface StreakData {
-  id: string
-  count: number
-  created_at?: string
-  updated_at?: string
+    id: string,
+    count: number,
+    created_at?: string,
+    updated_at?: string 
 }
 
 interface UseRealtimeStreakProps {
-  userId?: string
+  userId?: string 
   onUpdate?: (streak: StreakData) => void
   enabled?: boolean
 }
@@ -22,36 +22,70 @@ export function useRealtimeStreak({ userId, onUpdate, enabled = true }: UseRealt
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<Error | null>(null)
   const supabase = createClient()
+  const channelRef = useRef<RealtimeChannel | null>(null)
+  const reconnectTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   useEffect(() => {
-    if (!enabled) return
+    // console.log('🔄 useRealtimeStreak - Effect triggered', { userId, enabled });
+    
+    if (!enabled) {
+      // console.log('⏸️ useRealtimeStreak - Disabled, skipping');
+      setLoading(false);
+      return;
+    }
 
-    let channel: RealtimeChannel
+    if (!userId) {
+      // console.log('⚠️ No userId provided, skipping subscription');
+      setLoading(false);
+      return;
+    }
 
     const fetchInitialData = async () => {
+      // console.log('📥 Fetching initial streak data for userId:', userId);
+      
       try {
-        setLoading(true)
-        let query = supabase.from('streak').select('*')
+        setLoading(true);
+        const { data, error: fetchError } = await supabase
+          .from('streak')
+          .select('*')
+          .eq('user_id', userId)
+          .single();
 
-        if (userId) {
-          query = query.eq('user_id', userId)
+        if (fetchError) {
+          // console.error('❌ Error fetching initial data:', fetchError);
+          throw fetchError;
         }
-
-        const { data, error: fetchError } = await query.single()
-
-        if (fetchError) throw fetchError
-
-        setStreak(data)
-        setError(null)
+        
+        // console.log('✅ Initial data fetched successfully:', data);
+        setStreak(data);
+        setError(null);
       } catch (err) {
-        setError(err as Error)
+        // console.error('💥 Exception in fetchInitialData:', err);
+        setError(err as Error);
       } finally {
-        setLoading(false)
+        setLoading(false);
+        // console.log('✅ Initial data fetch complete');
       }
     }
 
     const setupRealtimeSubscription = () => {
-      channel = supabase.channel('streak-changes')
+      // console.log('🔌 Setting up realtime subscription for userId:', userId);
+      
+      if (channelRef.current) {
+        // console.log('🧹 Removing existing channel before creating new one');
+        supabase.removeChannel(channelRef.current);
+        channelRef.current = null;
+      }
+
+      const channelName = `streak-changes-${userId}-${Date.now()}`;
+      const channel = supabase.channel(channelName, {
+        config: {
+          broadcast: { self: true },
+          presence: { key: userId },
+        },
+      });
+
+      channelRef.current = channel;
 
       channel.on(
         'postgres_changes',
@@ -59,9 +93,10 @@ export function useRealtimeStreak({ userId, onUpdate, enabled = true }: UseRealt
           event: 'INSERT',
           schema: 'public',
           table: 'streak',
-          ...(userId && { filter: `user_id=eq.${userId}` }),
+          filter: `user_id=eq.${userId}`,
         },
         (payload) => {
+          // console.log('🆕 INSERT event received:', payload);
           const newStreak = payload.new as StreakData
           setStreak(newStreak)
           onUpdate?.(newStreak)
@@ -74,9 +109,10 @@ export function useRealtimeStreak({ userId, onUpdate, enabled = true }: UseRealt
           event: 'UPDATE',
           schema: 'public',
           table: 'streak',
-          ...(userId && { filter: `user_id=eq.${userId}` }),
+          filter: `user_id=eq.${userId}`,
         },
         (payload) => {
+          // console.log('🔄 UPDATE event received:', payload);
           const updatedStreak = payload.new as StreakData
           setStreak(updatedStreak)
           onUpdate?.(updatedStreak)
@@ -89,23 +125,79 @@ export function useRealtimeStreak({ userId, onUpdate, enabled = true }: UseRealt
           event: 'DELETE',
           schema: 'public',
           table: 'streak',
-          ...(userId && { filter: `user_id=eq.${userId}` }),
+          filter: `user_id=eq.${userId}`,
         },
-        () => {
+        (payload) => {
+          // console.log('🗑️ DELETE event received:', payload);
           setStreak(null)
         }
       )
 
-      channel.subscribe()
+      channel.subscribe((status, err) => {
+        // console.log('📡 Subscription status:', status);
+        
+        if (err) {
+          // console.error('❌ Subscription error:', err);
+        }
+        
+        switch (status) {
+          case 'SUBSCRIBED':
+            // console.log('✅ Successfully subscribed to realtime updates');
+            if (reconnectTimeoutRef.current) {
+              clearTimeout(reconnectTimeoutRef.current);
+              reconnectTimeoutRef.current = null;
+            }
+            break;
+            
+          case 'CHANNEL_ERROR':
+            // console.error('❌ Channel error occurred, attempting to reconnect...');
+            attemptReconnect();
+            break;
+            
+          case 'TIMED_OUT':
+            // console.error('⏰ Subscription timed out, attempting to reconnect...');
+            attemptReconnect();
+            break;
+            
+          case 'CLOSED':
+            // console.warn('🔒 Channel closed, attempting to reconnect...');
+            attemptReconnect();
+            break;
+        }
+      })
     }
 
-    fetchInitialData()
-    setupRealtimeSubscription()
+    const attemptReconnect = () => {
+      // console.log('🔄 Scheduling reconnect attempt in 3 seconds...');
+      
+      if (reconnectTimeoutRef.current) {
+        clearTimeout(reconnectTimeoutRef.current);
+      }
+
+      reconnectTimeoutRef.current = setTimeout(() => {
+        // console.log('🔄 Attempting to reconnect...');
+        setupRealtimeSubscription();
+      }, 3000);
+    }
+
+    fetchInitialData();
+    setupRealtimeSubscription();
 
     return () => {
-      if (channel) supabase.removeChannel(channel)
+      // console.log('🧹 Cleaning up realtime subscription');
+      
+      if (reconnectTimeoutRef.current) {
+        clearTimeout(reconnectTimeoutRef.current);
+        reconnectTimeoutRef.current = null;
+      }
+
+      if (channelRef.current) {
+        supabase.removeChannel(channelRef.current);
+        channelRef.current = null;
+        // console.log('✅ Channel removed');
+      }
     }
-  }, [userId, enabled, onUpdate, supabase])
+  }, [userId, enabled]);
 
   return { streak, loading, error }
 }
