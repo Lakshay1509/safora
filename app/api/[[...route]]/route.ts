@@ -12,7 +12,7 @@ import upvotes from './votes'
 import article from './article'
 import feedback from './feedback'
 import linkPreview from './link-preview'
-
+import cron from './cron'
 
 
 export const runtime = "nodejs";
@@ -31,6 +31,7 @@ const routes = app
     .route("/article",article)
     .route("/feedback",feedback)
     .route('/link-preview', linkPreview)
+    .route('/cron',cron)
 
 
 
