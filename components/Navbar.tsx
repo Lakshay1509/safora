@@ -16,6 +16,7 @@ import { useAuth } from "@/contexts/AuthContext"
 import Link from "next/link"
 import Image from "next/image"
 import { NotificationBell } from "./NotificationBell"
+import StreakCounter from "./Streak"
 
 interface LocationResult {
   formatted: string
@@ -254,14 +255,14 @@ export function Navbar() {
                   className="hidden md:block"
                 />
               </Link>
-               <Link href="/">
+              <Link href="/">
                 {/* <h1 className="text-xl font-bold text-black">
                   Safe or Not
                 </h1> */}
                 <Image
                   src="/logo.avif"
                   alt="Safe or Not"
-                  width={140}
+                  width={120}
                   height={50}
                   fetchPriority="high"
                   className="block md:hidden"
@@ -287,11 +288,18 @@ export function Navbar() {
             </div>
 
             {/* Mobile Icons */}
-            <div className="flex items-center md:hidden">
-              <Button variant="ghost" size="sm" className="p-2 mr-2" onClick={toggleSearchBar}>
-                <Search className="w-5 h-5 text-black" />
+            <div className="flex items-center md:hidden gap-1">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={toggleSearchBar}
+                className="bg-white border border-gray-200 shadow-sm rounded-full p-2 hover:bg-gray-50 transition-all"
+              >
+                <Search className="w-5 h-5 text-gray-700" />
               </Button>
-              <NotificationBell/>
+
+              {user && <NotificationBell />}
+              {user && <StreakCounter />}
               <Button variant="ghost" size="sm" className="p-2" onClick={toggleMobileMenu}>
                 {mobileMenuOpen ? <X className="w-5 h-5 text-black" /> : <Menu className="w-5 h-5 text-black" />}
               </Button>
@@ -309,21 +317,22 @@ export function Navbar() {
                   Community
                 </span>
               </Link>
-              
+
               {user?.id && !loading && (
                 <>
-                <Link
+                  {/* <Link
                   className={`flex items-center gap-2 text-sm hover:underline py-2 px-3 rounded-2xl  transition-all duration-200 group ${pathname === "/profile" ? "bg-black text-white  font-semibold" : "text-gray-700"
                     }`}
                   href="/profile"
-                  onClick={() => { setMobileMenuOpen(false) }}
+                  onClick={() => { sextMobileMenuOpen(false) }}
                 >
                   <User className="w-4 h-4 group-hover:scale-110 transition-transform duration-200" />
                   <span className="group-hover:translate-x-1 transition-transform duration-200">
                     Profile
                   </span>
-                </Link>
-                <NotificationBell/>
+                </Link> */}
+                  <NotificationBell />
+                  <StreakCounter />
                 </>
               )}
               <LoginButton />
@@ -361,16 +370,16 @@ export function Navbar() {
             <div className="md:hidden px-2 pb-4 pt-1 transition-all duration-300 ease-in-out">
               <div className="flex flex-col space-y-3">
                 <Link
-                className={`flex items-center gap-2 text-sm hover:underline py-2 px-3 rounded-2xl  transition-all duration-200 group ${pathname === "/community" ? "bg-black text-white font-semibold" : "text-gray-700"
-                  }`}
-                href="/community"
-              >
-                <Users className="w-4 h-4 group-hover:scale-110 transition-transform duration-200" />
-                <span className="group-hover:translate-x-1 transition-transform duration-200">
-                  Community
-                </span>
-              </Link>
-              {user?.id && !loading && (
+                  className={`flex items-center gap-2 text-sm hover:underline py-2 px-3 rounded-2xl  transition-all duration-200 group ${pathname === "/community" ? "bg-black text-white font-semibold" : "text-gray-700"
+                    }`}
+                  href="/community"
+                >
+                  <Users className="w-4 h-4 group-hover:scale-110 transition-transform duration-200" />
+                  <span className="group-hover:translate-x-1 transition-transform duration-200">
+                    Community
+                  </span>
+                </Link>
+                {/* {user?.id && !loading && (
                 <Link
                   className={`flex items-center gap-2 text-sm hover:underline py-2 px-3 rounded-2xl  transition-all duration-200 group ${pathname === "/profile" ? "bg-black text-white  font-semibold" : "text-gray-700"
                     }`}
@@ -382,7 +391,7 @@ export function Navbar() {
                     Profile
                   </span>
                 </Link>
-              )}
+              )} */}
                 <div className="py-1">
                   <LoginButton />
                 </div>

@@ -15,17 +15,20 @@ export function NotificationBell() {
 
   return (
     <div className="relative">
-      <button 
-        onClick={() => router.push('/community?view=notification')}
-        className="relative p-2 hover:bg-gray-100 rounded-full"
-      >
-        <Bell className="h-5 w-5" />
-        {unreadCount > 0 && (
-          <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-            {unreadCount > 99 ? '99+' : unreadCount}
-          </span>
-        )}
-      </button>
+     <button
+  onClick={() => router.push('/community?view=notification')}
+  className="relative flex items-center justify-center bg-white border border-gray-200 shadow-sm rounded-full p-2 hover:bg-gray-50 transition-all"
+>
+  <Bell className="h-4 w-4 text-gray-700 lg:h-5 lg:w-5" />
+  
+
+  {unreadCount > 0 && (
+    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-medium rounded-full h-5 w-5 flex items-center justify-center">
+      {unreadCount > 99 ? '99+' : unreadCount}
+    </span>
+  )}
+</button>
+
 
       {/* {isOpen && (
         <div className="absolute right-[-25px] lg:right-0 mt-2 w-80 bg-white border rounded-lg shadow-lg z-50">

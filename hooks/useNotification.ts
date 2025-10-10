@@ -66,7 +66,7 @@ export function useNotifications() {
     
     // Calculate unread count
     const unreadItems = globalNotifications.filter(n => n.is_read === 0 );
-    console.log("Unread notifications count:", unreadItems.length);
+    // console.log("Unread notifications count:", unreadItems.length);
     globalUnreadCount = unreadItems.length;
     
     // Update all components using this hook
@@ -96,7 +96,7 @@ export function useNotifications() {
     if (!globalChannel || currentUserId !== user.id) {
       // Clean up existing channel if user changed
       if (globalChannel && currentUserId !== user.id) {
-        console.log("User changed, removing old channel");
+        // console.log("User changed, removing old channel");
         supabase.removeChannel(globalChannel);
         globalChannel = null;
         globalNotifications = [];
@@ -116,7 +116,7 @@ export function useNotifications() {
             filter: `user_id=eq.${user.id}`,
           },
           (payload) => {
-            console.log("Notification INSERT detected:", payload);
+            // console.log("Notification INSERT detected:", payload);
             fetchNotifications();
           }
         )
@@ -129,12 +129,12 @@ export function useNotifications() {
             filter: `user_id=eq.${user.id}`,
           },
           (payload) => {
-            console.log("Notification UPDATE detected:", payload);
+            // console.log("Notification UPDATE detected:", payload);
             fetchNotifications();
           }
         )
         .subscribe((status) => {
-          console.log(`Realtime subscription status: ${status}`);
+          // console.log(`Realtime subscription status: ${status}`);
         });
     }
     
@@ -150,7 +150,7 @@ export function useNotifications() {
       //console.log(`Component unmounted. Remaining subscribers: ${subscribers}`);
       
       if (subscribers === 0 && globalChannel) {
-        console.log("All subscribers gone, cleaning up notification channel");
+        // console.log("All subscribers gone, cleaning up notification channel");
         supabase.removeChannel(globalChannel);
         globalChannel = null;
         currentUserId = null;
@@ -171,7 +171,7 @@ export function useNotifications() {
     if (error) {
       console.error("Error marking notification as read:", error);
     } else {
-      console.log("Successfully marked as read, refreshing data");
+      // console.log("Successfully marked as read, refreshing data");
       await fetchNotifications();
     }
   };
@@ -190,7 +190,7 @@ export function useNotifications() {
     if (error) {
       console.error("Error marking all notifications as read:", error);
     } else {
-      console.log("Successfully marked all as read, refreshing data");
+      // console.log("Successfully marked all as read, refreshing data");
       await fetchNotifications();
     }
   };
