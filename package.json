@@ -8,7 +8,7 @@
     "postinstall": "prisma generate",
     "start": "next start",
     "lint": "next lint",
-    "db:seed": "bun ./script/generate-slug.ts"
+    "db:seed": "bun ./script/update-streak.ts"
   },
   "dependencies": {
     "@emoji-mart/data": "^1.2.1",

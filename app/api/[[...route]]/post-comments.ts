@@ -94,7 +94,7 @@ const app = new Hono()
             }
           })
           const startOfToday = new Date();
-        startOfToday.setHours(0, 0, 0, 0);
+        startOfToday.setUTCHours(0, 0, 0, 0);
 
         await db.streak.updateMany({
           where: {
@@ -197,7 +197,7 @@ const app = new Hono()
           })
 
           const startOfToday = new Date();
-        startOfToday.setHours(0, 0, 0, 0);
+        startOfToday.setUTCHours(0, 0, 0, 0);
 
         await db.streak.updateMany({
           where: {
