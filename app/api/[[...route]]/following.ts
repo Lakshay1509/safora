@@ -75,6 +75,7 @@ const app = new Hono()
               increment: 1,
             },
             updated_at: new Date(),
+            active_today:true
           },
         });
     return ctx.json({follow},200);
