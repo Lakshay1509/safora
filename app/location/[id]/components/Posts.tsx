@@ -7,6 +7,7 @@ import AvatarCircle from "@/app/profile/components/AvatarCircle";
 import PostStatsFeed from "@/components/PostsStatsFeed";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
+import { MDXEditor } from "@mdxeditor/editor";
 
 const Posts = () => {
     const params = useParams();
@@ -81,7 +82,8 @@ const Posts = () => {
                                 >
 
                                     <h2 className="font-semibold text-lg">{truncateText(post.heading)}</h2>
-                                    <p className="text-gray-700 mt-2">{truncateText(post.body, true)}</p>
+                                    <MDXEditor className="text-gray-700 mt-2" markdown={truncateText(post.body, true)}/>
+                                    
                                 </Link>
                             </div>
 
