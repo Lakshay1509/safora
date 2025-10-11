@@ -99,16 +99,16 @@ const Article = () => {
 
                     {/* Featured Image */}
                     {post?.post.image_url && (
-                        <div className="mb-10 rounded-lg overflow-hidden">
+                       
                             <Image
                                 src={post?.post.image_url}
                                 alt={post?.post.heading || "Featured image"}
-                                width={800}
-                                height={400}
-                                layout="responsive"
-                                className="rounded-lg"
+                                width={500}
+                                height={500}
+                                
+                                className="mb-10 rounded-lg overflow-hidden mx-auto"
                             />
-                        </div>
+                        
                     )}
 
                     {/* Article content */}
