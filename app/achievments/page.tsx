@@ -104,7 +104,7 @@ const Page = () => {
               </h2>
             </div>
             
-            <UnlockButton enabled={data?.uniqueLocationReviews >= stats.locationReview && data?.postCount >= stats.posts &&  data?.totalUpvotes >= stats.upvotesReceived && data?.streakCount >= stats.streak && data?.articlesCount >= stats.articles }/>
+            <UnlockButton enabled={data?.uniqueLocationReviews >= stats.locationReview && data?.postCount >= stats.posts &&  data?.totalUpvotes >= stats.upvotesReceived && data?.streakCount >= stats.streak && data?.articlesCount >= stats.articles } id={index+1} streak={stats.streak} articlesCount={stats.articles} postCount={stats.posts} upvotesData={stats.upvotesReceived} uniqueLocationReviews={stats.locationReview}  />
           </div>
 
 
