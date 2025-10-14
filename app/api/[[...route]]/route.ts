@@ -13,6 +13,7 @@ import article from './article'
 import feedback from './feedback'
 import linkPreview from './link-preview'
 import cron from './cron'
+import achievment from './achievment'
 
 
 export const runtime = "nodejs";
@@ -32,6 +33,7 @@ const routes = app
     .route("/feedback",feedback)
     .route('/link-preview', linkPreview)
     .route('/cron',cron)
+    .route('/achievment',achievment)
 
 
 

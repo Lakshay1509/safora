@@ -16,6 +16,7 @@ import { useRouter } from "next/navigation";
 import { LinkPreview } from "@/components/LinkPreview";
 import { MDXEditor } from "@mdxeditor/editor";
 import { extractUrls } from "@/lib/url-utils";
+import Image from "next/image";
 
 export const Posts = () => {
   const { user, loading: authLoading } = useAuth();
@@ -104,16 +105,23 @@ export const Posts = () => {
                       {/* User and location info */}
                       <div className="flex items-center text-xs text-gray-500 mb-2">
                         {post.users && (
+                          <>
                           <AvatarCircle
                             url={post?.users?.profile_url}
                             name={post?.users?.name}
                           />
+
+                                       
+                        </>
                         )}
 
                         {post.users && (
+                          <>
                           <span className="font-medium mx-2">
                             {post.users.name}
                           </span>
+                           
+                           </>
                         )}
 
                         {post.created_at && (
