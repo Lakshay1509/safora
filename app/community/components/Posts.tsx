@@ -17,6 +17,7 @@ import { LinkPreview } from "@/components/LinkPreview";
 import { MDXEditor } from "@mdxeditor/editor";
 import { extractUrls } from "@/lib/url-utils";
 import Image from "next/image";
+import ProfileLogo from "@/components/ProfileLogo";
 
 export const Posts = () => {
   const { user, loading: authLoading } = useAuth();
@@ -106,23 +107,26 @@ export const Posts = () => {
                       <div className="flex items-center text-xs text-gray-500 mb-2">
                         {post.users && (
                           <>
-                          <AvatarCircle
+                          <ProfileLogo
                             url={post?.users?.profile_url}
                             name={post?.users?.name}
+                            color={post.users?.profile_color ?? ''}
+                            size="30"
                           />
 
                                        
                         </>
                         )}
 
-                        {post.users && (
-                          <>
-                          <span className="font-medium mx-2">
-                            {post.users.name}
-                          </span>
-                           
-                           </>
-                        )}
+                        <span 
+  className="font-medium mx-2 text-[14px]"
+  style={{
+    color: post?.users?.profile_color || '#000000'
+  }}
+>
+  {post?.users?.name}
+</span>
+
 
                         {post.created_at && (
                           <span>

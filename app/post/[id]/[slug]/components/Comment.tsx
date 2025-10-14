@@ -16,6 +16,7 @@ import { useDeleteCommentPost } from "@/features/post-comment.ts/use-delete-comm
 import { useAuth } from "@/contexts/AuthContext";
 import AvatarCircle from "@/app/profile/components/AvatarCircle";
 import { MDXEditor } from "@mdxeditor/editor";
+import ProfileLogo from "@/components/ProfileLogo";
 
 
 // Comment schema with validation
@@ -129,7 +130,14 @@ const Comment = ({ postId }: Props) => {
                     <div key={comment.id} className="p-3 bg-gray-50 rounded-lg">
                         <div className="flex items-center text-sm text-gray-600 mb-2">
                             {comment.users && (
-                                                 <AvatarCircle url={comment?.users?.profile_url} name={comment?.users?.name} />
+                                                //  <AvatarCircle url={comment?.users?.profile_url} name={comment?.users?.name} />
+                                                 <ProfileLogo
+                            url={comment?.users?.profile_url}
+                            name={comment?.users?.name}
+                            color={comment.users?.profile_color ?? ''}
+                            size="30"
+                            
+                          />
                                 )}
                             <span className="font-medium mx-2">{comment.users?.name || "Anonymous"}</span>
                             <span className="mx-2">•</span>

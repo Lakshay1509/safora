@@ -11,6 +11,7 @@ import { useRouter } from "next/navigation";
 import RightSidebar from "./RightSidebar";
 import AvatarCircle from "@/app/profile/components/AvatarCircle";
 import { useAuth } from "@/contexts/AuthContext";
+import ProfileLogo from "@/components/ProfileLogo";
 
 
 const Articles = () => {
@@ -67,15 +68,21 @@ const Articles = () => {
                     <div className="flex-1 pr-0 sm:pr-4 min-w-0">
                         <div className="flex items-center mb-2">
                             <div className="mr-2">
-                            <AvatarCircle
-                                url={post.users?.profile_url??''}
-                                name={post.users?.name}
-                                size="24"
-                            />
+                            <ProfileLogo
+                            url={post?.users?.profile_url}
+                            name={post?.users?.name}
+                            color={post.users?.profile_color ?? ''}
+                            size="30"
+                          />
                             </div>
-                            <span className="text-sm font-medium text-gray-800 dark:text-gray-200">
-                                {post.users?.name}
-                            </span>
+                            <span 
+  className="font-medium mx-2 text-[14px]"
+  style={{
+    color: post?.users?.profile_color || '#000000'
+  }}
+>
+  {post?.users?.name}
+</span>
                             <span className="text-sm text-gray-500 dark:text-gray-400 mx-1">on</span>
                             <span className="text-sm text-gray-500 dark:text-gray-400">
                                {post.created_at ? format(new Date(post.created_at), "MMM dd, yyyy") : ""}

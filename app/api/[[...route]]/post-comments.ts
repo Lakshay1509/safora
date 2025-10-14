@@ -16,7 +16,8 @@ const app = new Hono()
             users:{
               select:{
                 name:true,
-                profile_url:true
+                profile_url:true,
+                profile_color:true
               }
             }
           }

@@ -30,6 +30,7 @@ import { useDominantColor } from "@/lib/useDominantColour";
 import { MDXEditor } from "@mdxeditor/editor";
 import { extractUrls } from "@/lib/url-utils";
 import { LinkPreview } from "@/components/LinkPreview";
+import ProfileLogo from "@/components/ProfileLogo";
 
 const Post = () => {
     const { user, loading } = useAuth();
@@ -77,11 +78,23 @@ const Post = () => {
 
                 <div className="w-full max-w-3xl mx-4 p-4 bg-white rounded-lg mt-6 lg:mx-10 lg:mr-[22rem] pb-22">
                     <div className="flex space-x-2 items-start mb-2">
-                        <AvatarCircle url={post?.post.users?.profile_url} name={post?.post.users?.name} size="40" />
+                        <ProfileLogo
+                            url={post?.post.users?.profile_url}
+                            name={post?.post.users?.name}
+                            color={post?.post.users?.profile_color ?? ''}
+                            size="40"
+                          />
                         <div>
                             <h1 className="text-2xl font-bold">{post?.post.heading}</h1>
                             <div className="flex items-center text-sm text-gray-600 my-1">
-                                <span className="mr-2">By {post?.post.users?.name || "Anonymous"}</span>
+                                 <span 
+  className="font-medium mx-2 text-[14px]"
+  style={{
+    color: post?.post.users?.profile_color || '#000000'
+  }}
+>
+  {post?.post.users?.name}
+</span>
                                 <span className="mx-2">•</span>
                                 <span>
                                     {post?.post.created_at
