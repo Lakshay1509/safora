@@ -32,12 +32,12 @@ const UnlockButton = ({enabled,id,streak,uniqueLocationReviews,postCount,article
   return (
     <div>
          <Button
-              className={`${enabled ? 'mt-4 bg-gradient-to-r from-red-500 to-red-700 text-white text-xs font-semibold tracking-wide px-4 py-2 rounded-full shadow-md hover:shadow-lg hover:scale-105 transition-all duration-300 ease-in-out border border-red-400' : 'hidden'} `}
+              className={`${enabled ? ' bg-gradient-to-r from-red-500 to-red-700 text-white text-xs font-semibold tracking-wide px-4 py-2 rounded-full shadow-md hover:shadow-lg hover:scale-105 transition-all duration-300 ease-in-out border border-red-400' : 'hidden'} `}
               size="sm"
               onClick={handleClick}
               disabled={mutation.isPending}
             >
-              🎯 Unlock Badge
+              Apply theme
             </Button>
     </div>
   )

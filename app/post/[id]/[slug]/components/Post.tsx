@@ -82,7 +82,7 @@ const Post = () => {
                             url={post?.post.users?.profile_url}
                             name={post?.post.users?.name}
                             color={post?.post.users?.profile_color ?? ''}
-                            size="40"
+                            size="70"
                           />
                         <div>
                             <h1 className="text-2xl font-bold">{post?.post.heading}</h1>
