@@ -119,7 +119,7 @@ export function Sidebar() {
           <div className="bg-black text-white rounded-2xl border border-red-600 p-4 space-y-3 shadow-md transition-all hover:shadow-red-500/20 mb-4">
             {/* Text */}
             <p className="text-sm text-gray-200 leading-relaxed">
-              Log in to share your first travel experience and join the community.
+              Log in to share your first travel experience, join the community and get $20 worth of gift.
             </p>
 
             {/* Button */}
