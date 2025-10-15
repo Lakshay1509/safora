@@ -82,19 +82,19 @@ const Post = () => {
                             url={post?.post.users?.profile_url}
                             name={post?.post.users?.name}
                             color={post?.post.users?.profile_color ?? ''}
-                            size="70"
-                          />
+                            size="50"
+                        />
                         <div>
                             <h1 className="text-2xl font-bold">{post?.post.heading}</h1>
                             <div className="flex items-center text-sm text-gray-600 my-1">
-                                 <span 
-  className="font-medium mx-2 text-[14px]"
-  style={{
-    color: post?.post.users?.profile_color || '#000000'
-  }}
->
-  {post?.post.users?.name}
-</span>
+                                <span
+                                    className="font-medium  text-[14px]"
+                                    style={{
+                                        color: post?.post.users?.profile_color || '#000000'
+                                    }}
+                                >
+                                    {post?.post.users?.name}
+                                </span>
                                 <span className="mx-2">•</span>
                                 <span>
                                     {post?.post.created_at

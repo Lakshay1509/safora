@@ -308,7 +308,7 @@ export function Navbar() {
             {/* Profile and Logout - visible on larger screens */}
             <div className="hidden md:flex justify-center items-center space-x-3">
               <Link
-                className={`flex items-center gap-2 text-sm hover:underline py-2 px-3 rounded-2xl  transition-all duration-200 group ${pathname === "/community" ? "bg-black text-white font-semibold" : "text-gray-700"
+                className={`flex items-center gap-2 text-sm  py-2 px-3 rounded-2xl  transition-all duration-200 group ${pathname === "/community" ? "bg-black text-white font-semibold" : "text-gray-700"
                   }`}
                 href="/community"
               >

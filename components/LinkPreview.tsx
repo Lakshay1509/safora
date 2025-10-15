@@ -76,49 +76,56 @@ export function LinkPreview({ url }: LinkPreviewProps) {
 
   return (
     <a
-      href={preview.url}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="block border border-gray-200 rounded-lg overflow-hidden hover:border-gray-300 transition-colors my-4 max-w-xl"
-    >
-      {preview.image && (
-        <div className="relative w-full h-48 bg-gray-100">
-          <Image
-            src={preview.image}
-            alt={preview.title || "Preview image"}
-            fill
-            className="object-cover"
-            unoptimized
-          />
-        </div>
+  href={preview.url}
+  target="_blank"
+  rel="noopener noreferrer"
+  className="flex items-center border border-gray-200 rounded-lg overflow-hidden hover:border-gray-300 transition-colors my-3 max-w-md"
+>
+  {/* Left side image */}
+  {preview.image && (
+    <div className="relative w-28 h-28 flex-shrink-0 bg-gray-100">
+      <Image
+        src={preview.image}
+        alt={preview.title || "Preview image"}
+        fill
+        className="object-cover"
+        unoptimized
+      />
+    </div>
+  )}
+
+  {/* Right side content */}
+  <div className="p-3 flex flex-col justify-between w-full">
+    <div>
+      {preview.siteName && (
+        <p className="text-[10px] text-gray-500 mb-0.5">{preview.siteName}</p>
       )}
-      <div className="p-4">
-        {preview.siteName && (
-          <p className="text-xs text-gray-500 mb-1">{preview.siteName}</p>
-        )}
-        {preview.title && (
-          <h3 className="font-semibold text-gray-900 mb-1 line-clamp-2">
-            {preview.title}
-          </h3>
-        )}
-        {preview.description && (
-          <p className="text-sm text-gray-600 line-clamp-2">
-            {preview.description}
-          </p>
-        )}
-        <div className="flex items-center gap-1 text-xs text-gray-500 mt-2">
-          <ExternalLink className="h-3 w-3" />
-          <span className="truncate">
-            {(() => {
-              try {
-                return new URL(preview.url).hostname;
-              } catch {
-                return preview.url;
-              }
-            })()}
-          </span>
-        </div>
-      </div>
-    </a>
+      {preview.title && (
+        <h3 className="font-medium text-sm text-gray-900 mb-0.5 line-clamp-2">
+          {preview.title}
+        </h3>
+      )}
+      {preview.description && (
+        <p className="text-xs text-gray-600 line-clamp-2">
+          {preview.description}
+        </p>
+      )}
+    </div>
+
+    <div className="flex items-center gap-1 text-[10px] text-gray-500 mt-2">
+      <ExternalLink className="h-3 w-3" />
+      <span className="truncate">
+        {(() => {
+          try {
+            return new URL(preview.url).hostname;
+          } catch {
+            return preview.url;
+          }
+        })()}
+      </span>
+    </div>
+  </div>
+</a>
+
   );
 }
