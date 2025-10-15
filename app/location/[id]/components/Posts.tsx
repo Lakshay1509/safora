@@ -7,6 +7,7 @@ import AvatarCircle from "@/app/profile/components/AvatarCircle";
 import PostStatsFeed from "@/components/PostsStatsFeed";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
+import ProfileLogo from "@/components/ProfileLogo";
 import { MDXEditor } from "@mdxeditor/editor";
 
 const Posts = () => {
@@ -74,7 +75,12 @@ const Posts = () => {
                         <div key={post.id} className="p-2 py-3 lg:p-4 border-b border-gray-200 rounded-lg transition-colors duration-200 hover:bg-gray-50 text-sm">
                             <div className="flex items-start gap-3">
                                 {post.users && (
-                                    <AvatarCircle url={post?.users?.profile_url} name={post?.users?.name} size="40" />
+                                    <ProfileLogo
+                            url={post?.users?.profile_url}
+                            name={post?.users?.name}
+                            color={post.users?.profile_color ?? ''}
+                            size="40"
+                          />
                                 )}
                                 <Link
                                     href={`/post/${post.id}/${post.slug}`}

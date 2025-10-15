@@ -13,6 +13,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useDeleteCommentPost } from "@/features/post-comment.ts/use-delete-comment";
 import { Trash2 } from "lucide-react";
 import AvatarCircle from "@/app/profile/components/AvatarCircle";
+import ProfileLogo from "@/components/ProfileLogo";
 
 // SubComment schema with validation
 const subCommentSchema = z.object({
@@ -114,7 +115,11 @@ const SubComment = ({ id, postId }: Props) => {
         {data?.sub_comment.map((reply) => (
           <div key={reply.id} className="p-2 bg-gray-50 rounded-lg text-sm">
             <div className="flex items-center text-xs text-gray-600 mb-1">
-              <span className="mr-2"><AvatarCircle url={reply.users?.profile_url} name={reply.users?.name} /></span>
+              <span className="mr-2"><ProfileLogo
+                            url={reply?.users?.profile_url}
+                            name={reply?.users?.name}
+                            color={reply.users?.profile_color ?? ''}
+                            size="25"/></span>
               <span className="font-medium">{reply.users?.name}</span>
               <span className="mx-2">•</span>
               <span>

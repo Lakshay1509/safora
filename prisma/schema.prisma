@@ -393,6 +393,7 @@ model public_users {
   following_locations_count                    Int?                    @default(0)
   profile_url                                  String?
   daily_digest                                 Int                     @default(1) @db.SmallInt
+  profile_color                                String?
   comments                                     comments[]
   notifications_notifications_sender_idTousers notifications[]         @relation("notifications_sender_idTousers")
   notifications_notifications_user_idTousers   notifications[]         @relation("notifications_user_idTousers")

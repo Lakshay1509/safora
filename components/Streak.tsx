@@ -4,6 +4,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useRealtimeStreak } from "@/hooks/useStreak";
 import Image from "next/image";
 import { Skeleton } from "./ui/skeleton";
+import Link from "next/link";
 
 export default function StreakCounter() {
     const { user, loading: authLoading } = useAuth();
@@ -24,13 +25,14 @@ export default function StreakCounter() {
     
 
     return (
-        <div className="flex items-center space-x-1 bg-white border border-gray-200 shadow-sm rounded-full px-3 py-1">
+        <Link href="/achievments" className="flex items-center space-x-1 bg-white border border-gray-200 shadow-sm rounded-full px-3 py-1 hover:bg-gray-50 transition-colors cursor-pointer">
             {streak?.active_today &&<Image
                 src="/flame.gif"
                 alt="streak"
                 height={17}
                 width={17}
                 className="object-contain"
+                unoptimized
             />}
             {!streak?.active_today && <Image
                 src="/no-flame.png"
@@ -42,7 +44,7 @@ export default function StreakCounter() {
 
             }
             <p className="text-[16px] mt-1 font-semibold text-gray-800">{streak?.count ?? 0}</p>
-        </div>
+        </Link>
 
     );
 }

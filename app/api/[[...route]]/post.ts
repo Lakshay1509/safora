@@ -105,7 +105,8 @@ const app = new Hono()
           select: {
             id: true,
             name: true,
-            profile_url:true
+            profile_url:true,
+            profile_color:true
           },
         },
         _count:{
@@ -139,6 +140,7 @@ const app = new Hono()
             id: true,
             name: true,
             profile_url: true,
+            profile_color:true
           },
         },
         _count: {
@@ -147,6 +149,10 @@ const app = new Hono()
           },
         },
       },
+      orderBy :{
+        created_at:'desc'
+      }
+      
     });
 
     if (!posts) {
@@ -187,7 +193,8 @@ const app = new Hono()
           select: {
             id: true,
             name: true,
-            profile_url:true
+            profile_url:true,
+            profile_color:true
           },
         },
         _count: {
