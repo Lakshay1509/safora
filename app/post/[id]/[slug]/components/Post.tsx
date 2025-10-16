@@ -74,10 +74,10 @@ const Post = () => {
 
     return (
         <>
-            <div className="flex justify-center">
+            <main className="flex justify-center">
 
-                <div className="w-full max-w-3xl mx-4 p-4 bg-white rounded-lg mt-6 lg:mx-10 lg:mr-[22rem] pb-22">
-                    <div className="flex space-x-2 items-start mb-2">
+                <article className="w-full max-w-3xl mx-4 p-4 bg-white rounded-lg mt-6 lg:mx-10 lg:mr-[22rem] pb-22">
+                    <header className="flex space-x-2 items-start mb-2">
                         <ProfileLogo
                             url={post?.post.users?.profile_url}
                             name={post?.post.users?.name}
@@ -107,11 +107,11 @@ const Post = () => {
                         </div>
 
 
-                    </div>
+                    </header>
 
 
 
-                    <div className="prose prose-lg max-w-none mb-8 text-base">
+                    <div className="prose prose-lg max-w-none text-base">
                         <MDXEditor
                             markdown={post?.post.body ?? ''}
                             readOnly={true}
@@ -193,11 +193,16 @@ const Post = () => {
                     <ExploreMore id={post?.post.location_id ? post.post.location_id : ''} />
 
                     {/* Comments section */}
-                    <Comment postId={postId} />
+                    <section aria-labelledby="comments-heading">
+  <Comment postId={postId} />
+</section>
 
-                </div>
+
+                </article>
+                <footer>
                 {post?.post.location_id && <RightSidebar id={post?.post.location_id} />}
-            </div>
+                </footer>
+            </main>
             <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
                 <AlertDialogContent className="bg-white border border-gray-200 text-gray-900">
                     <AlertDialogHeader>

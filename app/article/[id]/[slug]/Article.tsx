@@ -66,13 +66,13 @@ const Article = () => {
 
     return (
         <>
-            <div className="flex justify-center max-w-4xl mx-auto relative">
+            <main className="flex justify-center max-w-4xl mx-auto relative">
                 {/* Floating action buttons on the right */}
 
 
-                <div className="w-full max-w-4xl mx-auto py-8 px-4 pb-24">
+                <article className="w-full max-w-4xl mx-auto py-8 px-4 pb-24">
                     {/* Author section */}
-                    <div className="flex items-center justify-center mb-4">
+                    <header className="flex items-center justify-center mb-4">
                         <div className="flex flex-col items-center">
                             <AvatarCircle
                                 url={post?.post.users?.profile_url}
@@ -90,7 +90,7 @@ const Article = () => {
                                 <span>{estimateReadingTime(post?.post.body)} min read</span>
                             </div>
                         </div>
-                    </div>
+                    </header>
 
                     {/* Title */}
                     <h1 className="text-3xl md:text-4xl font-bold text-center mt-6 mb-8">
@@ -160,11 +160,14 @@ const Article = () => {
 
 
                     {/* Comments section */}
-                    <div className="mt-12">
-                        <Comment postId={postId} />
-                    </div>
-                </div>
-            </div>
+                    
+                         <section aria-labelledby="comments-heading" className="mt-12">
+                          <Comment postId={postId} />
+                        </section>
+                        
+                    
+                </article>
+            </main>
 
             {/* Delete dialog remains unchanged */}
             <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
