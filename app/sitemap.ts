@@ -76,6 +76,13 @@ export default async function sitemap(): Promise<SitemapEntry[]> {
       priority: 1.0,
     },
     {
+      url : "https://www.safeornot.space/community",
+      lastModified: new Date().toISOString(),
+      changeFrequency: "daily",
+      priority:1.0
+
+    },
+    {
       url: "https://www.safeornot.space/privacy-policy",
       lastModified: new Date().toISOString(),
       changeFrequency: "monthly",
@@ -105,6 +112,7 @@ export default async function sitemap(): Promise<SitemapEntry[]> {
     priority:0.8,
 
   }));
+
 
   return [...staticEntries, ...locationEntries,...postEntries,...articleEntries];
 }

@@ -84,10 +84,10 @@ export function AreaCard() {
 
       <CardContent className="pt-0 flex flex-col lg:flex-row w-full justify-between gap-4 lg:gap-0">
         <div className="space-y-2 lg:space-y-4">
-          <h2 className="flex items-center gap-x-2 lg:gap-x-3 text-xl sm:text-2xl lg:text-3xl font-semibold">
+          <h1 className="flex items-center gap-x-2 lg:gap-x-3 text-xl sm:text-2xl lg:text-3xl font-semibold">
             <MapPin className="h-6 w-6 sm:h-7 sm:w-7 lg:h-8 lg:w-8" />
             {data?.location.name}
-          </h2>
+          </h1>
 
 
           <div className="text-black ml-8 sm:ml-10 lg:ml-12">
