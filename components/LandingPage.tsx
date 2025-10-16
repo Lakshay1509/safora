@@ -8,6 +8,7 @@ import { useGetDefaultUserLanding } from "@/features/user/use-get-user-landing";
 import Script from "next/script";
 import Image from "next/image";
 import CTA from "./CTA";
+import BentoBox from "./BentoBox";
 
 export default function LandingPage() {
   const { user, loading } = useAuth();
@@ -166,6 +167,8 @@ export default function LandingPage() {
 </div>
 
       </section>
+
+      <BentoBox/>
 
       {/* Community Description Section */}
       <section
