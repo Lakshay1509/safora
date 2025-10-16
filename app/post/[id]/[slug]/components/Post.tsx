@@ -27,10 +27,11 @@ import ExploreMore from "./ExploreMore";
 import AvatarCircle from "@/app/profile/components/AvatarCircle";
 import Image from "next/image";
 import { useDominantColor } from "@/lib/useDominantColour";
-import { MDXEditor } from "@mdxeditor/editor";
+import { linkDialogPlugin, linkPlugin, MDXEditor } from "@mdxeditor/editor";
 import { extractUrls } from "@/lib/url-utils";
 import { LinkPreview } from "@/components/LinkPreview";
 import ProfileLogo from "@/components/ProfileLogo";
+import { convertUrlsToMarkdownLinks } from "@/utils/convertUrltoMarkdown";
 
 const Post = () => {
     const { user, loading } = useAuth();
@@ -113,11 +114,13 @@ const Post = () => {
 
                     <div className="prose prose-lg max-w-none text-base">
                         <MDXEditor
-                            markdown={post?.post.body ?? ''}
-                            readOnly={true}
-
-                        />
-
+        markdown={post?.post.body ?? ''}
+        readOnly={true}
+        plugins={[
+            linkPlugin(),
+            linkDialogPlugin()
+        ]}
+    />
 
 
                     </div>

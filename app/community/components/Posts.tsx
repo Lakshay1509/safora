@@ -14,7 +14,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { LinkPreview } from "@/components/LinkPreview";
-import { MDXEditor } from "@mdxeditor/editor";
+import { linkDialogPlugin, linkPlugin, MDXEditor } from "@mdxeditor/editor";
 import { extractUrls } from "@/lib/url-utils";
 import Image from "next/image";
 import ProfileLogo from "@/components/ProfileLogo";
@@ -159,7 +159,11 @@ export const Posts = () => {
                           {truncateText(post.heading)}
                         </h2>
                         <div className="text-gray-700 mt-2 text-[15px]">
-                          <MDXEditor markdown={truncateText(post.body, true)} readOnly={true}/>
+                          <MDXEditor markdown={truncateText(post.body, true)} readOnly={true} plugins={[
+                                      linkPlugin(),
+                                      linkDialogPlugin()
+                                  ]}/>
+                                  
                         </div>
                       </Link>
 
