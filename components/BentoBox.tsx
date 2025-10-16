@@ -48,9 +48,10 @@ export default function BentoBox() {
     <section className="max-w-7xl mx-auto py-12 md:py-20 lg:py-24 px-4 sm:px-6 lg:px-8">
       {/* Header */}
       <div className="mb-12 sm:mb-14 md:mb-16 lg:mb-20 max-w-2xl">
-        <h1 className="mb-3 sm:mb-4 text-2xl md:text-3xl  font-bold tracking-tight text-black">
-         What Can Safe or Not Do?
-        </h1>
+        <h2 className="mb-3 sm:mb-4 text-2xl md:text-3xl font-bold tracking-tight text-black">
+          What Can Safe or Not Do?
+        </h2>
+
         <p className="text-sm sm:text-base md:text-lg text-black/70 leading-relaxed">
           Everything you need to travel safely.
         </p>
@@ -77,15 +78,15 @@ export default function BentoBox() {
                 </p>
               </div>
 
-              
-              
+
+
             </div>
           </div>
         ))}
       </div>
 
-      
-    
+
+
     </section>
   )
 }
