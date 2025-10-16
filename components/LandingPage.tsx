@@ -170,7 +170,47 @@ export default function LandingPage() {
 
       <BentoBox/>
 
-      {/* Community Description Section */}
+      {/* NEW: How It Works Section - Adds ~200 words */}
+      <section className="w-full max-w-7xl mx-auto py-12 md:py-16 px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-12">
+          <h2 className="text-2xl md:text-3xl font-bold text-black mb-4">
+            How SafeOrNot Works
+          </h2>
+          <p className="text-base md:text-lg text-neutral-600 max-w-3xl mx-auto">
+            Our platform connects travelers worldwide to share authentic safety experiences. 
+            Every location review comes from real people who have been there, creating a 
+            trusted network of safety information you can rely on when planning your next trip.
+          </p>
+        </div>
+
+        <div className="grid md:grid-cols-3 gap-8">
+          <div className="text-center p-6">
+            <div className="text-4xl mb-4">🗺️</div>
+            <h3 className="text-xl font-semibold mb-3">Browse Locations</h3>
+            <p className="text-neutral-600">
+              Search any location worldwide to discover safety insights, ratings, and 
+              detailed reviews from our global community of travelers.
+            </p>
+          </div>
+          <div className="text-center p-6">
+            <div className="text-4xl mb-4">✍️</div>
+            <h3 className="text-xl font-semibold mb-3">Share Your Experience</h3>
+            <p className="text-neutral-600">
+              Contribute to the community by sharing your own safety experiences. 
+              Your insights help fellow travelers make informed decisions.
+            </p>
+          </div>
+          <div className="text-center p-6">
+            <div className="text-4xl mb-4">🎯</div>
+            <h3 className="text-xl font-semibold mb-3">Make Informed Decisions</h3>
+            <p className="text-neutral-600">
+              Access real-time safety data, day/night comparisons, and AI-powered 
+              recommendations to travel with confidence.
+            </p>
+          </div>
+        </div>
+      </section>
+
       <section
         aria-labelledby="community-description"
         className="w-full py-12 md:py-20 lg:py-24 px-4 sm:px-6 lg:px-8"
@@ -202,6 +242,61 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
+
+      {/* NEW: FAQ Section - Adds ~300 words */}
+      <section className="w-full max-w-4xl mx-auto py-12 md:py-16 px-4 sm:px-6 lg:px-8">
+        <h2 className="text-2xl md:text-3xl font-bold text-center text-black mb-10">
+          Frequently Asked Questions
+        </h2>
+        
+        <div className="space-y-6">
+          <details className="group border border-neutral-200 rounded-lg p-6">
+            <summary className="font-semibold text-lg cursor-pointer">
+              How accurate are the safety ratings?
+            </summary>
+            <p className="mt-3 text-neutral-600">
+              Our safety ratings are based on real user experiences and community reports. 
+              We use AI to identify patterns and verify authenticity, ensuring reliable 
+              information for travelers worldwide.
+            </p>
+          </details>
+
+          <details className="group border border-neutral-200 rounded-lg p-6">
+            <summary className="font-semibold text-lg cursor-pointer">
+              Can I contribute safety information?
+            </summary>
+            <p className="mt-3 text-neutral-600">
+              Yes! We encourage all travelers to share their experiences. Simply create 
+              an account, search for a location, and add your review. Your contribution 
+              helps build a safer travel community.
+            </p>
+          </details>
+
+          <details className="group border border-neutral-200 rounded-lg p-6">
+            <summary className="font-semibold text-lg cursor-pointer">
+              Is SafeOrNot free to use?
+            </summary>
+            <p className="mt-3 text-neutral-600">
+              Yes, SafeOrNot is completely free for all travelers. Browse locations, 
+              read reviews, and contribute your own experiences at no cost.
+            </p>
+          </details>
+
+          <details className="group border border-neutral-200 rounded-lg p-6">
+            <summary className="font-semibold text-lg cursor-pointer">
+              How often is safety information updated?
+            </summary>
+            <p className="mt-3 text-neutral-600">
+              Safety information is updated in real-time as community members share new 
+              experiences. Our AI continuously analyzes patterns to provide the most 
+              current safety insights.
+            </p>
+          </details>
+        </div>
+      </section>
+
+      {/* Community Description Section */}
+      
 
 
       {/* Footer */}
