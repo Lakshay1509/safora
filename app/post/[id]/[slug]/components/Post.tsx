@@ -3,7 +3,6 @@
 import { useParams, useRouter } from "next/navigation";
 import { useGetPost } from "@/features/post/use-get-byId";
 import { format } from "date-fns";
-import { useGetPostComments } from "@/features/post/use-get-post-comments";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { PenIcon, Trash } from "lucide-react";
@@ -24,14 +23,13 @@ import RightSidebar from "./RightSidebar";
 import PostStats from "@/components/PostStats";
 import PostDetailSkeleton from "./PostsSkeleton";
 import ExploreMore from "./ExploreMore";
-import AvatarCircle from "@/app/profile/components/AvatarCircle";
 import Image from "next/image";
 import { useDominantColor } from "@/lib/useDominantColour";
 import { linkDialogPlugin, linkPlugin, MDXEditor } from "@mdxeditor/editor";
 import { extractUrls } from "@/lib/url-utils";
 import { LinkPreview } from "@/components/LinkPreview";
 import ProfileLogo from "@/components/ProfileLogo";
-import { convertUrlsToMarkdownLinks } from "@/utils/convertUrltoMarkdown";
+
 
 const Post = () => {
     const { user, loading } = useAuth();
