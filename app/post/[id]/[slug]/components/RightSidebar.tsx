@@ -45,7 +45,7 @@ const RightSidebar = ({id}:Props) => {
         </Link>
 
         <div className="mt-10">
-          <h1 className="font-semibold flex items-center mb-4">More posts <ArrowRight size={16} className="ml-1"/></h1>
+          <h3 className="font-semibold flex items-center mb-4">More posts <ArrowRight size={16} className="ml-1"/></h3>
           
           {post_Loading ? (
             <div className="text-sm text-gray-500">Loading posts...</div>

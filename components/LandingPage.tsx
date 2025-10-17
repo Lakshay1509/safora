@@ -1,9 +1,8 @@
 "use client";
 
-import WorldMap from "@/components/ui/world-map";
+
 import { useAuth } from "@/contexts/AuthContext";
 import SelectGender from "./SelectGender";
-import LoginButton from "./LoginLogoutButton";
 import { useGetDefaultUserLanding } from "@/features/user/use-get-user-landing";
 import Script from "next/script";
 import Image from "next/image";

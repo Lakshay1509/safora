@@ -114,13 +114,13 @@ const Post = () => {
 
                     <div className="prose prose-lg max-w-none text-base">
                         <MDXEditor
-        markdown={post?.post.body ?? ''}
-        readOnly={true}
-        plugins={[
-            linkPlugin(),
-            linkDialogPlugin()
-        ]}
-    />
+                            markdown={post?.post.body ?? ''}
+                            readOnly={true}
+                            plugins={[
+                                linkPlugin(),
+                                linkDialogPlugin()
+                            ]}
+                        />
 
 
                     </div>
@@ -197,13 +197,13 @@ const Post = () => {
 
                     {/* Comments section */}
                     <section aria-labelledby="comments-heading">
-  <Comment postId={postId} />
-</section>
+                        <Comment postId={postId} />
+                    </section>
 
 
                 </article>
                 <footer>
-                {post?.post.location_id && <RightSidebar id={post?.post.location_id} />}
+                    {post?.post.location_id && <RightSidebar id={post?.post.location_id} />}
                 </footer>
             </main>
             <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>

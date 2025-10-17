@@ -70,9 +70,9 @@ export default function BentoBox() {
             {/* Content */}
             <div className="relative z-10 flex flex-col justify-between h-full">
               <div>
-                <h2 className="mb-2 sm:mb-3 text-lg md:text-2xl font-bold tracking-wider ">
+                <h3 className="mb-2 sm:mb-3 text-lg md:text-2xl font-bold tracking-wider ">
                   {feature.title}
-                </h2>
+                </h3>
                 <p className="text-sm md:text-base  leading-relaxed text-black/60">
                   {feature.description}
                 </p>

@@ -56,11 +56,27 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 }
 
+const page = async ({ params }: Props) => {
+  const { id } = await params;
+  
+  // Fetch post data server-side
+  const post = await db.posts.findUnique({
+    where: { id: id },
+    select: { 
+      heading: true, 
+    },
+  });
 
-const page = () => {
+  if (!post) {
+    return <div>Post not found</div>;
+  }
+
   return (
-    <Post/>
-  )
+    <div>
+      <h1 className="sr-only">{post.heading}</h1>
+      <Post />
+    </div>
+  );
 }
 
 export default page
