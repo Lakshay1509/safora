@@ -50,6 +50,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       description: `Community insights & safety tips for ${location.name}.`,
       images: ["/og.webp"],
     },
+    alternates:{
+      canonical: `/location/${id}`
+    }
   };
 }
 
