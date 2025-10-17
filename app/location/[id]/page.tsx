@@ -8,6 +8,7 @@ import { createClient } from "@/utils/supabase/server";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { LocationTracker } from "./components/LocationTracker";
+import NotFound from "@/app/not-found";
 
 type Props = {
   params: Promise<{ id: string }>;
@@ -65,8 +66,17 @@ const page = async ({ params }: Props) => {
     select: { name: true },
   });
 
+  if(!location){
+    return (
+      <div>
+        <NotFound/>
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen bg-white p-4 pb-20 md:p-6 lg:p-8">
+      <h1 className="sr-only">{location?.name}</h1>
       {/* Add LocationTracker here - it renders nothing but tracks the visit */}
       {location && (
         <LocationTracker locationId={id} locationName={location.name} />
