@@ -2,28 +2,22 @@
 import React, { useState } from "react";
 import { Button } from "./ui/button";
 import { useRouter } from "next/navigation";
-import { signout } from "@/lib/auth-action";
 import { useAuth } from "@/contexts/AuthContext";
 import { HoverBorderGradient } from "./ui/hover-border-gradient";
 import { ArrowRight } from "lucide-react";
 
-interface Props {
-  extraLoading?: boolean;
-  userPresent: boolean;
-}
 
-const CTA = ({ extraLoading, userPresent }: Props) => {
-  const { user, loading, setUser } = useAuth(); // Get setUser from context
-  const [isLoggingOut, setIsLoggingOut] = useState(false);
+const CTA = () => {
+  const { user, loading} = useAuth();
   const router = useRouter();
 
-  if (loading || extraLoading) {
+  if (loading) {
     return <Button variant="outline" disabled>Loading...</Button>;
   }
 
   return (
     <>
-      {!userPresent && (
+      {!user && (
         <HoverBorderGradient
           containerClassName="rounded-full"
           as="button"
@@ -39,7 +33,7 @@ const CTA = ({ extraLoading, userPresent }: Props) => {
         </HoverBorderGradient>
       )}
 
-      {userPresent && (
+      {user && (
         <HoverBorderGradient
           containerClassName="rounded-full"
           as="button"

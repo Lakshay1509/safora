@@ -1,23 +1,10 @@
-"use client";
-
-
-import { useAuth } from "@/contexts/AuthContext";
 import SelectGender from "./SelectGender";
-import { useGetDefaultUserLanding } from "@/features/user/use-get-user-landing";
 import Script from "next/script";
 import Image from "next/image";
 import CTA from "./CTA";
 import BentoBox from "./BentoBox";
 
-export default function LandingPage() {
-  const { user, loading } = useAuth();
-
-  const shouldFetchUserData = !!user && !loading;
-
-  const { data, isLoading, isError } = useGetDefaultUserLanding({
-    enabled: shouldFetchUserData,
-  });
-
+export default async function LandingPage() {
   return (
     <main className="min-h-screen w-full py-10 sm:py-16 md:py-20 dark:bg-black bg-white flex flex-col justify-center items-center overflow-hidden">
       {/* Metadata JSON-LD for SEO */}
@@ -61,11 +48,7 @@ export default function LandingPage() {
 
       {/* CTA Section */}
       <section className="mt-6 ">
-        {!user ? (
-          <CTA extraLoading={isLoading} userPresent={false} />
-        ) : (
-          <CTA extraLoading={isLoading} userPresent={true} />
-        )}
+        <CTA />
       </section>
 
       {/* Map Section */}
@@ -74,34 +57,6 @@ export default function LandingPage() {
         className="w-full max-w-7xl mx-auto mt-6 sm:mt-8 md:mt-10 px-2 sm:px-4"
       >
         <div className="aspect-[16/9] sm:aspect-[16/8] md:aspect-[16/7] lg:aspect-[16/6] flex justify-center items-center">
-          {/* <WorldMap
-            dots={[
-              {
-                start: { lat: 64.2008, lng: -149.4937 }, // Alaska
-                end: { lat: 34.0522, lng: -118.2437 }, // Los Angeles
-              },
-              {
-                start: { lat: 64.2008, lng: -149.4937 }, // Alaska
-                end: { lat: -15.7975, lng: -47.8919 }, // Brasília
-              },
-              {
-                start: { lat: -15.7975, lng: -47.8919 }, // Brasília
-                end: { lat: 38.7223, lng: -9.1393 }, // Lisbon
-              },
-              {
-                start: { lat: 51.5074, lng: -0.1278 }, // London
-                end: { lat: 28.6139, lng: 77.209 }, // New Delhi
-              },
-              {
-                start: { lat: 28.6139, lng: 77.209 }, // New Delhi
-                end: { lat: 43.1332, lng: 131.9113 }, // Vladivostok
-              },
-              {
-                start: { lat: 28.6139, lng: 77.209 }, // New Delhi
-                end: { lat: -1.2921, lng: 36.8219 }, // Nairobi
-              },
-            ]}
-          /> */}
           <Image src="/hero.avif" alt="hero" height='1200' width='1200' />
         </div>
 
@@ -109,9 +64,6 @@ export default function LandingPage() {
 
       {/* Gender Selection */}
       <SelectGender
-        DialogOpen={
-          !isLoading && !isError && data?.userData.gender === null
-        }
       />
 
       {/* Hero Support Section */}
@@ -120,54 +72,54 @@ export default function LandingPage() {
         className="w-full flex justify-center items-center pb-8 px-4  md:pb-16 sm:px-6 lg:px-8"
       >
         <div className="max-w-2xl mx-auto">
-  {/* Badges Container - Centered horizontally at top */}
-  <div className="flex justify-center items-center gap-2 mb-6">
-    <a 
-  href="https://startupfa.me/s/safeornot?utm_source=safeornot.space" 
-  target="_blank"
-  rel="noopener noreferrer"
->
-  <img 
-    src="https://startupfa.me/badges/featured-badge.webp" 
-    alt="SafeOrNot - Featured on Startup Fame" 
-    width={171} 
-    height={54}
-    className="w-auto h-auto max-w-[140px] sm:max-w-[171px]"
-  />
-</a>
+          {/* Badges Container - Centered horizontally at top */}
+          <div className="flex justify-center items-center gap-2 mb-6">
+            <a
+              href="https://startupfa.me/s/safeornot?utm_source=safeornot.space"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <img
+                src="https://startupfa.me/badges/featured-badge.webp"
+                alt="SafeOrNot - Featured on Startup Fame"
+                width={171}
+                height={54}
+                className="w-auto h-auto max-w-[140px] sm:max-w-[171px]"
+              />
+            </a>
 
-<a
-  href="https://peerpush.net/p/safe-or-not"
-  target="_blank"
-  rel="noopener noreferrer"
->
-  <img
-    src="https://peerpush.net/p/safe-or-not/badge"
-    alt="Safe or Not badge"
-    width={171} 
-    height={54}
-    className="w-auto h-auto max-w-[140px] sm:max-w-[171px]"
-  />
-</a>
+            <a
+              href="https://peerpush.net/p/safe-or-not"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <img
+                src="https://peerpush.net/p/safe-or-not/badge"
+                alt="Safe or Not badge"
+                width={171}
+                height={54}
+                className="w-auto h-auto max-w-[140px] sm:max-w-[171px]"
+              />
+            </a>
 
-  </div>
+          </div>
 
-  {/* Peerlist Image - Centered below badges */}
-  <div className="flex justify-center">
-    <Image
-      src="/peerlist.avif"
-      alt="Peerlist community support"
-      width={550}
-      height={550}
-      className="w-full h-auto max-w-md md:max-w-lg"
-      priority
-    />
-  </div>
-</div>
+          {/* Peerlist Image - Centered below badges */}
+          <div className="flex justify-center">
+            <Image
+              src="/peerlist.avif"
+              alt="Peerlist community support"
+              width={550}
+              height={550}
+              className="w-full h-auto max-w-md md:max-w-lg"
+              priority
+            />
+          </div>
+        </div>
 
       </section>
 
-      <BentoBox/>
+      <BentoBox />
 
       {/* NEW: How It Works Section - Adds ~200 words */}
       <section className="w-full max-w-7xl mx-auto py-12 md:py-16 px-4 sm:px-6 lg:px-8">
@@ -176,8 +128,8 @@ export default function LandingPage() {
             How SafeOrNot Works
           </h2>
           <p className="text-base md:text-lg text-neutral-600 max-w-3xl mx-auto">
-            Our platform connects travelers worldwide to share authentic safety experiences. 
-            Every location review comes from real people who have been there, creating a 
+            Our platform connects travelers worldwide to share authentic safety experiences.
+            Every location review comes from real people who have been there, creating a
             trusted network of safety information you can rely on when planning your next trip.
           </p>
         </div>
@@ -187,7 +139,7 @@ export default function LandingPage() {
             <div className="text-4xl mb-4">🗺️</div>
             <h3 className="text-xl font-semibold mb-3">Browse Locations</h3>
             <p className="text-neutral-600">
-              Search any location worldwide to discover safety insights, ratings, and 
+              Search any location worldwide to discover safety insights, ratings, and
               detailed reviews from our global community of travelers.
             </p>
           </div>
@@ -195,7 +147,7 @@ export default function LandingPage() {
             <div className="text-4xl mb-4">✍️</div>
             <h3 className="text-xl font-semibold mb-3">Share Your Experience</h3>
             <p className="text-neutral-600">
-              Contribute to the community by sharing your own safety experiences. 
+              Contribute to the community by sharing your own safety experiences.
               Your insights help fellow travelers make informed decisions.
             </p>
           </div>
@@ -203,7 +155,7 @@ export default function LandingPage() {
             <div className="text-4xl mb-4">🎯</div>
             <h3 className="text-xl font-semibold mb-3">Make Informed Decisions</h3>
             <p className="text-neutral-600">
-              Access real-time safety data, day/night comparisons, and AI-powered 
+              Access real-time safety data, day/night comparisons, and AI-powered
               recommendations to travel with confidence.
             </p>
           </div>
@@ -247,15 +199,15 @@ export default function LandingPage() {
         <h2 className="text-2xl md:text-3xl font-bold text-center text-black mb-10">
           Frequently Asked Questions
         </h2>
-        
+
         <div className="space-y-6">
           <details className="group border border-neutral-200 rounded-lg p-6">
             <summary className="font-semibold text-lg cursor-pointer">
               How accurate are the safety ratings?
             </summary>
             <p className="mt-3 text-neutral-600">
-              Our safety ratings are based on real user experiences and community reports. 
-              We use AI to identify patterns and verify authenticity, ensuring reliable 
+              Our safety ratings are based on real user experiences and community reports.
+              We use AI to identify patterns and verify authenticity, ensuring reliable
               information for travelers worldwide.
             </p>
           </details>
@@ -265,8 +217,8 @@ export default function LandingPage() {
               Can I contribute safety information?
             </summary>
             <p className="mt-3 text-neutral-600">
-              Yes! We encourage all travelers to share their experiences. Simply create 
-              an account, search for a location, and add your review. Your contribution 
+              Yes! We encourage all travelers to share their experiences. Simply create
+              an account, search for a location, and add your review. Your contribution
               helps build a safer travel community.
             </p>
           </details>
@@ -276,7 +228,7 @@ export default function LandingPage() {
               Is SafeOrNot free to use?
             </summary>
             <p className="mt-3 text-neutral-600">
-              Yes, SafeOrNot is completely free for all travelers. Browse locations, 
+              Yes, SafeOrNot is completely free for all travelers. Browse locations,
               read reviews, and contribute your own experiences at no cost.
             </p>
           </details>
@@ -286,8 +238,8 @@ export default function LandingPage() {
               How often is safety information updated?
             </summary>
             <p className="mt-3 text-neutral-600">
-              Safety information is updated in real-time as community members share new 
-              experiences. Our AI continuously analyzes patterns to provide the most 
+              Safety information is updated in real-time as community members share new
+              experiences. Our AI continuously analyzes patterns to provide the most
               current safety insights.
             </p>
           </details>
@@ -295,7 +247,7 @@ export default function LandingPage() {
       </section>
 
       {/* Community Description Section */}
-      
+
 
 
       {/* Footer */}
