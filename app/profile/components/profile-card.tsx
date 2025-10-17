@@ -12,6 +12,7 @@ import SelectGender from "@/components/SelectGender";
 import AvatarUpload from "./AvatarUpload";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
+import SelectGenderProfile from "@/components/SelectGenderProfile";
 
 
 export function ProfileCard() {
@@ -127,7 +128,7 @@ export function ProfileCard() {
           Add Gender
         </Button>
 
-        <SelectGender 
+        <SelectGenderProfile
           DialogOpen={dialogOpen} 
           onClose={() => setIsDialogOpen(false)}
         />
