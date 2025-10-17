@@ -53,6 +53,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       description: twitterDescription,
       images: [post.image_url ?? "/og.webp"],
     },
+    alternates:{
+      canonical: `https://www.safeornot.space/article/${id}/${post.slug}`
+    }
   };
 
 }
@@ -62,6 +65,11 @@ const page = async ({ params }: Props) => {
     where: { id: id },
     select: {
       heading: true,
+      body: true,
+      created_at: true,
+      image_url: true,
+      users: { select: { name: true } },
+      locations: { select: { name: true } }
     },
   });
 
@@ -70,7 +78,37 @@ const page = async ({ params }: Props) => {
   }
   return (
     <div>
-      <h1 className="sr-only">{post.heading}</h1>
+      <article className="sr-only" aria-hidden="true">
+        <h1>{post.heading}</h1>
+        <p>{post.body.slice(0, 300)}</p>
+        <p>
+          Author: {post.users?.name ?? "Anonymous"}
+          Published: {post.created_at?.toISOString().split("T")[0]}
+          {post.locations?.name && `Location: ${post.locations.name}`}
+        </p>
+      </article>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{
+        __html: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "BlogPosting",
+          headline: post.heading,
+          articleBody: post.body.slice(0, 500),
+          author: {
+            "@type": "Person",
+            name: post.users?.name ?? "Unknown",
+          },
+          datePublished: post.created_at?.toISOString(),
+          image: post.image_url ?? "https://www.safeornot.space/og.webp",
+          publisher: {
+            "@type": "Organization",
+            name: "Safe or Not",
+            logo: {
+              "@type": "ImageObject",
+              url: "https://www.safeornot.space/logo.avif",
+            },
+          },
+        }),
+      }} />
       <Article />
     </div>
   )

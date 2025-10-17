@@ -2,7 +2,7 @@ import { AreaCard } from "./components/area-card";
 import { PrecautionCard } from "./components/map-card";
 import { ReviewsCard } from "./components/reviews-card";
 import TabView from "./components/TabView";
-import { Metadata} from "next";
+import { Metadata } from "next";
 import { db } from "@/lib/prisma";
 import { createClient } from "@/utils/supabase/server";
 import { Button } from "@/components/ui/button";
@@ -16,7 +16,7 @@ type Props = {
 
 // ✅ Dynamic metadata for SEO
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const {id} = await params;
+  const { id } = await params;
   const location = await db.locations.findUnique({
     where: { id: id },
     select: { name: true },
@@ -55,33 +55,45 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 const page = async ({ params }: Props) => {
   const { id } = await params;
-  
+
   // Check if user is authenticated (server-side)
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  
+
   // Get location details for tracking
   const location = await db.locations.findUnique({
     where: { id: id },
     select: { name: true },
   });
 
-  if(!location){
+  if (!location) {
     return (
       <div>
-        <NotFound/>
+        <NotFound />
       </div>
     )
   }
 
   return (
     <div className="min-h-screen bg-white p-4 pb-20 md:p-6 lg:p-8">
-      <h1 className="sr-only">{location?.name}</h1>
+      {/* Hidden semantic content for SEO */}
+      <article className="sr-only" aria-hidden="true">
+        <h1>{location.name}</h1>
+        <p>
+          Explore safety insights, traveler reviews, and community experiences about {location.name}.
+          Get real-time updates, AI-powered safety scores, and helpful local precautions shared by verified users.
+        </p>
+        <p>
+          Safe or Not empowers travelers with community-driven data — helping you decide whether {location.name} is safe to visit.
+        </p>
+      </article>
+
+
       {/* Add LocationTracker here - it renders nothing but tracks the visit */}
       {location && (
         <LocationTracker locationId={id} locationName={location.name} />
       )}
-      
+
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Top Area Card - Full Width */}
         <AreaCard />
@@ -90,9 +102,9 @@ const page = async ({ params }: Props) => {
         {/* Show TabView only if user is logged in */}
         {user ? (
           <>
-          
-        <PrecautionCard />
-          <TabView />
+
+            <PrecautionCard />
+            <TabView />
           </>
         ) : (
           <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-8 text-center">
