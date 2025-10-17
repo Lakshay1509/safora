@@ -1,3 +1,4 @@
+'use client'
 import RightSidebar from '@/app/community/components/RightSidebar';
 import AvatarCircle from '@/app/profile/components/AvatarCircle';
 import { useNotifications } from '@/hooks/useNotification';
