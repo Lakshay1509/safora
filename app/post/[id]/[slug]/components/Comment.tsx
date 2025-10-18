@@ -15,7 +15,7 @@ import { useState } from "react";
 import { useDeleteCommentPost } from "@/features/post-comment.ts/use-delete-comment";
 import { useAuth } from "@/contexts/AuthContext";
 import AvatarCircle from "@/app/profile/components/AvatarCircle";
-import { MDXEditor } from "@mdxeditor/editor";
+import { linkPlugin, MDXEditor, linkDialogPlugin } from "@mdxeditor/editor";
 import ProfileLogo from "@/components/ProfileLogo";
 
 
@@ -130,15 +130,15 @@ const Comment = ({ postId }: Props) => {
                     <div key={comment.id} className="p-3 bg-gray-50 rounded-lg">
                         <div className="flex items-center text-sm text-gray-600 mb-2">
                             {comment.users && (
-                                                //  <AvatarCircle url={comment?.users?.profile_url} name={comment?.users?.name} />
-                                                 <ProfileLogo
-                            url={comment?.users?.profile_url}
-                            name={comment?.users?.name}
-                            color={comment.users?.profile_color ?? ''}
-                            size="30"
-                            
-                          />
-                                )}
+                                //  <AvatarCircle url={comment?.users?.profile_url} name={comment?.users?.name} />
+                                <ProfileLogo
+                                    url={comment?.users?.profile_url}
+                                    name={comment?.users?.name}
+                                    color={comment.users?.profile_color ?? ''}
+                                    size="30"
+
+                                />
+                            )}
                             <span className="font-medium mx-2">{comment.users?.name || "Anonymous"}</span>
                             <span className="mx-2">•</span>
                             <span>
@@ -160,10 +160,14 @@ const Comment = ({ postId }: Props) => {
                         </div>
                         <div className="text-gray-800 text-[14px]">
                             <MDXEditor
-                                                        markdown={comment.text ?? ''}
-                                                        readOnly={true}
-                            
-                                                    />
+                                markdown={comment.text ?? ''}
+                                readOnly={true}
+                                plugins={[
+                                    linkPlugin(),
+                                    linkDialogPlugin()
+                                ]}
+
+                            />
                         </div>
                         <div className="mt-2 flex items-center justify-between">
                             <button
@@ -172,7 +176,7 @@ const Comment = ({ postId }: Props) => {
                             >
                                 <MessageCircle className="h-4 w-4 mr-1" />
                                 {openReplies.includes(comment.id) ? "Hide replies" : "Reply"}
-                                
+
                                 <span className="ml-2">({comment._count.other_posts_comments})</span>
                             </button>
                         </div>

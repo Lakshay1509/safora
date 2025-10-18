@@ -300,12 +300,7 @@ export default async function LandingPage() {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="mt-10 text-center text-xs text-neutral-500">
-        <p>
-          © {new Date().getFullYear()} SafeOrNot. All rights reserved.
-        </p>
-      </footer>
+     
     </main>
   );
 }

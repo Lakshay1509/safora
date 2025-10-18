@@ -8,7 +8,7 @@ import PostStatsFeed from "@/components/PostsStatsFeed";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import ProfileLogo from "@/components/ProfileLogo";
-import { MDXEditor } from "@mdxeditor/editor";
+import { linkDialogPlugin, linkPlugin, MDXEditor } from "@mdxeditor/editor";
 
 const Posts = () => {
     const params = useParams();
@@ -44,22 +44,22 @@ const Posts = () => {
 
     if (!data || data.post.length === 0) {
         return (
-  <div className="p-6 flex flex-col lg:flex-row items-center justify-center gap-6 text-center lg:text-left">
-    <Image 
-      src="/create-first.png" 
-      alt="first-image" 
-      height={150} 
-      width={150} 
-      className="flex-shrink-0"
-    />
-    <div className="flex-col space-y-2 ">
-    <p className="text-gray-700 text-base sm:text-lg font-medium max-w-md">
-      Start the conversation. <span className="text-blue-600 font-semibold">Be the first to contribute!</span>
-    </p>
-    <Button onClick={()=>{router.push('/create-post')}} >Create Post</Button>
-    </div>
-  </div>
-);
+            <div className="p-6 flex flex-col lg:flex-row items-center justify-center gap-6 text-center lg:text-left">
+                <Image
+                    src="/create-first.png"
+                    alt="first-image"
+                    height={150}
+                    width={150}
+                    className="flex-shrink-0"
+                />
+                <div className="flex-col space-y-2 ">
+                    <p className="text-gray-700 text-base sm:text-lg font-medium max-w-md">
+                        Start the conversation. <span className="text-blue-600 font-semibold">Be the first to contribute!</span>
+                    </p>
+                    <Button onClick={() => { router.push('/create-post') }} >Create Post</Button>
+                </div>
+            </div>
+        );
 
     }
 
@@ -76,11 +76,11 @@ const Posts = () => {
                             <div className="flex items-start gap-3">
                                 {post.users && (
                                     <ProfileLogo
-                            url={post?.users?.profile_url}
-                            name={post?.users?.name}
-                            color={post.users?.profile_color ?? ''}
-                            size="40"
-                          />
+                                        url={post?.users?.profile_url}
+                                        name={post?.users?.name}
+                                        color={post.users?.profile_color ?? ''}
+                                        size="40"
+                                    />
                                 )}
                                 <Link
                                     href={`/post/${post.id}/${post.slug}`}
@@ -88,8 +88,11 @@ const Posts = () => {
                                 >
 
                                     <h2 className="font-semibold text-lg">{truncateText(post.heading)}</h2>
-                                    <MDXEditor className="text-gray-700 mt-2" markdown={truncateText(post.body, true)}/>
-                                    
+                                    <MDXEditor className="text-gray-700 mt-2" markdown={truncateText(post.body, true)} readOnly={true} plugins={[
+                                        linkPlugin(),
+                                        linkDialogPlugin()
+                                    ]} />
+
                                 </Link>
                             </div>
 
