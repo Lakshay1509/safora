@@ -45,7 +45,7 @@ export function Footer({
               </li>
               <li>
                 <Link
-                  href="/community?view=articles"
+                  href="/community?view=article"
                   className="text-sm text-gray-600 hover:text-gray-900 transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 rounded-sm"
                 >
                   Articles
