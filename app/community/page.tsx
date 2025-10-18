@@ -3,6 +3,7 @@ import Tabview from "./components/Tabview";
 import Articles from "./components/Articles";
 import Notification from "@/components/Notification";
 import { Metadata } from "next";
+import PostSkeleton from "./components/PostsSkeleton";
 
 interface PageProps {
   searchParams: Promise<{ view?: string; page?: string }>
@@ -57,7 +58,11 @@ const Page = async ({ searchParams }: PageProps) => {
       </header>
       
       <main role="main">
-        <Suspense fallback={<div>Loading...</div>}>
+        <Suspense fallback={<div className="space-y-4 p-4">
+                {[1, 2, 3, 4, 5].map((item) => (
+                  <PostSkeleton key={item} />
+                ))}
+              </div>}>
           {view === 'feed' && <Tabview />}
           {view === 'article' && <Articles/>}
           {view === 'notification' && <Notification/>}

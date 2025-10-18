@@ -23,16 +23,57 @@ export default async function LandingPage() {
         }}
       />
 
+      {/* FAQ Schema */}
+      <Script
+        id="faq-schema"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            "mainEntity": [
+              {
+                "@type": "Question",
+                "name": "How accurate are the safety ratings?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Our safety ratings are based on real user experiences and community reports. We use AI to identify patterns and verify authenticity, ensuring reliable information for travelers worldwide."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Can I contribute safety information?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Yes! We encourage all travelers to share their experiences. Simply create an account, search for a location, and add your review. Your contribution helps build a safer travel community."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Is SafeOrNot free to use?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Yes, SafeOrNot is completely free for all travelers. Browse locations, read reviews, and contribute your own experiences at no cost."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "How often is safety information updated?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Safety information is updated in real-time as community members share new experiences. Our AI continuously analyzes patterns to provide the most current safety insights."
+                }
+              }
+            ]
+          }),
+        }}
+      />
+
       {/* Hero Section */}
       <header className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        <h1 className="font-bold text-3xl lg:text-4xl dark:text-white text-black">
+        <h1 className="font-bold text-3xl lg:text-4xl text-black dark:text-white">
           Your Everyday <span className="italic text-red-500">Safety Lens</span>
         </h1>
-
-        {/* <p className="text-sm sm:text-base md:text-lg text-neutral-500 max-w-xs sm:max-w-md md:max-w-2xl mx-auto py-2 sm:py-3 md:py-4">
-          Subtle safety insights — quick, simple, and reassuring.
-        </p> */}
-
       </header>
 
       {/* Why Section */}
@@ -40,9 +81,10 @@ export default async function LandingPage() {
         aria-labelledby="why-safeornot"
         className="w-full max-w-4xl text-center px-4 sm:px-6 lg:px-8"
       >
+        <h2 id="why-safeornot" className="sr-only">Why Choose SafeOrNot</h2>
         <p className="mt-2 text-sm sm:text-base md:text-lg text-neutral-500 mx-auto py-2 sm:py-3 md:py-4">
-          Get community-driven and real-time tips for safer
-          decisions wherever you go.
+          Get community-driven street safety analysis and real-time tips for safer
+          decisions wherever you go. Comprehensive urban safety insights for travelers exploring new cities.
         </p>
       </section>
 
@@ -57,14 +99,17 @@ export default async function LandingPage() {
         className="w-full max-w-7xl mx-auto mt-6 sm:mt-8 md:mt-10 px-2 sm:px-4"
       >
         <div className="aspect-[16/9] sm:aspect-[16/8] md:aspect-[16/7] lg:aspect-[16/6] flex justify-center items-center">
-          <Image src="/hero.avif" alt="hero" height='1200' width='1200' />
+          <Image 
+            src="/hero.avif" 
+            alt="Interactive world map showing community-driven safety ratings and real-time travel safety insights" 
+            height={1200} 
+            width={1200} 
+          />
         </div>
-
       </section>
 
       {/* Gender Selection */}
-      <SelectGender
-      />
+      <SelectGender />
 
       {/* Hero Support Section */}
       <section
@@ -121,10 +166,14 @@ export default async function LandingPage() {
 
       <BentoBox />
 
-      {/* NEW: How It Works Section - Adds ~200 words */}
-      <section className="w-full max-w-7xl mx-auto py-12 md:py-16 px-4 sm:px-6 lg:px-8">
+      {/* How It Works Section */}
+      <section 
+        id="how-it-works"
+        aria-labelledby="how-it-works-heading"
+        className="w-full max-w-7xl mx-auto py-12 md:py-16 px-4 sm:px-6 lg:px-8"
+      >
         <div className="text-center mb-12">
-          <h2 className="text-2xl md:text-3xl font-bold text-black mb-4">
+          <h2 id="how-it-works-heading" className="text-2xl md:text-3xl font-bold text-black mb-4">
             How SafeOrNot Works
           </h2>
           <p className="text-base md:text-lg text-neutral-600 max-w-3xl mx-auto">
@@ -162,6 +211,7 @@ export default async function LandingPage() {
         </div>
       </section>
 
+      {/* Community Description Section */}
       <section
         aria-labelledby="community-description"
         className="w-full py-12 md:py-20 lg:py-24 px-4 sm:px-6 lg:px-8"
@@ -184,7 +234,7 @@ export default async function LandingPage() {
             <div className="flex-1 max-w-2xl">
               <Image
                 src="/og.webp"
-                alt="Travel community experiences and reviews"
+                alt="SafeOrNot community members sharing travel safety experiences and location reviews"
                 width={1000}
                 height={1000}
                 className="rounded-2xl border-b-4 border-black"
@@ -194,9 +244,13 @@ export default async function LandingPage() {
         </div>
       </section>
 
-      {/* NEW: FAQ Section - Adds ~300 words */}
-      <section className="w-full max-w-4xl mx-auto py-12 md:py-16 px-4 sm:px-6 lg:px-8">
-        <h2 className="text-2xl md:text-3xl font-bold text-center text-black mb-10">
+      {/* FAQ Section */}
+      <section 
+        id="faq"
+        aria-labelledby="faq-heading"
+        className="w-full max-w-4xl mx-auto py-12 md:py-16 px-4 sm:px-6 lg:px-8"
+      >
+        <h2 id="faq-heading" className="text-2xl md:text-3xl font-bold text-center text-black mb-10">
           Frequently Asked Questions
         </h2>
 
@@ -245,10 +299,6 @@ export default async function LandingPage() {
           </details>
         </div>
       </section>
-
-      {/* Community Description Section */}
-
-
 
       {/* Footer */}
       <footer className="mt-10 text-center text-xs text-neutral-500">
