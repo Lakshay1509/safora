@@ -4,7 +4,7 @@ import { createClient } from "@/utils/supabase/server";
 import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
 import { randomUUID } from "crypto";
-import { generateLocationPrecautions } from "@/lib/gemini-service";
+import { generateTravelerWarnings } from "@/lib/gemini-service";
 enum TimeOfDay {
   DAY = "DAY",
   NIGHT = "NIGHT",
@@ -19,7 +19,6 @@ interface location {
   lat: number;
   lon: number;
 }
-
 
 const app = new Hono()
 
@@ -174,50 +173,80 @@ const app = new Hono()
       where: { location_id: id },
     });
 
-    const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+    // Check if precautions are older than 7 days (to match the 7-day data window)
+    const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
 
-    if (!locationPrecautions || locationPrecautions.created_at < oneDayAgo) {
-       const location = await db.locations.findUnique({
+    if (!locationPrecautions || locationPrecautions.created_at < sevenDaysAgo) {
+      const location = await db.locations.findUnique({
         where: { id: id },
       });
 
       if (!location) {
         return ctx.json({ error: "Location not found" }, 404);
       }
-      
-      try{
-        const generatedData = await generateLocationPrecautions(
+
+      try {
+        const generatedData = await generateTravelerWarnings(
           location.name,
           location.city,
           location.country
-        )
+        );
 
-        const createdPrecautions = await db.precautions.upsert({
-  where: {
-    location_id: id,
-  },
-  update: {
-    approved_precautions: generatedData,
-    created_at:new Date()
-  },
-  create: {
-    location_id: id,
-    approved_precautions: generatedData,
-  },
-})
-
-        if(!createdPrecautions){
-          return ctx.json({error:"Error getting precautions"},500);
+        // Check if no recent data was found
+        if (generatedData.dataRecency === "no_recent_data" || generatedData.warnings.length === 0) {
+          return ctx.json(
+            {
+              location_id: id,
+              warnings: [],
+              dataRecency: generatedData.dataRecency,
+              searchDate: generatedData.searchDate,
+              travelerRelevance: generatedData.travelerRelevance,
+              message: "No recent traveler-specific safety data found for this location in the last 7 days",
+            },
+            200
+          );
         }
 
-        return ctx.json({location_id:createdPrecautions.location_id,approved_precautions:createdPrecautions.approved_precautions,created_at:createdPrecautions.created_at},200)
-      }
-      catch(error){
-        console.log(error)
-        return ctx.json({error:"Error getting precautions"},500)
+        const createdPrecautions = await db.precautions.upsert({
+          where: {
+            location_id: id,
+          },
+          update: {
+            approved_precautions: generatedData as any,
+            created_at: new Date(),
+          },
+          create: {
+            location_id: id,
+            approved_precautions: generatedData as any,
+          },
+        });
+
+        if (!createdPrecautions) {
+          return ctx.json({ error: "Error getting precautions" }, 500);
+        }
+
+        return ctx.json(
+          {
+            location_id: createdPrecautions.location_id,
+            warnings: createdPrecautions.approved_precautions,
+            created_at: createdPrecautions.created_at,
+          },
+          200
+        );
+      } catch (error) {
+        console.log(error);
+        return ctx.json({ error: "Error getting precautions" }, 500);
       }
     }
-    return ctx.json( locationPrecautions , 200);
+    
+    return ctx.json(
+      {
+        location_id: locationPrecautions.location_id,
+        warnings: locationPrecautions.approved_precautions,
+        created_at: locationPrecautions.created_at,
+      },
+      200
+    );
   })
 
   .get("/comments/:id", async (ctx) => {
@@ -255,27 +284,24 @@ const app = new Hono()
     return ctx.json({ locationComments }, 200);
   })
 
-  .get("/location_stats/:id",async(ctx)=>{
+  .get("/location_stats/:id", async (ctx) => {
+    const id = ctx.req.param("id");
+    const posts = await db.posts.count({
+      where: { location_id: id },
+    });
 
+    const comments = await db.comments.count({
+      where: { location_id: id },
+    });
 
-      const id = ctx.req.param("id");
-      const posts = await db.posts.count({
-        where:{location_id:id}
-      })
+    const followers = await db.locations.findUnique({
+      where: { id: id },
+      select: {
+        followers_count: true,
+      },
+    });
 
-      const comments = await db.comments.count({
-        where:{location_id:id}
-      })
-
-      const followers = await db.locations.findUnique({
-        where:{id:id},
-        select:{
-          followers_count:true
-        }
-      })
-
-      
-      return ctx.json({posts,comments,followers},200)
+    return ctx.json({ posts, comments, followers }, 200);
   })
 
   .post(
@@ -291,7 +317,6 @@ const app = new Hono()
       })
     ),
     async (ctx) => {
-     
       const values = ctx.req.valid("json");
       const location = await db.$queryRaw<location[]>`
   INSERT INTO locations (country, city, name, geog)
@@ -303,8 +328,6 @@ const app = new Hono()
   )
   RETURNING id, country, city, name, created_at, ${values.lat} as lat, ${values.long} as lon;
 `;
-
-
 
       if (!location || (Array.isArray(location) && location.length === 0)) {
         return ctx.json({ error: "Error creating location" }, 404);

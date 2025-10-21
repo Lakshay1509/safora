@@ -3,10 +3,8 @@
 import { useState, useEffect } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { ArrowUpRight, Compass, LogIn, Navigation, Plus, SquarePen } from "lucide-react";
+import { Compass, LogIn, Plus, SquarePen } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
-import { useGetTrending } from "@/features/community/use-get-trending";
-import TrendingCard from "./TrendingCard";
 import AvatarCircle from "@/app/profile/components/AvatarCircle";
 import { useGetDefaultUser } from "@/features/user/use-get-default";
 import { useGetUserLocationCount } from "@/features/user/use-get-locationCount";
@@ -54,9 +52,12 @@ export function Sidebar() {
 
   return (
     <>
+      
+
       {/* Desktop sidebar - visible on lg screens */}
       <div className="fixed left-0 top-0 h-[90vh] w-64 bg-white border-r border-t rounded-xl border-gray-200 mt-22 hidden lg:flex flex-col">
         <div className="p-4 flex-1">
+          {/* Create Post Button */}
           <Button
             onClick={handleCreatePost}
             className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
@@ -65,36 +66,45 @@ export function Sidebar() {
             Create Post
           </Button>
 
+          {/* Navigation Buttons */}
           <div className="flex flex-col justify-center items-center space-y-2 mt-10">
-            <Button
-              className={`w-full ${view === 'feed' ? 'bg-red-600 text-white hover:bg-red-700' : ''}`}
-              variant={view === 'feed' ? 'default' : 'outline'}
-              onClick={() => router.push('/community?view=feed')}
-            >
-              <Compass /> Feed
-            </Button>
-            <Button
-              className={`w-full ${view === 'article' ? 'bg-red-600 text-white hover:bg-red-700' : ''}`}
-              variant={view === 'article' ? 'default' : 'outline'}
-              onClick={() => router.push('/community?view=article')}
-            >
-              <SquarePen /> Articles
-            </Button>
+            <Link href="/community?view=feed" className="w-full">
+              <Button
+                className={`w-full ${view === "feed"
+                    ? "bg-red-600 text-white hover:bg-red-700"
+                    : ""
+                  }`}
+                variant={view === "feed" ? "default" : "outline"}
+              >
+                <Compass className="mr-2 h-4 w-4" />
+                Feed
+              </Button>
+            </Link>
 
+            <Link href="/community?view=article" className="w-full">
+              <Button
+                className={`w-full ${view === "article"
+                    ? "bg-red-600 text-white hover:bg-red-700"
+                    : ""
+                  }`}
+                variant={view === "article" ? "default" : "outline"}
+              >
+                <SquarePen className="mr-2 h-4 w-4" />
+                Articles
+              </Button>
+            </Link>
           </div>
+
+          {/* Recent Locations */}
           <div className="mt-10">
-
             <RecentLocations />
-
           </div>
-
         </div>
 
 
 
-
         <div className="p-4 text-xs text-gray-500 mt-auto">
-          {user ?(
+          {user ? (
             <Link href='/profile' >
               <div className="flex items-center space-x-3 mb-4 hover:bg-gray-300 transition-all rounded-2xl p-3">
                 {/* Avatar */}
@@ -114,22 +124,22 @@ export function Sidebar() {
                 </div>
               </div>
             </Link>)
-          :(
+            : (
 
-          <div className="bg-black text-white rounded-2xl border border-red-600 p-4 space-y-3 shadow-md transition-all hover:shadow-red-500/20 mb-4">
-            {/* Text */}
-            <p className="text-sm text-gray-200 leading-relaxed">
-              Log in to share your first travel experience, join the community and get $20 worth of gift.
-            </p>
+              <div className="bg-black text-white rounded-2xl border border-red-600 p-4 space-y-3 shadow-md transition-all hover:shadow-red-500/20 mb-4">
+                {/* Text */}
+                <p className="text-sm text-gray-200 leading-relaxed">
+                  Log in to share your first travel experience, join the community and get $20 worth of gift.
+                </p>
 
-            {/* Button */}
-            <Link href="/login">
-              <button className="w-full flex items-center justify-center space-x-2 bg-red-600 hover:bg-red-700 text-white font-medium py-2 rounded-xl transition-all">
-                <LogIn size={18} />
-                <span>Log In</span>
-              </button>
-            </Link>
-          </div>)}
+                {/* Button */}
+                <Link href="/login">
+                  <button className="w-full flex items-center justify-center space-x-2 bg-red-600 hover:bg-red-700 text-white font-medium py-2 rounded-xl transition-all">
+                    <LogIn size={18} />
+                    <span>Log In</span>
+                  </button>
+                </Link>
+              </div>)}
 
           <div className="flex flex-wrap gap-2 justify-center">
             <a href="/privacy-policy" className="hover:underline">Privacy Policy</a>
@@ -142,29 +152,46 @@ export function Sidebar() {
 
 
       {/* Floating Mobile Dock */}
+
       <div className="fixed bottom-0 z-50 left-0 w-full bg-white border-t border-gray-200 shadow-lg lg:hidden">
         <div className="flex justify-around items-center py-2">
-          <button className="flex flex-col items-center text-xs rounded-full bg-gradient-to-r from-red-600 to-red-500 text-white p-2  shadow-md shadow-red-500/30 hover:scale-105 hover:shadow-red-500/50 transition-all duration-200" onClick={handleCreatePost}>
-            <Plus className="h-6 w-6 mb-0.5" />
-
-          </button>
+          {/* Create Post Button */}
           <button
-            className={`flex flex-col items-center text-sm pb-1 ${view === 'feed' ? 'text-red-600 border-b-2 border-red-600' : 'text-gray-600 hover:text-primary'}`}
-            onClick={() => router.push('/community?view=feed')}
+            className="flex flex-col items-center text-xs rounded-full bg-gradient-to-r from-red-600 to-red-500 text-white p-2 shadow-md shadow-red-500/30 hover:scale-105 hover:shadow-red-500/50 transition-all duration-200"
+            onClick={handleCreatePost}
+          >
+            <Plus className="h-6 w-6 mb-0.5" />
+          </button>
+
+          {/* Feed Button */}
+          <Link
+            href="/community?view=feed"
+            className={`flex flex-col items-center text-sm pb-1 ${view === "feed"
+                ? "text-red-600 border-b-2 border-red-600"
+                : "text-gray-600 hover:text-primary"
+              }`}
           >
             <Compass className="h-6 w-6 mb-1" />
+          </Link>
 
-          </button>
-          <button
-            className={`flex flex-col items-center text-sm pb-1 ${view === 'article' ? 'text-red-600 border-b-2 border-red-600' : 'text-gray-600 hover:text-primary'}`}
-            onClick={() => router.push('/community?view=article')}
+          {/* Articles Button */}
+          <Link
+            href="/community?view=article"
+            className={`flex flex-col items-center text-sm pb-1 ${view === "article"
+                ? "text-red-600 border-b-2 border-red-600"
+                : "text-gray-600 hover:text-primary"
+              }`}
           >
             <SquarePen className="h-6 w-6 mb-1" />
+          </Link>
 
-          </button>
+          {/* Profile Avatar */}
           <button onClick={handleClick}>
-            <AvatarCircle url={data?.userData.profile_url} name={data?.userData.name ?? ''} size="40" />
-
+            <AvatarCircle
+              url={data?.userData.profile_url}
+              name={data?.userData.name ?? ""}
+              size="40"
+            />
           </button>
         </div>
       </div>

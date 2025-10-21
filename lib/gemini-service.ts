@@ -1,24 +1,60 @@
-// lib/gemini-precautions-service.ts
+// lib/gemini-service.ts
 import { GoogleGenAI } from "@google/genai";
 
 const ai = new GoogleGenAI({
   apiKey: process.env.GEMINI_API_KEY!
 });
 
-export type SafetyTip ={
+// Type definitions
+export type WarningCategory = 
+  | "tourist_scam"
+  | "tourist_crime"
+  | "women_traveler_safety"
+  | "traveler_environment"
+  | "tourist_transport"
+  | "accommodation_scam";
+
+export type SeverityLevel = "low" | "medium" | "high" | "critical";
+
+export type DataRecency = "last_7_days" | "outdated" | "no_recent_data";
+
+export type TravelerRelevance = "high" | "medium" | "low";
+
+export interface TravelerWarning {
+  category: WarningCategory;
+  severity: SeverityLevel;
+  issue: string;
+  details: string;
+  lastReported: string;
+  travelerImpact: string;
+}
+
+export interface GeneratedWarnings {
+  warnings: TravelerWarning[];
+  dataRecency: DataRecency;
+  searchDate: string;
+  travelerRelevance: TravelerRelevance;
+}
+
+// Legacy types for backward compatibility
+export type SafetyTip = {
   tip: string;
 }
 
-export type GeneratedPrecautions ={
+export type GeneratedPrecautions = {
   [key: string]: any;
   tips: SafetyTip[];
 }
 
-export async function generateLocationPrecautions(
+/**
+ * Generates real-time traveler safety warnings for a specific location
+ * Focuses on tourist-specific safety issues from the last 7 days
+ */
+export async function generateTravelerWarnings(
   locationName: string,
   city: string | null,
   country: string
-): Promise<GeneratedPrecautions> {
+): Promise<GeneratedWarnings> {
   try {
     // Configure Google Search grounding tool
     const groundingTool = {
@@ -35,48 +71,103 @@ export async function generateLocationPrecautions(
       ? `${locationName}, ${city}, ${country}` 
       : `${locationName}, ${country}`;
 
-    const prompt = `**Role**: You are a safety assistant.
-**Input**:
-* \`place\`: ${locationString}.
+    // Get current date in ISO format
+    const currentDate = new Date();
+    const searchDate = currentDate.toISOString().split('T')[0];
+    
+    // Calculate cutoff date (7 days ago)
+    const cutoffDate = new Date(currentDate);
+    cutoffDate.setDate(cutoffDate.getDate() - 7);
+    const cutoffDateString = cutoffDate.toISOString().split('T')[0];
+
+    const prompt = `**Role**: You are a real-time traveler safety intelligence analyst providing up-to-date warnings.
+
+**Input**: 
+* Location: ${locationString}
+* Current Date: ${searchDate}
+* Cutoff Date: ${cutoffDateString} (only use information from the **last 7 days**)
+
 **Task**:
-1. Search the web for the **latest** safety guidance and incidents about \`place\`.
-   * Use **credible sources**: government/police/transport advisories, local authorities, major news outlets, and official operators.
-   * Only use sources **published/updated within the last 2 months**.
-2. Generate **exactly 5 tips**, each on **one line** (no line breaks) and should be strictly in English .
-   * **At least 3** tips must be **women-focused** (e.g., women-only transit options, helplines, harassment reporting, late-night travel practices).
-   * Keep language clear, non-alarmist, and non-victim-blaming.
-   * Tailor to local context (transit, neighborhoods, hours, scams, events).
-3. Append **numeric citation indices** in square brackets to each tip, e.g., \`[1, 3]\`.
-   * Indices refer to your **internally compiled, recency-sorted source list** (not part of the output).
-   * Prefer 2-3 sources per tip when possible; 1 is acceptable if strongly authoritative.
-**Output**:
-* Return **only** a JSON array of 5 objects, **no extra text**.
-* Each object has the shape: \`{ "tip": "..." }\`.
-* Do **not** include the sources list in the output.
-* If you cannot find **≥3** credible recent sources overall, return:
-  \`\`\`json
-  []
-  \`\`\`
-**Validation Rules**:
-* Exactly 5 tips.
-* ≥3 tips clearly **for women** (mention women/women-only options/harassment reporting/etc.).
-* Each tip is **one line** (no newline), concise, and location-specific.
-* Every tip ends with bracketed numeric citations like \`[2]\` or \`[1, 4]\`.
-* No duplicate tips.
-**Example Output Format (structure only; content is placeholder)**:
+1. Search the web for **traveler-specific safety issues** reported between **${cutoffDateString} - ${searchDate}**:
+   * **Primary Focus**: Issues affecting tourists/travelers/visitors specifically (not general resident crime)
+   * **Include**: Tourist scams at airports/stations/attractions, taxi/transport overcharging, fake tour guides, accommodation scams, tourist-targeted theft/pickpocketing, currency exchange fraud, restaurant bill padding, SIM card scams, ATM skimming at tourist areas, harassment of travelers, tourist police incidents
+   * **Environmental for Travelers**: AQI/pollution affecting outdoor sightseeing, health advisories, water quality at hotels, disease outbreaks, travel disruptions (strikes, protests, weather)
+   * **Women Travelers**: Harassment in tourist areas, unsafe accommodations, transport safety, solo female traveler incidents, women-only facilities
+   
+   **Sources**: 
+   - r/travel, r/solotravel, r/IndiaTravel subreddits (last 7 days)
+   - TripAdvisor recent reviews and forums (October 2025)
+   - Local news: "tourist scam [location]", "traveler robbed [location]" (last week)
+   - Twitter/X: #travel[location], recent traveler complaints (last 7 days)
+   - Government travel advisories updated this week
+   - Hostel/hotel review warnings (Booking.com, Hostelworld) from last 7 days
+
+2. Generate **exactly 6 traveler-specific warnings**:
+   * **At least 2 for women travelers** (female solo traveler incidents, unsafe areas for women, women-targeted scams)
+   * **At least 1 environmental/health** (affecting sightseeing, outdoor activities, or traveler health)
+   * **At least 3 scam/crime-related** (specifically targeting tourists, not general crime)
+   * **MANDATORY**: Each warning must be based on incidents reported **${cutoffDateString} - ${searchDate}**
+   * Each must include:
+     - **Specific traveler context** (at airport, near [landmark], in [tourist area], at [accommodation type])
+     - **Actionable info** (exact prices travelers should pay, specific scam methods, where to report, alternative options)
+     - **Recency proof** (mention "this week", "recent reports", or specific date)
+     - One sentence, max 150 chars, traveler-focused language
+
+3. Add **numeric citations** [1], [2] for each tip.
+
+**Output Format** (JSON only):
 \`\`\`json
-[
-  { "tip": "Use well-lit main roads after dark. [1, 3]" },
-  { "tip": "Women: prefer women-only transit coaches when available. [2, 5]" },
-  { "tip": "Verify cab plate; share live route with contacts. [1, 4]" },
-  { "tip": "Avoid isolated parks after 10 PM. [3]" },
-  { "tip": "Women: call local harassment helpline if threatened. [2]" },
-  { "tip": "Use official taxi stands near stations. [1, 6]" },
-  { "tip": "Women: sit near driver or other women in cabs. [4]" },
-  { "tip": "Beware common tourist scams reported recently. [3, 6]" }
-]
-  Only return the response in the format specified above and double check the format.
-`;
+{
+  "warnings": [
+    {
+      "category": "tourist_scam|tourist_crime|women_traveler_safety|traveler_environment|tourist_transport|accommodation_scam",
+      "severity": "low|medium|high|critical",
+      "issue": "Brief traveler-focused description [1, 2]",
+      "details": "Specific information: where tourists encounter this, exact scam method, prices, what to do instead [1, 2]",
+      "lastReported": "YYYY-MM-DD",
+      "travelerImpact": "Brief note on who's affected: all tourists, solo travelers, women, budget travelers, etc."
+    }
+  ],
+  "dataRecency": "last_7_days|outdated|no_recent_data",
+  "searchDate": "${searchDate}",
+  "travelerRelevance": "high|medium|low"
+}
+\`\`\`
+
+**Strict Validation Rules**:
+* ❌ **REJECT** any information older than ${cutoffDateString}
+* ❌ **REJECT** general crime statistics not specific to travelers
+* ❌ **REJECT** generic safety advice ("be careful", "stay alert")
+* ✅ **ONLY ACCEPT** recent traveler experiences, scams targeting tourists, incidents at tourist locations
+* ✅ Must have at least 4 sources from last 7 days to proceed
+* If insufficient recent traveler-specific data: return \`dataRecency: "no_recent_data"\` with empty warnings array
+
+**Search Query Instructions for Gemini**:
+When searching, prioritize:
+1. "tourist scam ${locationString} October 2025"
+2. "traveler safety ${locationString} this week"
+3. "site:reddit.com/r/travel ${locationString} pickpocket scam" (last 7 days)
+4. "solo female traveler ${locationString} harassment October 2025"
+5. "${locationString} airport taxi scam recent"
+6. "${locationString} AQI traveler advisory October 2025"
+
+**Critical Rules**:
+- 🚫 No data older than **${cutoffDateString}**
+- 🎯 Must be **traveler/tourist-specific** (not general crime)
+- 📍 Must mention specific **tourist locations** (airports, stations, landmarks, tourist neighborhoods)
+- 💰 Must include **prices/amounts** for scams where applicable
+- 👤 Must specify **which type of travelers** are affected
+- If you cannot find at least 4 recent traveler-specific sources, return:
+  \`\`\`json
+  {
+    "warnings": [],
+    "dataRecency": "no_recent_data",
+    "searchDate": "${searchDate}",
+    "travelerRelevance": "low"
+  }
+  \`\`\`
+
+Only return the response in the format specified above and double check the format.`;
 
     const config = {
       tools: [groundingTool],
@@ -89,10 +180,7 @@ export async function generateLocationPrecautions(
       config: config,
     });
 
-   
-
     const responseText = result.text;
-    // console.log(responseText)
     
     // Extract JSON from response
     let jsonString = '';
@@ -101,35 +189,43 @@ export async function generateLocationPrecautions(
     if (markdownMatch && markdownMatch[1]) {
       jsonString = markdownMatch[1];
     } else {
-      const jsonMatch = responseText?.match(/(\[[\s\S]*?\])/);
+      // Try to find JSON object in response
+      const jsonMatch = responseText?.match(/(\{[\s\S]*?"warnings"[\s\S]*?\})/);
       if (jsonMatch && jsonMatch[0]) {
         jsonString = jsonMatch[0];
       }
     }
 
     if (!jsonString) {
-      console.error('No JSON array found in response');
+      console.error('No JSON found in response');
       throw new Error("Invalid JSON response from Gemini");
     }
 
-    const tips: SafetyTip[] = JSON.parse(jsonString);
+    const parsedResponse: GeneratedWarnings = JSON.parse(jsonString);
 
-     if (tips.length === 0) {
-      return { tips: [] };
+    // Validate response structure
+    if (!parsedResponse.warnings || !Array.isArray(parsedResponse.warnings)) {
+      throw new Error("Invalid response structure: missing warnings array");
     }
 
-    // Validate each tip has required structure
-    const invalidTips = tips.filter(tip => !tip.tip || typeof tip.tip !== 'string');
-    if (invalidTips.length > 0) {
-      throw new Error("Invalid tip structure in response");
+    if (!parsedResponse.dataRecency || !parsedResponse.searchDate) {
+      throw new Error("Invalid response structure: missing required metadata");
     }
 
+    // Validate each warning has required fields
+    parsedResponse.warnings.forEach((warning, index) => {
+      if (!warning.category || !warning.severity || !warning.issue || 
+          !warning.details || !warning.lastReported || !warning.travelerImpact) {
+        throw new Error(`Invalid warning structure at index ${index}: missing required fields`);
+      }
+    });
 
-    return {
-      tips,
-    };
-  } catch (error:any) {
-    console.error('Error generating precautions from Gemini:', error);
-    throw new Error(`Failed to generate precautions: ${error.message}`);
+   
+
+    return parsedResponse;
+  } catch (error: any) {
+    console.error('Error generating traveler warnings from Gemini:', error);
+    throw new Error(`Failed to generate traveler warnings: ${error.message}`);
   }
 }
+
