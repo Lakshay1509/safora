@@ -95,7 +95,7 @@ export function PrecautionCard() {
               <p className="font-medium">
                 Traveler Safety Warnings{" "}
                 <span className="text-[14px] bg-gradient-to-r from-pink-500 to-blue-500 bg-clip-text text-transparent">
-                  (AI Generated - Last 7 Days)
+                  (AI Generated - Last 30 Days)
                 </span>
               </p>
 

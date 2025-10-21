@@ -77,13 +77,13 @@ export async function generateTravelerWarnings(
     
     // Calculate cutoff date (7 days ago)
     const cutoffDate = new Date(currentDate);
-    cutoffDate.setDate(cutoffDate.getDate() - 7);
+    cutoffDate.setDate(cutoffDate.getDate() - 30);
     const cutoffDateString = cutoffDate.toISOString().split('T')[0];
 
     const prompt = `**Role**: You are a real-time traveler safety intelligence analyst providing up-to-date warnings.
 
 **Input**: 
-* Location: ${locationString}
+* Location:  ${locationString} or the nearest major city
 * Current Date: ${searchDate}
 * Cutoff Date: ${cutoffDateString} (only use information from the **last 7 days**)
 
@@ -167,7 +167,7 @@ When searching, prioritize:
   }
   \`\`\`
 
-Only return the response in the format specified above and double check the format.`;
+our final output must be only the JSON object,and double check the format.`;
 
     const config = {
       tools: [groundingTool],
@@ -180,7 +180,10 @@ Only return the response in the format specified above and double check the form
       config: config,
     });
 
+
     const responseText = result.text;
+
+    
     
     // Extract JSON from response
     let jsonString = '';

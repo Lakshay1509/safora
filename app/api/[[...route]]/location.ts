@@ -192,7 +192,7 @@ const app = new Hono()
           location.country
         );
 
-        // Check if no recent data was found
+        // // Check if no recent data was found
         if (generatedData.dataRecency === "no_recent_data" || generatedData.warnings.length === 0) {
           return ctx.json(
             {
