@@ -17,7 +17,7 @@ export const useGetLocationPrecautions = (id:string)=>{
 
             return data;
         },
-        retry:1
+        retry:2
     });
 
     return query;

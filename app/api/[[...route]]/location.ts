@@ -174,7 +174,7 @@ const app = new Hono()
     });
 
     // Check if precautions are older than 7 days (to match the 7-day data window)
-    const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+    const sevenDaysAgo = new Date(Date.now() - 1 * 24 * 60 * 60 * 1000);
 
     if (!locationPrecautions || locationPrecautions.created_at < sevenDaysAgo) {
       const location = await db.locations.findUnique({
