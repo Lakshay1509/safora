@@ -8,21 +8,37 @@ const redis = new Redis({
   token: process.env.UPSTASH_REDIS_REST_TOKEN!,
 })
 
-const rateLimiter = new Ratelimit({
+// Lenient limiter for GET requests
+const getRateLimiter = new Ratelimit({
   redis,
-  limiter: Ratelimit.slidingWindow(100, '15m'),
+  limiter: Ratelimit.slidingWindow(300, '15m'), 
   analytics: true,
-  prefix: '@upstash/ratelimit',
-})
+  prefix: '@upstash/ratelimit-get',
+});
+
+// Stricter limiter for mutations
+const mutationRateLimiter = new Ratelimit({
+  redis,
+  limiter: Ratelimit.slidingWindow(30, '15m'), 
+  analytics: true,
+  prefix: '@upstash/ratelimit-mutation',
+});
+
 
 export async function middleware(request: NextRequest) {
-  // Get IP from headers (Next.js 15+)
+  // Get IP from headers
   const ip = 
     request.headers.get('x-forwarded-for')?.split(',')[0].trim() ??
     request.headers.get('x-real-ip') ??
     '127.0.0.1'
   
-  const { success, limit, remaining, reset } = await rateLimiter.limit(ip)
+  let success, limit, remaining, reset;
+
+  if (request.method === 'GET' || request.method === 'HEAD' || request.method === 'OPTIONS') {
+    ({ success, limit, remaining, reset } = await getRateLimiter.limit(ip));
+  } else {
+    ({ success, limit, remaining, reset } = await mutationRateLimiter.limit(ip));
+  }
   
   // Block request if rate limit exceeded
   if (!success) {
