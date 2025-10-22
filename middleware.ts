@@ -24,6 +24,14 @@ const mutationRateLimiter = new Ratelimit({
   prefix: '@upstash/ratelimit-mutation',
 });
 
+// More lenient limiter for link preview
+const linkPreviewRateLimiter = new Ratelimit({
+  redis,
+  limiter: Ratelimit.slidingWindow(300, '15m'), 
+  analytics: true,
+  prefix: '@upstash/ratelimit-link-preview',
+});
+
 
 export async function middleware(request: NextRequest) {
   // Get IP from headers
@@ -34,8 +42,15 @@ export async function middleware(request: NextRequest) {
   
   let success, limit, remaining, reset;
 
+  // Check if this is a link preview request
+  const isLinkPreviewRequest = request.nextUrl.pathname.startsWith('/api/') && 
+                               request.nextUrl.pathname.includes('link-preview/fetch');
+
   if (request.method === 'GET' || request.method === 'HEAD' || request.method === 'OPTIONS') {
     ({ success, limit, remaining, reset } = await getRateLimiter.limit(ip));
+  } else if (isLinkPreviewRequest) {
+    // Use more lenient rate limiter for link preview
+    ({ success, limit, remaining, reset } = await linkPreviewRateLimiter.limit(ip));
   } else {
     ({ success, limit, remaining, reset } = await mutationRateLimiter.limit(ip));
   }
