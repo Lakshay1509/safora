@@ -74,6 +74,18 @@ export default async function LandingPage() {
         <h1 className="font-bold text-3xl lg:text-4xl text-black dark:text-white">
           Your Everyday <span className="italic text-red-500">Safety Lens</span>
         </h1>
+
+        {/* Social Proof Badge */}
+        <div className="mt-4 flex justify-center text-sm text-neutral-600 dark:text-neutral-400">
+          <div className="flex items-center gap-2 rounded-full bg-emerald-50 dark:bg-emerald-900/20 px-3 py-1.5 border border-emerald-100 dark:border-emerald-800">
+            <span className="text-base">👥</span>
+            <span className="text-emerald-700 dark:text-emerald-400 font-medium">
+              100+ travelers
+            </span>
+            <span className="inline">sharing live safety updates</span>
+          </div>
+        </div>
+
       </header>
 
       {/* Why Section */}
@@ -99,11 +111,11 @@ export default async function LandingPage() {
         className="w-full max-w-7xl mx-auto mt-6 sm:mt-8 md:mt-10 px-2 sm:px-4"
       >
         <div className="aspect-[16/9] sm:aspect-[16/8] md:aspect-[16/7] lg:aspect-[16/6] flex justify-center items-center">
-          <Image 
-            src="/hero.avif" 
-            alt="Interactive world map showing community-driven safety ratings and real-time travel safety insights" 
-            height={1200} 
-            width={1200} 
+          <Image
+            src="/hero.avif"
+            alt="Interactive world map showing community-driven safety ratings and real-time travel safety insights"
+            height={1200}
+            width={1200}
           />
         </div>
       </section>
@@ -167,7 +179,7 @@ export default async function LandingPage() {
       <BentoBox />
 
       {/* How It Works Section */}
-      <section 
+      <section
         id="how-it-works"
         aria-labelledby="how-it-works-heading"
         className="w-full max-w-7xl mx-auto py-12 md:py-16 px-4 sm:px-6 lg:px-8"
@@ -245,7 +257,7 @@ export default async function LandingPage() {
       </section>
 
       {/* FAQ Section */}
-      <section 
+      <section
         id="faq"
         aria-labelledby="faq-heading"
         className="w-full max-w-4xl mx-auto py-12 md:py-16 px-4 sm:px-6 lg:px-8"
@@ -300,7 +312,7 @@ export default async function LandingPage() {
         </div>
       </section>
 
-     
+
     </main>
   );
 }
