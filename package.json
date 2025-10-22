@@ -37,6 +37,8 @@
     "@types/geojson": "^7946.0.16",
     "@types/jsdom": "^27.0.0",
     "@types/slug": "^5.0.9",
+    "@upstash/ratelimit": "^2.0.6",
+    "@upstash/redis": "^1.35.6",
     "@vercel/analytics": "^1.5.0",
     "@vercel/speed-insights": "^1.2.0",
     "class-variance-authority": "^0.7.1",
