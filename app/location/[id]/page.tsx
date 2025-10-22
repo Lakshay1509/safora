@@ -78,7 +78,7 @@ const page = async ({ params }: Props) => {
   }
 
   return (
-    <div className="min-h-screen bg-white p-4 pb-20 md:p-6 lg:p-8">
+    <div className="min-h-screen bg-white px-4 pb-20 md:px-6 lg:px-8">
       {/* Hidden semantic content for SEO */}
       <article className="sr-only" aria-hidden="true">
         <h1>{location.name}</h1>
