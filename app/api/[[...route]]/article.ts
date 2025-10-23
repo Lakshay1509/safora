@@ -8,7 +8,7 @@ import z from "zod";
 
 const app = new Hono()
 
-    .post(
+  .post(
     "/add",
     zValidator(
       "form",
@@ -28,7 +28,6 @@ const app = new Hono()
         data: { user },
         error,
       } = await supabase.auth.getUser();
-
 
       if (error || !user) {
         return ctx.json({ error: "Unauthorized" }, 401);
@@ -54,16 +53,15 @@ const app = new Hono()
           return ctx.json({ error: "Image upload failed" }, 500);
         }
       }
-      
 
       const article = await db.posts.create({
         data: {
-          heading:values.heading,
-          body:values.body,
+          heading: values.heading,
+          body: values.body,
           user_id: user.id,
           slug: generateSlug(values.heading),
           image_url: imageUrl,
-          is_article:1
+          is_article: 1,
         },
       });
 
@@ -83,8 +81,7 @@ const app = new Hono()
               increment: 1,
             },
             updated_at: new Date(),
-            active_today:true
-            
+            active_today: true,
           },
         });
         return ctx.json({ article }, 200);
@@ -114,11 +111,10 @@ const app = new Hono()
         error,
       } = await supabase.auth.getUser();
 
-
       if (error || !user) {
         return ctx.json({ error: "Unauthorized" }, 401);
       }
-       const id = ctx.req.param("id");
+      const id = ctx.req.param("id");
       const values = ctx.req.valid("form");
       const file = values.image;
 
@@ -139,17 +135,18 @@ const app = new Hono()
           return ctx.json({ error: "Image upload failed" }, 500);
         }
       }
-      
+
+     
 
       const article = await db.posts.update({
-        where:{id:id},
+        where: { id: id , user_id:user.id },
         data: {
-          heading:values.heading,
-          body:values.body,
+          heading: values.heading,
+          body: values.body,
           user_id: user.id,
           slug: generateSlug(values.heading),
           ...(imageUrl && { image_url: imageUrl }),
-          is_article:1
+          is_article: 1,
         },
       });
 
@@ -196,20 +193,21 @@ const app = new Hono()
 
     return ctx.json({ post }, 200);
   })
-  .post('/upload-image',zValidator(
-    "form",
-    z.object({
-      image:z.instanceof(File).optional(),
-    })
-  ),
+  .post(
+    "/upload-image",
+    zValidator(
+      "form",
+      z.object({
+        image: z.instanceof(File).optional(),
+      })
+    ),
 
-  async(ctx)=>{
-    const supabase = await createClient();
-    const {
+    async (ctx) => {
+      const supabase = await createClient();
+      const {
         data: { user },
         error,
       } = await supabase.auth.getUser();
-
 
       if (error || !user) {
         return ctx.json({ error: "Unauthorized" }, 401);
@@ -236,11 +234,10 @@ const app = new Hono()
         }
       }
 
-      if(imageUrl){
-        return ctx.json({imageUrl},200)
+      if (imageUrl) {
+        return ctx.json({ imageUrl }, 200);
       }
-      return ctx.json({error:"Error uplaoding image"},500)
-    
-  }
-)
+      return ctx.json({ error: "Error uplaoding image" }, 500);
+    }
+  );
 export default app;

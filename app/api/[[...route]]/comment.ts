@@ -87,6 +87,7 @@ const app = new Hono()
     const comment = await db.comments.update({
       where: {
       comment_id: values.comment_id,
+      user_id:user.id
     },
       data:{
         user_id:user.id,
