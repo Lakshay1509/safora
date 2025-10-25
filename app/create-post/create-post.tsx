@@ -6,7 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { addPost } from "@/features/post/use-add-post";
 import { EditPost} from "@/features/post/use-update-post";
-import { Loader2, Smile } from "lucide-react";
+import { Loader2, Smile, Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
@@ -20,7 +20,7 @@ import { useImagePreview } from "@/lib/imagePreview";
 import data from '@emoji-mart/data'
 import Picker from '@emoji-mart/react'
 
-// Schema should match backend validation
+// Updated schema - no file size validation needed since we upload directly
 const postSchema = z.object({
   heading: z.string()
     .min(10, "Heading must be at least 10 characters")
@@ -47,6 +47,8 @@ type PostFormValues = z.infer<typeof postSchema>;
 const CreatePost = () => {
   const [charCount, setCharCount] = useState({ heading: 0, body: 0 });
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
   const emojiPickerRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   
@@ -165,6 +167,57 @@ const CreatePost = () => {
     setShowEmojiPicker(false);
   };
 
+  // Upload image directly to Cloudinary
+  const uploadImageToCloudinary = async (file: File): Promise<string> => {
+    try {
+      setIsUploadingImage(true);
+      setUploadProgress(0);
+
+      // Get signature from API
+      const sigResponse = await fetch('/api/upload/signature');
+      if (!sigResponse.ok) {
+        throw new Error('Failed to get upload signature');
+      }
+      
+      const { signature, timestamp, cloudName, apiKey, folder } = await sigResponse.json();
+      
+      // Upload directly to Cloudinary
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('signature', signature);
+      formData.append('timestamp', timestamp.toString());
+      formData.append('api_key', apiKey);
+      formData.append('folder', folder);
+
+      // Optional: Add transformations for optimization
+      formData.append('quality', 'auto');
+      formData.append('fetch_format', 'auto');
+      
+      const uploadResponse = await fetch(
+        `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
+        {
+          method: 'POST',
+          body: formData,
+        }
+      );
+
+      if (!uploadResponse.ok) {
+        throw new Error('Failed to upload image to Cloudinary');
+      }
+      
+      const data = await uploadResponse.json();
+      setUploadProgress(100);
+      
+      return data.secure_url;
+    } catch (error) {
+      console.error('Image upload error:', error);
+      toast.error('Failed to upload image. Please try again.');
+      throw error;
+    } finally {
+      setIsUploadingImage(false);
+    }
+  };
+
   const {data: LocationData, isLoading: isLoadingLocation} = useGetLocation(locationId?locationId : '');
 
   // Create mutation
@@ -173,37 +226,54 @@ const CreatePost = () => {
   // Update mutation
   const { mutate: updatePost, isPending: isUpdating } = EditPost(postId || '');
 
-  const isPending = isCreating || isUpdating;
+  const isPending = isCreating || isUpdating || isUploadingImage;
   const isLoading = isLoadingLocation || isLoadingPost;
 
-  const onSubmit = (data: PostFormValues) => {
-    const payload = {
-      ...data,
-      image: data.image && data.image.length > 0 ? data.image[0] : undefined,
-    };
-    if (isEditMode && postId) {
-      const editPayload = {
-        heading:data.heading,
-        body:data.body,
-        locationId:locationId? locationId:''
+  const onSubmit = async (data: PostFormValues) => {
+    try {
+      let imageUrl: string | undefined;
+
+      // Upload image first if present (only for new posts)
+      if (!isEditMode && data.image && data.image.length > 0) {
+        imageUrl = await uploadImageToCloudinary(data.image[0]);
       }
-      updatePost(editPayload, {
-        onSuccess: () => {
-          router.push(`/post/${postId}/${post_slug}`);
-        },
-      });
-    } else {
-      if (!locationId) {
-        toast.error("Please select a location before creating a post.");
-        return;
+
+      if (isEditMode && postId) {
+        const editPayload = {
+          heading: data.heading,
+          body: data.body,
+          locationId: locationId ? locationId : ''
+        }
+        updatePost(editPayload, {
+          onSuccess: () => {
+            router.push(`/post/${postId}/${post_slug}`);
+          },
+        });
+      } else {
+        if (!locationId) {
+          toast.error("Please select a location before creating a post.");
+          return;
+        }
+
+        // Send only the image URL to the API
+        const payload = {
+          heading: data.heading,
+          body: data.body,
+          image_url: imageUrl,
+        };
+
+        createPost(payload, {
+          onSuccess: () => {
+            reset();
+            setCharCount({ heading: 0, body: 0 });
+            clearPreview();
+            router.push(`/community`);
+          },
+        });
       }
-      createPost(payload, {
-        onSuccess: () => {
-          reset();
-          setCharCount({ heading: 0, body: 0 });
-          router.push(`/community`);
-        },
-      });
+    } catch (error) {
+      console.error('Submission error:', error);
+      toast.error('Failed to create post. Please try again.');
     }
   };
 
@@ -319,7 +389,24 @@ const CreatePost = () => {
                 className="file:text-sm file:font-medium file:text-gray-700 dark:file:text-gray-300"
                 disabled={isPending}
               />
-              {preview && (
+              
+              {/* Upload Progress */}
+              {isUploadingImage && (
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2 text-sm text-gray-600">
+                    <Upload className="h-4 w-4 animate-pulse" />
+                    <span>Uploading image... {uploadProgress}%</span>
+                  </div>
+                  <div className="w-full bg-gray-200 rounded-full h-2">
+                    <div 
+                      className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                      style={{ width: `${uploadProgress}%` }}
+                    />
+                  </div>
+                </div>
+              )}
+
+              {preview && !isUploadingImage && (
                 <div className="mt-4">
                   <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">Preview:</p>
                   <div className="relative w-full max-w-md">
@@ -333,6 +420,7 @@ const CreatePost = () => {
                       onClick={handleRemoveImage}
                       className="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold shadow-lg transition-colors"
                       aria-label="Remove image"
+                      disabled={isPending}
                     >
                       ×
                     </button>
@@ -364,7 +452,7 @@ const CreatePost = () => {
               {isPending ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  {isEditMode ? "Updating..." : "Submitting..."}
+                  {isUploadingImage ? "Uploading Image..." : isEditMode ? "Updating..." : "Submitting..."}
                 </>
               ) : isEditMode ? "Update Post" : "Create Post"}
             </Button>

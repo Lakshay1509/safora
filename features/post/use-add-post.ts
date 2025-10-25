@@ -4,18 +4,19 @@ import { client } from "@/lib/hono";
 import { toast } from "sonner";
 
 type ResponseType = InferResponseType<(typeof client.api.post.add)[":location_id"]["$post"]>;
-type RequestType = InferRequestType<(typeof client.api.post.add)[":location_id"]["$post"]>["form"];
+type RequestType = InferRequestType<(typeof client.api.post.add)[":location_id"]["$post"]>["json"];
 
 export const addPost = (location_id: string) => {
   const queryClient = useQueryClient();
 
   return useMutation<ResponseType, Error, RequestType>({
-    mutationFn: async (data) => {
+    mutationFn: async (json) => {
 
       try {
         const response = await client.api.post.add[":location_id"]["$post"]({
-          param: { location_id: location_id },
-          form:data
+          json,
+          param: { location_id: location_id }
+        
         });
 
         if (!response.ok) {

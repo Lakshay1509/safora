@@ -86,6 +86,20 @@ class CloudinaryService {
   async deleteImage(publicId: string): Promise<any> {
     return await cloudinary.uploader.destroy(publicId);
   }
+
+  generateSignature(timestamp: number, userId: string) {
+    const params = {
+      timestamp: timestamp,
+      folder: `posts/${userId}`,
+    };
+    
+    const signature = cloudinary.utils.api_sign_request(
+      params,
+      process.env.CLOUDINARY_API_SECRET!
+    );
+    
+    return signature;
+  }
 }
 
 export default new CloudinaryService();

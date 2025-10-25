@@ -11,14 +11,11 @@ const app = new Hono()
   .post(
     "/add/:location_id",
     zValidator(
-      "form",
+      "json", // Changed from "form" to "json"
       z.object({
         heading: z.string().min(10).max(250),
         body: z.string().min(10).max(1500),
-        image: z.preprocess(
-          (arg) => (arg instanceof File && arg.size > 0 ? arg : undefined),
-          z.instanceof(File).optional()
-        ),
+        image_url: z.string().url().optional(), // Just receive the URL
       })
     ),
 
@@ -35,35 +32,17 @@ const app = new Hono()
         return ctx.json({ error: "Unauthorized" }, 401);
       }
 
-      const values = ctx.req.valid("form");
-      const file = values.image;
+      const values = ctx.req.valid("json");
 
-      let imageUrl: string | undefined;
-
-      if (file && file instanceof File && file.size > 0) {
-        try {
-          const fileBuffer = await file.arrayBuffer();
-          const buffer = Buffer.from(fileBuffer);
-
-          const uploadResult = await cloudinaryService.uploadPostImage(
-            buffer,
-            user.id
-          );
-          imageUrl = uploadResult.url;
-        } catch (uploadError) {
-          console.error("Image upload failed:", uploadError);
-          return ctx.json({ error: "Image upload failed" }, 500);
-        }
-      }
-
+      // No more file processing here!
       const post = await db.posts.create({
         data: {
-          heading:values.heading,
-          body:values.body,
+          heading: values.heading,
+          body: values.body,
           user_id: user.id,
           location_id: location_id,
           slug: generateSlug(values.heading),
-          image_url: imageUrl,
+          image_url: values.image_url, // Just store the URL
         },
       });
 
