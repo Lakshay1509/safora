@@ -34,42 +34,49 @@ const linkPreviewRateLimiter = new Ratelimit({
 
 
 export async function middleware(request: NextRequest) {
-  // Get IP from headers
-  const ip = 
-    request.headers.get('x-forwarded-for')?.split(',')[0].trim() ??
-    request.headers.get('x-real-ip') ??
-    '127.0.0.1'
+  const pathname = request.nextUrl.pathname;
   
-  let success, limit, remaining, reset;
+  // Only apply rate limiting to /api routes
+  if (pathname.startsWith('/api/')) {
+    // Get IP from headers
+    const ip = 
+      request.headers.get('x-forwarded-for')?.split(',')[0].trim() ??
+      request.headers.get('x-real-ip') ??
+      '127.0.0.1'
+    
+    let success, limit, remaining, reset;
 
-  // Check if this is a link preview request
-  const isLinkPreviewRequest = request.nextUrl.pathname.startsWith('/api/') && 
-                               request.nextUrl.pathname.includes('link-preview/fetch');
+    // Check if this is a link preview request
+    const isLinkPreviewRequest = pathname.includes('link-preview/fetch');
 
-  if (request.method === 'GET' || request.method === 'HEAD' || request.method === 'OPTIONS') {
-    ({ success, limit, remaining, reset } = await getRateLimiter.limit(ip));
-  } else if (isLinkPreviewRequest) {
-    // Use more lenient rate limiter for link preview
-    ({ success, limit, remaining, reset } = await linkPreviewRateLimiter.limit(ip));
-  } else {
-    ({ success, limit, remaining, reset } = await mutationRateLimiter.limit(ip));
-  }
-  
-  // Block request if rate limit exceeded
-  if (!success) {
-    return NextResponse.json(
-      { error: 'Too many requests. Please try again later.' },
-      { 
-        status: 429,
-        headers: {
-          'X-RateLimit-Limit': limit.toString(),
-          'X-RateLimit-Remaining': remaining.toString(),
-          'X-RateLimit-Reset': reset.toString(),
-        }
+    if (request.method === 'GET' || request.method === 'HEAD' || request.method === 'OPTIONS') {
+      if (isLinkPreviewRequest) {
+        // Use more lenient rate limiter for link preview
+        ({ success, limit, remaining, reset } = await linkPreviewRateLimiter.limit(ip));
+      } else {
+        ({ success, limit, remaining, reset } = await getRateLimiter.limit(ip));
       }
-    )
+    } else {
+      ({ success, limit, remaining, reset } = await mutationRateLimiter.limit(ip));
+    }
+    
+    // Block request if rate limit exceeded
+    if (!success) {
+      return NextResponse.json(
+        { error: 'Too many requests. Please try again later.' },
+        { 
+          status: 429,
+          headers: {
+            'X-RateLimit-Limit': limit.toString(),
+            'X-RateLimit-Remaining': remaining.toString(),
+            'X-RateLimit-Reset': reset.toString(),
+          }
+        }
+      )
+    }
   }
   
+  // Continue with session update for all routes
   return await updateSession(request)
 }
 
