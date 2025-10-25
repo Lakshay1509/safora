@@ -30,6 +30,15 @@ import { toast } from 'sonner'
 
 // Image upload handler function
 async function imageUploadHandler(file: File): Promise<string> {
+  // Validate file size (10 MB = 10 * 1024 * 1024 bytes)
+  const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB in bytes
+  
+  if (file.size > MAX_FILE_SIZE) {
+    const fileSizeMB = (file.size / (1024 * 1024)).toFixed(2);
+    toast.error(`File size (${fileSizeMB} MB) exceeds the maximum limit of 10 MB`);
+    throw new Error('File size exceeds 10 MB limit');
+  }
+
   try {
     const sigResponse = await fetch('/api/upload/signature');
     if (!sigResponse.ok) {
