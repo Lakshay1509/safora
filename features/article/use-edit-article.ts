@@ -4,17 +4,17 @@ import { client } from "@/lib/hono";
 import { toast } from "sonner";
 
 type ResponseType = InferResponseType<(typeof client.api.article.update)[":id"]["$put"]>;
-type RequestType = InferRequestType<(typeof client.api.article.update)[":id"]["$put"]>["form"];
+type RequestType = InferRequestType<(typeof client.api.article.update)[":id"]["$put"]>["json"];
 
 export const updateArticle = (id:string) => {
   const queryClient = useQueryClient();
 
   return useMutation<ResponseType, Error, RequestType>({
-    mutationFn: async (data) => {
+    mutationFn: async (json) => {
 
       try {
         const response = await client.api.article.update[":id"]["$put"]({
-          form:data,
+          json,
           param:{id}
         });
 

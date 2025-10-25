@@ -97,7 +97,7 @@ export const Posts = () => {
               <React.Fragment key={i}>
                 {page.data.map((post) => {
                   const urls = extractUrls(post.body);
-                  
+
                   return (
                     <div
                       key={post.id}
@@ -107,25 +107,25 @@ export const Posts = () => {
                       <div className="flex items-center text-xs text-gray-500 mb-2">
                         {post.users && (
                           <>
-                          <ProfileLogo
-                            url={post?.users?.profile_url}
-                            name={post?.users?.name}
-                            color={post.users?.profile_color ?? ''}
-                            size="30"
-                          />
+                            <ProfileLogo
+                              url={post?.users?.profile_url}
+                              name={post?.users?.name}
+                              color={post.users?.profile_color ?? ''}
+                              size="30"
+                            />
 
-                                       
-                        </>
+
+                          </>
                         )}
 
-                        <span 
-  className="font-medium mx-2 text-[14px]"
-  style={{
-    color: post?.users?.profile_color || '#000000'
-  }}
->
-  {post?.users?.name}
-</span>
+                        <span
+                          className="font-medium mx-2 text-[14px]"
+                          style={{
+                            color: post?.users?.profile_color || '#000000'
+                          }}
+                        >
+                          {post?.users?.name}
+                        </span>
 
 
                         {post.created_at && (
@@ -137,9 +137,8 @@ export const Posts = () => {
 
                       <div>
                         <Link
-                          href={`location/${
-                            post.locations?.id ? post.locations.id : ""
-                          }`}
+                          href={`location/${post.locations?.id ? post.locations.id : ""
+                            }`}
                           className="hover:underline"
                         >
                           {post.locations && (
@@ -160,15 +159,15 @@ export const Posts = () => {
                         </h2>
                         <div className="text-gray-700 mt-2 text-[15px]">
                           <MDXEditor markdown={truncateText(post.body, true)} readOnly={true} plugins={[
-                                      linkPlugin(),
-                                      linkDialogPlugin()
-                                  ]}/>
-                                  
+                            linkPlugin(),
+                            linkDialogPlugin()
+                          ]} />
+
                         </div>
                       </Link>
 
                       {/* Show link previews */}
-                      {post.image_url===null && urls.length > 0 && (
+                      {post.image_url === null && urls.length > 0 && (
                         <div className="mt-3">
                           {urls.slice(0, 1).map((url, index) => (
                             <LinkPreview key={index} url={url} />
@@ -186,8 +185,8 @@ export const Posts = () => {
                         id={post.id}
                         upvotes_count={post.upvotes}
                         comments={post._count.posts_comments}
-                        upvoted={post.upvote===1 }
-                        slug={post.slug??''}
+                        upvoted={post.upvote === 1}
+                        slug={post.slug ?? ''}
                       />
                     </div>
                   );
@@ -206,15 +205,15 @@ export const Posts = () => {
                   Sign in to access more posts, join discussions, and connect with the community.
                 </p>
                 <div className="flex gap-3 justify-center">
-                  <Button 
-                    size="lg" 
+                  <Button
+                    size="lg"
                     className="bg-blue-600 hover:bg-blue-700"
                     onClick={() => router.push('/login')}
                   >
                     Sign In
                   </Button>
-                  <Button 
-                    size="lg" 
+                  <Button
+                    size="lg"
                     variant="outline"
                     onClick={() => router.push('/login')}
                   >

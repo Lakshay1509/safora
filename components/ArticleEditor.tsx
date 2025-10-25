@@ -7,7 +7,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Button } from './ui/button'
-import { Pen, Rocket } from 'lucide-react'
+import { Loader2, Pen, Rocket, Upload } from 'lucide-react'
 import { Label } from './ui/label'
 import { Input } from './ui/input'
 import { addArticle } from '@/features/article/use-add-article'
@@ -34,18 +34,20 @@ const articleSchema = z.object({
     .optional()
 })
 
-
 type ArticleFormData = z.infer<typeof articleSchema>
 
 export default function ArticleEditor() {
   const searchParams = useSearchParams();
   const [charCount, setCharCount] = useState({ heading: 0, body: 0 });
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const router = useRouter()
   const isEditMode = searchParams.get('edit') === 'true';
   const postId = searchParams.get('post-id');
- const post_slug = searchParams.get('post-slug')
+  const post_slug = searchParams.get('post-slug')
+  
   const { data: postData, isLoading: isLoadingPost } = useGetPost(
     postId ? postId : ''
   );
@@ -72,7 +74,58 @@ export default function ArticleEditor() {
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
+    setValue("image", undefined);
   };
+
+  // Upload image directly to Cloudinary
+  const uploadImageToCloudinary = async (file: File): Promise<string> => {
+    try {
+      setIsUploadingImage(true);
+      setUploadProgress(0);
+
+      // Get signature from API
+      const sigResponse = await fetch('/api/upload/signature');
+      if (!sigResponse.ok) {
+        throw new Error('Failed to get upload signature');
+      }
+      
+      const { signature, timestamp, cloudName, apiKey, folder } = await sigResponse.json();
+      
+      // Upload directly to Cloudinary
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('signature', signature);
+      formData.append('timestamp', timestamp.toString());
+      formData.append('api_key', apiKey);
+      formData.append('folder', folder);
+      formData.append('quality', 'auto');
+      formData.append('fetch_format', 'auto');
+      
+      const uploadResponse = await fetch(
+        `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
+        {
+          method: 'POST',
+          body: formData,
+        }
+      );
+
+      if (!uploadResponse.ok) {
+        throw new Error('Failed to upload image to Cloudinary');
+      }
+      
+      const data = await uploadResponse.json();
+      setUploadProgress(100);
+      
+      return data.secure_url;
+    } catch (error) {
+      console.error('Image upload error:', error);
+      toast.error('Failed to upload image. Please try again.');
+      throw error;
+    } finally {
+      setIsUploadingImage(false);
+    }
+  };
+
   const mutation = addArticle();
   const updateMutation = updateArticle(postId ?? '');
   const ref = useRef<MDXEditorMethods>(null)
@@ -111,10 +164,15 @@ More content here...
         heading: postData.post.heading.length,
         body: postData.post.body.length
       });
+      
+      // Set existing image preview if available
+      if (postData.post.image_url) {
+        setImagePreview(postData.post.image_url);
+      }
     }
   }, [isEditMode, postData, setValue]);
 
-  const onPublish = (data: ArticleFormData) => {
+  const onPublish = async (data: ArticleFormData) => {
     const content = ref.current?.getMarkdown();
     if (content === undefined || content.length <= 10) {
       toast.error("Body should be greater than 10");
@@ -125,18 +183,31 @@ More content here...
       return;
     }
 
-    mutation.mutateAsync({
-      heading: data.heading,
-      image: data.image && data.image.length > 0 ? data.image[0] : undefined,
-      body: content
-    }, {
-      onSuccess: () => {
-        router.push('/community?view=article');
+    try {
+      let imageUrl: string | undefined;
+
+      // Upload image first if present
+      if (data.image && data.image.length > 0) {
+        imageUrl = await uploadImageToCloudinary(data.image[0]);
       }
-    });
+
+      // Send only the image URL to the API
+      await mutation.mutateAsync({
+        heading: data.heading,
+        body: content,
+        image_url: imageUrl,
+      }, {
+        onSuccess: () => {
+          router.push('/community?view=article');
+        }
+      });
+    } catch (error) {
+      console.error('Submission error:', error);
+      toast.error('Failed to create article. Please try again.');
+    }
   };
 
-  const onUpdate = (data: ArticleFormData) => {
+  const onUpdate = async (data: ArticleFormData) => {
     const content = ref.current?.getMarkdown();
     if (content === undefined || content.length <= 10) {
       toast.error("Body should be greater than 10");
@@ -147,16 +218,34 @@ More content here...
       return;
     }
 
-    updateMutation.mutateAsync({
-      heading: data.heading,
-      image: data.image && data.image.length > 0 ? data.image[0] : undefined,
-      body: content
-    }, {
-      onSuccess: () => {
-        router.push(`/article/${postId}/${post_slug}`);
-      },
-    });
+    try {
+      let imageUrl: string | undefined;
+
+      // Upload new image if changed
+      if (data.image && data.image.length > 0) {
+        imageUrl = await uploadImageToCloudinary(data.image[0]);
+      } else if (postData?.post.image_url) {
+        // Keep existing image if no new image uploaded
+        imageUrl = postData.post.image_url;
+      }
+
+      // Send only the image URL to the API
+      await updateMutation.mutateAsync({
+        heading: data.heading,
+        body: content,
+        image_url: imageUrl,
+      }, {
+        onSuccess: () => {
+          router.push(`/article/${postId}/${post_slug}`);
+        },
+      });
+    } catch (error) {
+      console.error('Update error:', error);
+      toast.error('Failed to update article. Please try again.');
+    }
   };
+
+  const isPending = mutation.isPending || updateMutation.isPending || isUploadingImage;
 
   return (
     <form onSubmit={handleSubmit(isEditMode ? onUpdate : onPublish)} className="max-w-6xl mr-auto py-6 px-6 lg:pl-10 pb-20 lg:pb-8 ">
@@ -169,7 +258,7 @@ More content here...
             {...register("heading")}
             id="heading"
             className={errors.heading ? "border-red-500" : ""}
-            disabled={mutation.isPending}
+            disabled={isPending}
             onChange={(e) => setCharCount(prev => ({ ...prev, heading: e.target.value.length }))}
           />
           <div className="flex justify-between">
@@ -183,14 +272,15 @@ More content here...
             </span>
           </div>
         </div>
+        
         <div>
-          <Label htmlFor="image" className=" text-sm font-medium text-gray-700">
+          <Label htmlFor="image" className="text-sm font-medium text-gray-700">
             Cover Image (optional)
             <p className='text-[12px]'>Max size 10 MB</p>
           </Label>
 
           <Input
-            disabled={mutation.isPending}
+            disabled={isPending}
             id="image"
             type="file"
             {...register("image")}
@@ -202,7 +292,24 @@ More content here...
             }}
             onChange={handleFileChange}
           />
-          {imagePreview && (
+          
+          {/* Upload Progress */}
+          {isUploadingImage && (
+            <div className="space-y-2 mt-2">
+              <div className="flex items-center gap-2 text-sm text-gray-600">
+                <Upload className="h-4 w-4 animate-pulse" />
+                <span>Uploading image... {uploadProgress}%</span>
+              </div>
+              <div className="w-full bg-gray-200 rounded-full h-2">
+                <div 
+                  className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                  style={{ width: `${uploadProgress}%` }}
+                />
+              </div>
+            </div>
+          )}
+
+          {imagePreview && !isUploadingImage && (
             <div className="mt-4 flex flex-col items-center justify-center gap-4 p-4 border rounded-xl bg-gray-50 shadow-sm">
               <img
                 src={imagePreview}
@@ -213,12 +320,16 @@ More content here...
                 type="button"
                 onClick={handleRemoveImage}
                 className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white font-medium rounded-lg shadow transition"
+                disabled={isPending}
               >
                 Remove Image
               </button>
             </div>
           )}
-
+          
+          {errors.image && (
+            <p className="text-sm text-red-500 mt-1">{errors.image.message as string}</p>
+          )}
         </div>
       </div>
 
@@ -227,7 +338,7 @@ More content here...
           {charCount.body}/15000
         </span>
       </div>
-      <div className="border rounded-lg  prose prose-lg max-w-none h-[500px] lg:h-[650px] overflow-auto">
+      <div className="border rounded-lg prose prose-lg max-w-none h-[500px] lg:h-[650px] overflow-auto">
         <ForwardRefEditor
           ref={ref}
           markdown={markdown}
@@ -241,11 +352,21 @@ More content here...
       </div>
       <div className="my-4 flex w-full items-center">
         <Button
-          disabled={mutation.isPending || updateMutation.isPending}
-          className="px-4 py-2  w-full"
+          disabled={isPending}
+          className="px-4 py-2 w-full"
+          type="submit"
         >
-          {!isEditMode && <p className='flex'>Publish Article <Rocket className='ml-2'/></p>}
-          {isEditMode && <p className='flex '>Edit Article <Pen className='ml-2'/></p>}
+          {isPending ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              {isUploadingImage ? "Uploading Image..." : isEditMode ? "Updating..." : "Publishing..."}
+            </>
+          ) : (
+            <>
+              {!isEditMode && <p className='flex'>Publish Article <Rocket className='ml-2'/></p>}
+              {isEditMode && <p className='flex'>Edit Article <Pen className='ml-2'/></p>}
+            </>
+          )}
         </Button>
       </div>
     </form>
