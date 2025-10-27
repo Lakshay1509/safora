@@ -1,66 +1,54 @@
-# ---- deps: Node 22 + Bun + OpenSSL ----
-FROM node:22-bookworm-slim AS deps
-RUN apt-get update -y && apt-get install -y curl openssl unzip && rm -rf /var/lib/apt/lists/*
+# ---- Base Stage ----
+FROM oven/bun:1 AS base
 WORKDIR /app
 
-# Copy lockfiles for better caching
-COPY package.json bun.lock ./
-COPY prisma ./prisma
-
-# Install Bun
-RUN curl -fsSL https://bun.sh/install | bash
-ENV BUN_INSTALL=/root/.bun
-ENV PATH=$BUN_INSTALL/bin:$PATH
-
-# Install dependencies
+# ---- Install dependencies ----
+COPY bun.lock package.json ./
 RUN bun install --frozen-lockfile
 
-
-# ---- build ----
-FROM node:22-bookworm-slim AS builder
-RUN apt-get update -y && apt-get install -y openssl && rm -rf /var/lib/apt/lists/*
-WORKDIR /app
-
-# Copy Bun
-COPY --from=deps /root/.bun /root/.bun
-ENV BUN_INSTALL=/root/.bun
-ENV PATH=$BUN_INSTALL/bin:$PATH
-
-# Copy deps + source
-COPY --from=deps /app/node_modules ./node_modules
+# ---- Copy the rest of the source code ----
 COPY . .
 
-ENV NEXT_TELEMETRY_DISABLED=1
-
-# === Build-time Public Env Variables ===
+# ---- Accept environment variables at build time ----
+# These are provided automatically by Railway if set in "Variables"
+ARG DATABASE_URL
 ARG NEXT_PUBLIC_SUPABASE_URL
 ARG NEXT_PUBLIC_SUPABASE_ANON_KEY
 ARG NEXT_PUBLIC_API_URL
 ARG NEXT_PUBLIC_GEOAPIFY_API_KEY
 
-ENV NEXT_PUBLIC_SUPABASE_URL=$NEXT_PUBLIC_SUPABASE_URL
-ENV NEXT_PUBLIC_SUPABASE_ANON_KEY=$NEXT_PUBLIC_SUPABASE_ANON_KEY
-ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
-ENV NEXT_PUBLIC_GEOAPIFY_API_KEY=$NEXT_PUBLIC_GEOAPIFY_API_KEY
+# ---- Make them available inside the build ----
+ENV DATABASE_URL=${DATABASE_URL}
+ENV NEXT_PUBLIC_SUPABASE_URL=${NEXT_PUBLIC_SUPABASE_URL}
+ENV NEXT_PUBLIC_SUPABASE_ANON_KEY=${NEXT_PUBLIC_SUPABASE_ANON_KEY}
+ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
+ENV NEXT_PUBLIC_GEOAPIFY_API_KEY=${NEXT_PUBLIC_GEOAPIFY_API_KEY}
 
-# === Build the Next.js app ===
-RUN bunx prisma generate && bun run build
+# ---- Generate Prisma client ----
+RUN bunx prisma generate
 
+# ---- Build Next.js app ----
+RUN bun run build
 
-# ---- runtime ----
-FROM node:22-bookworm-slim AS runner
-RUN apt-get update -y && apt-get install -y openssl && rm -rf /var/lib/apt/lists/*
+# ---- Runtime Stage ----
+FROM oven/bun:1 AS runner
 WORKDIR /app
 
+# Copy built assets and minimal files
+COPY --from=base /app/.next ./.next
+COPY --from=base /app/public ./public
+COPY --from=base /app/prisma ./prisma
+COPY --from=base /app/node_modules ./node_modules
+COPY --from=base /app/package.json ./
+COPY --from=base /app/bun.lock ./
+
+# ---- Environment (for runtime, Railway injects automatically) ----
 ENV NODE_ENV=production
-ENV PORT=8080
+ENV PORT=3000
 
-# Copy only what’s needed for runtime
-COPY --from=builder /app/.next ./.next
-COPY --from=builder /app/public ./public
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/package.json ./package.json
+EXPOSE 3000
 
-# Expose and run
-EXPOSE 8080
-CMD ["sh", "-c", "npx next start -p ${PORT}"]
+# ---- Start Command ----
+# If you use Hono custom server (server.ts), change this to:
+# CMD ["bun", "run", "server.ts"]
+CMD ["bun", "run", "start"]
