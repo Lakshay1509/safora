@@ -16,8 +16,10 @@ import cron from './cron'
 import achievment from './achievment'
 import upload from './upload'
 
-
 export const runtime = "nodejs";
+export const dynamic = 'force-dynamic';
+export const dynamicParams = true;
+
 const app = new Hono().basePath("/api");
 
 const routes = app
@@ -36,9 +38,6 @@ const routes = app
     .route('/cron',cron)
     .route('/achievment',achievment)
     .route('/upload',upload)
-
-
-
 
 export const GET = handle(app);
 export const POST = handle(app);

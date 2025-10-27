@@ -3,9 +3,19 @@ import { db } from "@/lib/prisma";
 import { Resend } from "resend";
 import { NextRequest } from "next/server";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+export const dynamic = 'force-dynamic'
+export const runtime = 'nodejs'
 
-export const dynamic = "force-dynamic";
+let resendClient: Resend | null = null
+
+function getResend() {
+  const key = process.env.RESEND_API_KEY
+  if (!key) throw new Error('RESEND_API_KEY is missing')
+  if (!resendClient) resendClient = new Resend(key)
+  return resendClient
+}
+
+
 
 const truncateText = (text: string | null, wordLimit: number = 15): string => {
   if (!text) return "";
@@ -40,6 +50,8 @@ export async function GET(request: NextRequest) {
   if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
     return Response.json({ error: "Unauthorized" }, { status: 401 });
   }
+
+   const resend = getResend()
 
   try {
     // Optimize database queries with Promise.all for parallel execution

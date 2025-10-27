@@ -3,6 +3,14 @@ import { updateSession } from '@/utils/supabase/middleware'
 import { Ratelimit } from '@upstash/ratelimit'
 import { Redis } from '@upstash/redis'
 
+// Only run middleware on specific paths
+export const config = {
+  matcher: [
+    '/api/:path*',
+    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+  ],
+}
+
 const redis = new Redis({
   url: process.env.UPSTASH_REDIS_REST_URL!,
   token: process.env.UPSTASH_REDIS_REST_TOKEN!,
@@ -34,6 +42,11 @@ const linkPreviewRateLimiter = new Ratelimit({
 
 
 export async function middleware(request: NextRequest) {
+  // Skip middleware during build time
+  if (process.env.NEXT_PHASE === 'phase-production-build') {
+    return NextResponse.next()
+  }
+  
   const pathname = request.nextUrl.pathname;
   
   // Only apply rate limiting to /api routes
@@ -78,10 +91,4 @@ export async function middleware(request: NextRequest) {
   
   // Continue with session update for all routes
   return await updateSession(request)
-}
-
-export const config = {
-  matcher: [
-    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
-  ],
 }
