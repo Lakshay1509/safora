@@ -4,6 +4,8 @@ import Articles from "./components/Articles";
 import Notification from "@/components/Notification";
 import { Metadata } from "next";
 import PostSkeleton from "./components/PostsSkeleton";
+import TrendingPage from "./components/Trending";
+
 
 interface PageProps {
   searchParams: Promise<{ view?: string; page?: string }>
@@ -66,6 +68,7 @@ const Page = async ({ searchParams }: PageProps) => {
           {view === 'feed' && <Tabview />}
           {view === 'article' && <Articles/>}
           {view === 'notification' && <Notification/>}
+          {view === 'trending' && <TrendingPage/>}
         </Suspense>
       </main>
     </div>

@@ -199,6 +199,131 @@ const result = locations.map((loc) => {
     }
 
     return ctx.json({result},200);
+  })
+
+  .get('/trending-page', async (ctx) => {
+    try {
+      // Get top 10 locations with most reviews
+      const topLocations = await db.reviews.groupBy({
+        by: ["location_id"],
+        _count: { location_id: true },
+        orderBy: { _count: { location_id: "desc" } },
+        take: 10,
+      });
+
+      const locationIds = topLocations.map((l) => l.location_id);
+
+      // Get location details with names
+      const locationDetails = await db.locations.findMany({
+        where: { id: { in: locationIds } },
+        select: { id: true, name: true, reviews1: true },
+      });
+
+      // Get day and night ratings for these locations
+      const [dayRatings, nightRatings] = await Promise.all([
+        db.reviews.groupBy({
+          by: ["location_id"],
+          where: {
+            location_id: { in: locationIds },
+            time_of_day: "DAY",
+          },
+          _avg: {
+            general_score: true,
+          },
+        }),
+        db.reviews.groupBy({
+          by: ["location_id"],
+          where: {
+            location_id: { in: locationIds },
+            time_of_day: "NIGHT",
+          },
+          _avg: {
+            general_score: true,
+          },
+        }),
+      ]);
+
+      // Create maps for easy lookup
+      const dayRatingMap = new Map(
+        dayRatings.map((r) => [r.location_id, r._avg.general_score])
+      );
+      const nightRatingMap = new Map(
+        nightRatings.map((r) => [r.location_id, r._avg.general_score])
+      );
+
+      // Merge all location data
+      const locationsData = topLocations.map((loc) => {
+        const detail = locationDetails.find((d) => d.id === loc.location_id);
+        return {
+          location_id: loc.location_id,
+          name: detail?.name,
+          total_reviews: loc._count.location_id + Number(detail?.reviews1 ?? 0),
+          day_rating: dayRatingMap.get(loc.location_id) 
+            ? Math.round((dayRatingMap.get(loc.location_id)! / 5) * 100) 
+            : null,
+          night_rating: nightRatingMap.get(loc.location_id)
+            ? Math.round((nightRatingMap.get(loc.location_id)! / 5) * 100)
+            : null,
+        };
+      });
+
+      // Get top 20 posts by engagement (upvotes + comments)
+      const topPosts = await db.posts.findMany({
+        where: { is_article: 0 },
+        select: {
+          id: true,
+          heading: true,
+          body: true,
+          upvotes: true,
+          created_at: true,
+          slug: true,
+          image_url: true,
+          users: {
+            select: {
+              name: true,
+              profile_url: true,
+              profile_color: true,
+            },
+          },
+          locations: {
+            select: {
+              name: true,
+              id: true,
+            },
+          },
+          _count: {
+            select: {
+              posts_comments: true,
+            },
+          },
+        },
+        orderBy: [
+          { upvotes: "desc" },
+        ],
+        take: 100, // Get more to sort by engagement
+      });
+
+      // Calculate engagement score and sort
+      const sortedPosts = topPosts
+        .map((post) => ({
+          ...post,
+          engagement: post.upvotes + post._count.posts_comments,
+          comments: post._count.posts_comments,
+        }))
+        .sort((a, b) => b.engagement - a.engagement)
+        .slice(0, 20);
+
+      return ctx.json(
+        {
+          locations: locationsData,
+          posts: sortedPosts,
+        },
+        200
+      );
+    } catch (error) {
+      console.error("Error fetching trending page data:", error);
+      return ctx.json({ error: "Failed to fetch trending data" }, 500);
+    }
   });
 
 

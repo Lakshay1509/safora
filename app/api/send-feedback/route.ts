@@ -34,6 +34,7 @@ export async function GET(request: NextRequest) {
     const [users] = await Promise.all([
       // Remove the limit of 80 users - process all users with digest enabled
       db.public_users.findMany({
+        where:{daily_digest:1},
         select: {
           id: true,
           name: true,

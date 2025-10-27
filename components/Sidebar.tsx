@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { Compass, LogIn, Plus, SquarePen } from "lucide-react";
+import { Compass, LogIn, Plus, SquarePen, TrendingUp } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import AvatarCircle from "@/app/profile/components/AvatarCircle";
 import { useGetDefaultUser } from "@/features/user/use-get-default";
@@ -93,6 +93,18 @@ export function Sidebar() {
                 Articles
               </Button>
             </Link>
+            <Link href="/community?view=trending" className="w-full">
+              <Button
+                className={`w-full ${view === "trending"
+                    ? "bg-red-600 text-white hover:bg-red-700"
+                    : ""
+                  }`}
+                variant={view === "trending" ? "default" : "outline"}
+              >
+                <TrendingUp className="mr-2 h-4 w-4" />
+                Trending
+              </Button>
+            </Link>
           </div>
 
           {/* Recent Locations */}
@@ -154,43 +166,56 @@ export function Sidebar() {
       {/* Floating Mobile Dock */}
 
       <div className="fixed bottom-0 z-50 left-0 w-full bg-white border-t border-gray-200 shadow-lg lg:hidden">
-        <div className="flex justify-around items-center py-2">
+        <div className="flex justify-around items-center py-3">
           {/* Create Post Button */}
           <button
-            className="flex flex-col items-center text-xs rounded-full bg-gradient-to-r from-red-600 to-red-500 text-white p-2 shadow-md shadow-red-500/30 hover:scale-105 hover:shadow-red-500/50 transition-all duration-200"
+            className="flex flex-col items-center justify-center"
             onClick={handleCreatePost}
           >
-            <Plus className="h-6 w-6 mb-0.5" />
+            <div className="rounded-full bg-gradient-to-r from-red-600 to-red-500 text-white p-2 shadow-md shadow-red-500/30 hover:scale-105 hover:shadow-red-500/50 transition-all duration-200">
+              <Plus className="h-5 w-5" />
+            </div>
           </button>
 
           {/* Feed Button */}
           <Link
             href="/community?view=feed"
-            className={`flex flex-col items-center text-sm pb-1 ${view === "feed"
+            className={`flex flex-col items-center justify-center text-sm pb-1 ${view === "feed"
                 ? "text-red-600 border-b-2 border-red-600"
                 : "text-gray-600 hover:text-primary"
               }`}
           >
-            <Compass className="h-6 w-6 mb-1" />
+            <Compass className="h-5 w-5 mb-1" />
           </Link>
 
           {/* Articles Button */}
           <Link
             href="/community?view=article"
-            className={`flex flex-col items-center text-sm pb-1 ${view === "article"
+            className={`flex flex-col items-center justify-center text-sm pb-1 ${view === "article"
                 ? "text-red-600 border-b-2 border-red-600"
                 : "text-gray-600 hover:text-primary"
               }`}
           >
-            <SquarePen className="h-6 w-6 mb-1" />
+            <SquarePen className="h-5 w-5 mb-1" />
+          </Link>
+
+          {/* Trending Button */}
+          <Link
+            href="/community?view=trending"
+            className={`flex flex-col items-center justify-center text-sm pb-1 ${view === "trending"
+                ? "text-red-600 border-b-2 border-red-600"
+                : "text-gray-600 hover:text-primary"
+              }`}
+          >
+            <TrendingUp className="h-5 w-5 mb-1" />
           </Link>
 
           {/* Profile Avatar */}
-          <button onClick={handleClick}>
+          <button onClick={handleClick} className="flex items-center justify-center">
             <AvatarCircle
               url={data?.userData.profile_url}
               name={data?.userData.name ?? ""}
-              size="40"
+              size="32"
             />
           </button>
         </div>
