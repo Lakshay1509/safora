@@ -6,8 +6,6 @@ import { Toaster } from "@/components/ui/sonner";
 import { Navbar } from "@/components/Navbar";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { SidebarLayout } from "@/components/SidebarLayout";
-import { Analytics } from "@vercel/analytics/next"
-import { SpeedInsights } from '@vercel/speed-insights/next';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -98,8 +96,6 @@ export default function RootLayout({
         <SidebarLayout>
 
           {children}
-          <Analytics />
-          <SpeedInsights/>
         </SidebarLayout>
         </QueryProviders>
         </AuthProvider>

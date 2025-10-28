@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Compass, LogIn, Plus, SquarePen, TrendingUp } from "lucide-react";
@@ -21,6 +21,9 @@ export function Sidebar() {
   const { data, isLoading, isError } = useGetDefaultUser();
   const { data: user_data } = useGetUserLocationCount();
 
+  // Memoize view to prevent unnecessary recalculations
+  const view = useMemo(() => searchParams.get('view') || 'feed', [searchParams]);
+
   // Handle client-side mounting
   useEffect(() => {
     setIsMounted(true);
@@ -28,8 +31,6 @@ export function Sidebar() {
 
   // Don't render anything on the server or during initial mount
   if (!isMounted) return null;
-
-  const view = searchParams.get('view') || 'feed';
 
   // Navigate to create post page
   const handleCreatePost = () => {
@@ -39,21 +40,17 @@ export function Sidebar() {
     else {
       router.push("/create-post");
     }
-
   };
 
   const handleClick = () => {
     if (!user) {
       return toast.error("Login to view profile");
-
     }
     router.push('/profile');
   }
 
   return (
     <>
-      
-
       {/* Desktop sidebar - visible on lg screens */}
       <div className="fixed left-0 top-0 h-[90vh] w-64 bg-white border-r border-t rounded-xl border-gray-200 mt-22 hidden lg:flex flex-col">
         <div className="p-4 flex-1">
@@ -67,10 +64,10 @@ export function Sidebar() {
           </Button>
 
           {/* Navigation Buttons */}
-          <div className="flex flex-col justify-center items-center space-y-2 mt-10">
-            <Link href="/community?view=feed" className="w-full">
+          <nav className="flex flex-col justify-center items-center space-y-2 mt-10" aria-label="Main navigation">
+            <Link href="/community?view=feed" className="w-full" prefetch={true}>
               <Button
-                className={`w-full ${view === "feed"
+                className={`w-full transition-colors ${view === "feed"
                     ? "bg-red-600 text-white hover:bg-red-700"
                     : ""
                   }`}
@@ -81,9 +78,9 @@ export function Sidebar() {
               </Button>
             </Link>
 
-            <Link href="/community?view=article" className="w-full">
+            <Link href="/community?view=article" className="w-full" prefetch={true}>
               <Button
-                className={`w-full ${view === "article"
+                className={`w-full transition-colors ${view === "article"
                     ? "bg-red-600 text-white hover:bg-red-700"
                     : ""
                   }`}
@@ -93,9 +90,10 @@ export function Sidebar() {
                 Articles
               </Button>
             </Link>
-            <Link href="/community?view=trending" className="w-full">
+            
+            <Link href="/community?view=trending" className="w-full" prefetch={true}>
               <Button
-                className={`w-full ${view === "trending"
+                className={`w-full transition-colors ${view === "trending"
                     ? "bg-red-600 text-white hover:bg-red-700"
                     : ""
                   }`}
@@ -105,7 +103,7 @@ export function Sidebar() {
                 Trending
               </Button>
             </Link>
-          </div>
+          </nav>
 
           {/* Recent Locations */}
           <div className="mt-10">
@@ -113,11 +111,9 @@ export function Sidebar() {
           </div>
         </div>
 
-
-
         <div className="p-4 text-xs text-gray-500 mt-auto">
           {user ? (
-            <Link href='/profile' >
+            <Link href='/profile' prefetch={true}>
               <div className="flex items-center space-x-3 mb-4 hover:bg-gray-300 transition-all rounded-2xl p-3">
                 {/* Avatar */}
                 <AvatarCircle url={data?.userData.profile_url} name={data?.userData.name ?? ''} />
@@ -137,14 +133,11 @@ export function Sidebar() {
               </div>
             </Link>)
             : (
-
               <div className="bg-black text-white rounded-2xl border border-red-600 p-4 space-y-3 shadow-md transition-all hover:shadow-red-500/20 mb-4">
-                {/* Text */}
                 <p className="text-sm text-gray-200 leading-relaxed">
                   Log in to share your first travel experience, join the community and get $20 worth of gift.
                 </p>
 
-                {/* Button */}
                 <Link href="/login">
                   <button className="w-full flex items-center justify-center space-x-2 bg-red-600 hover:bg-red-700 text-white font-medium py-2 rounded-xl transition-all">
                     <LogIn size={18} />
@@ -160,11 +153,7 @@ export function Sidebar() {
         </div>
       </div>
 
-      {/* Mobile floating button - visible on sm/md screens */}
-
-
       {/* Floating Mobile Dock */}
-
       <div className="fixed bottom-0 z-50 left-0 w-full bg-white border-t border-gray-200 shadow-lg lg:hidden">
         <div className="flex justify-around items-center py-3">
           {/* Create Post Button */}
@@ -180,7 +169,8 @@ export function Sidebar() {
           {/* Feed Button */}
           <Link
             href="/community?view=feed"
-            className={`flex flex-col items-center justify-center text-sm pb-1 ${view === "feed"
+            prefetch={true}
+            className={`flex flex-col items-center justify-center text-sm pb-1 transition-colors ${view === "feed"
                 ? "text-red-600 border-b-2 border-red-600"
                 : "text-gray-600 hover:text-primary"
               }`}
@@ -191,7 +181,8 @@ export function Sidebar() {
           {/* Articles Button */}
           <Link
             href="/community?view=article"
-            className={`flex flex-col items-center justify-center text-sm pb-1 ${view === "article"
+            prefetch={true}
+            className={`flex flex-col items-center justify-center text-sm pb-1 transition-colors ${view === "article"
                 ? "text-red-600 border-b-2 border-red-600"
                 : "text-gray-600 hover:text-primary"
               }`}
@@ -202,7 +193,8 @@ export function Sidebar() {
           {/* Trending Button */}
           <Link
             href="/community?view=trending"
-            className={`flex flex-col items-center justify-center text-sm pb-1 ${view === "trending"
+            prefetch={true}
+            className={`flex flex-col items-center justify-center text-sm pb-1 transition-colors ${view === "trending"
                 ? "text-red-600 border-b-2 border-red-600"
                 : "text-gray-600 hover:text-primary"
               }`}
@@ -220,8 +212,6 @@ export function Sidebar() {
           </button>
         </div>
       </div>
-
-
     </>
   );
 }
