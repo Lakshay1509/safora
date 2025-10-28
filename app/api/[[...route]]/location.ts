@@ -64,11 +64,11 @@ const app = new Hono()
 
   .get("/locationByID/:id", async (ctx) => {
     const id = ctx.req.param("id");
-    // const supabase = await createClient();
-    // const {
-    //   data: { user },
-    //   error,
-    // } = await supabase.auth.getUser();
+    const supabase = await createClient();
+    const {
+      data: { user },
+      error,
+    } = await supabase.auth.getUser();
 
     // if (error || !user) {
     //   return ctx.json({ error: "Unauthorized" }, 401);
@@ -81,7 +81,37 @@ const app = new Hono()
     if (!location) {
       return ctx.json({ error: "Location not found" }, 404);
     }
-    return ctx.json({ location }, 200);
+
+    const posts = await db.posts.count({
+      where: { location_id: id },
+    });
+
+    const comments = await db.comments.count({
+      where: { location_id: id },
+    });
+
+    const followers = await db.locations.findUnique({
+      where: { id: id },
+      select: {
+        followers_count: true,
+      },
+    });
+
+    // Check if user is following this location
+    let isFollowing = false;
+    if (user) {
+      const followRecord = await db.user_location_follows.findUnique({
+        where: {
+          user_id_location_id: {
+            user_id: user.id,
+            location_id: id,
+          },
+        },
+      });
+      isFollowing = !!followRecord;
+    }
+
+    return ctx.json({ location, posts, comments, followers, isFollowing }, 200);
   })
 
   .get("/reviews/:id/:time_of_day", async (ctx) => {

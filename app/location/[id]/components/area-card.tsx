@@ -7,8 +7,6 @@ import { MapPin } from "lucide-react"
 import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts"
 import { useGetLocationReview } from "@/features/location/use-get-location-review";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useEffect } from "react";
-import { useGetLocationStats } from "@/features/location/use-get-location-stats";
 import Follow from "./Follow";
 
 export function AreaCard() {
@@ -20,14 +18,6 @@ export function AreaCard() {
     isLoading,
     isError
   } = useGetLocation(id);
-
-  // useEffect(() => {
-  //   if (data?.location.name) {
-  //     document.title = `${data.location.name} - Safe Or Not`;
-  //   }
-  // }, [data]);
-
-  const { data: stats, isLoading: stats_loading, isError: stats_error } = useGetLocationStats(id);
 
   const {
     data: dayData,
@@ -95,17 +85,17 @@ export function AreaCard() {
           </div>
           <div className="ml-8 sm:ml-10 lg:ml-12 flex flex-col md:flex-row md:items-center md:space-x-4 space-y-2 md:space-y-0 text-gray-700 text-sm font-medium mt-2">
             <p className="flex items-center space-x-1">
-              <span className="font-semibold">{stats?.followers?.followers_count ?? 0}</span>
+              <span className="font-semibold">{data?.followers?.followers_count ?? 0}</span>
               <span className="text-gray-500">Followers</span>
             </p>
             <div className="hidden md:block h-4 w-px bg-gray-300"></div>
             <p className="flex items-center space-x-1">
-              <span className="font-semibold">{stats?.posts ?? 0}</span>
+              <span className="font-semibold">{data?.posts ?? 0}</span>
               <span className="text-gray-500">Posts</span>
             </p>
             <div className="hidden md:block h-4 w-px bg-gray-300"></div>
             <p className="flex items-center space-x-1">
-              <span className="font-semibold">{stats?.comments ?? 0}</span>
+              <span className="font-semibold">{data?.comments ?? 0}</span>
               <span className="text-gray-500">Comments</span>
             </p>
           </div>
@@ -116,7 +106,7 @@ export function AreaCard() {
 
 
         <div>
-          <Follow id={id} />
+          <Follow id={id} following={data?.isFollowing ?? false} />
           <div className="flex flex-row justify-between px-8 lg:items-center gap-4 sm:gap-6">
             <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-3">
               <div className="text-center">

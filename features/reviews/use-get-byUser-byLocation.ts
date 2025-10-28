@@ -1,11 +1,13 @@
 import {useQuery} from "@tanstack/react-query";
 import {client} from "@/lib/hono"
+import { useAuth } from "@/contexts/AuthContext";
 
 
 
 export const useGetReviewByUser = (location_id:string,time_of_day:string)=>{
+    const {user} = useAuth();
     const query = useQuery({
-        enabled : !!location_id,
+        enabled : !!location_id && !!user,
         queryKey: ["userReview", location_id, time_of_day], 
         queryFn: async ()=>{
             const response = await client.api.review.byUser[":location_id"][":time_of_day"].$get({

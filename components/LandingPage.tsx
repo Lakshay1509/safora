@@ -116,6 +116,7 @@ export default async function LandingPage() {
             alt="Interactive world map showing community-driven safety ratings and real-time travel safety insights"
             height={1200}
             width={1200}
+            unoptimized
           />
         </div>
       </section>
@@ -170,6 +171,7 @@ export default async function LandingPage() {
               height={550}
               className="w-full h-auto max-w-md md:max-w-lg"
               priority
+              unoptimized
             />
           </div>
         </div>
@@ -250,6 +252,7 @@ export default async function LandingPage() {
                 width={1000}
                 height={1000}
                 className="rounded-2xl border-b-4 border-black"
+                unoptimized
               />
             </div>
           </div>

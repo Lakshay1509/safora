@@ -12,7 +12,6 @@ interface Props{
 
 const RightSidebar = ({id}:Props) => {
     const {data,isLoading,isError} = useGetLocation(id); 
-    const{data:stats,isLoading:stats_loading,isError:stats_error} = useGetLocationStats(id);
     const { data:post, isLoading:post_Loading, isError:post_error } = useGetLocationPost(id);
   return (
     <div className="fixed right-0 top-0 h-[90vh] w-80 bg-white border-l border-t border-r rounded-xl border-gray-200 mt-22  py-10 px-6 hidden lg:block overflow-y-auto">
@@ -28,17 +27,17 @@ const RightSidebar = ({id}:Props) => {
 
           <div className=" flex items-center space-x-2 text-gray-700 text-sm font-medium">
             <p className="flex items-center space-x-1">
-              <span className="font-semibold">{stats?.followers?.followers_count}</span>
+              <span className="font-semibold">{data?.followers?.followers_count ?? 0}</span>
               <span className="text-gray-500">Followers</span>
             </p>
             <div className="h-4 w-px bg-gray-300"></div>
             <p className="flex items-center space-x-1">
-              <span className="font-semibold">{stats?.posts}</span>
+              <span className="font-semibold">{data?.posts ?? 0}</span>
               <span className="text-gray-500">Posts</span>
             </p>
             <div className="h-4 w-px bg-gray-300"></div>
             <p className="flex items-center space-x-1">
-              <span className="font-semibold">{stats?.comments}</span>
+              <span className="font-semibold">{data?.comments ?? 0}</span>
               <span className="text-gray-500">Comments</span>
             </p>
           </div>

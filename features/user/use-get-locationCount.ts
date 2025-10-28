@@ -1,9 +1,12 @@
 import {useQuery} from "@tanstack/react-query";
 import {client} from "@/lib/hono"
+import { useAuth } from "@/contexts/AuthContext";
 
 
 export const useGetUserLocationCount = ()=>{
+    const {user} = useAuth();
     const query = useQuery({
+        enabled :!!user,
         queryKey: ["userLocationCount"],
         queryFn: async ()=>{
             const response = await client.api.user["locations-count"].$get();
