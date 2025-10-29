@@ -138,7 +138,7 @@ export default async function LandingPage() {
               rel="noopener noreferrer"
             >
               <img
-                src="https://startupfa.me/badges/featured-badge.webp"
+                src="/startup_fame.webp"
                 alt="SafeOrNot - Featured on Startup Fame"
                 width={171}
                 height={54}
