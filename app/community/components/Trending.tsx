@@ -1,6 +1,5 @@
 "use client";
 
-
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { TrendingUp, MapPin, Sun, Moon, MessageSquare, ArrowUp } from "lucide-react";
@@ -22,114 +21,114 @@ export default function TrendingPage() {
       </div>
     );
   }
+
   function stringToColor(str: string) {
-  let hash = 0;
-  for (let i = 0; i < str.length; i++) {
-    hash = str.charCodeAt(i) + ((hash << 5) - hash);
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+      hash = str.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    const color = `hsl(${hash % 360}, 70%, 35%)`;
+    return color;
   }
-  const color = `hsl(${hash % 360}, 70%, 35%)`;
-  return color;
-}
 
-// Component: circular initials badge
-function LocationBadge({ name }: { name: string }) {
-  const color = stringToColor(name);
-  const initials = name
-    .split(" ")
-    .map((word) => word[0])
-    .join("")
-    .slice(0, 2)
-    .toUpperCase();
+  function LocationBadge({ name }: { name: string }) {
+    const color = stringToColor(name);
+    const initials = name
+      .split(" ")
+      .map((word) => word[0])
+      .join("")
+      .slice(0, 2)
+      .toUpperCase();
 
-  return (
-    <div
-      className="w-8 h-8 flex items-center justify-center rounded-full text-white font-semibold text-xs shrink-0"
-      style={{ backgroundColor: color }}
-    >
-      {initials}
-    </div>
-  );
-}
-
-  return (
-    <div className="flex flex-row justify-start w-full">
-    <div className="container max-w-4xl flex-1 mr-auto px-4 py-8 space-y-12">
-      {/* Header */}
-      <div className="space-y-2">
-        <div className="flex items-center gap-2">
-          <TrendingUp className="h-8 w-8 text-primary" />
-          <h1 className="text-xl md:text-2xl font-bold tracking-tight">Trending Now</h1>
-        </div>
-        <p className="text-muted-foreground text-base md:text-lg">
-          Most reviewed locations and engaging community posts
-        </p>
+    return (
+      <div
+        className="w-10 h-10 flex items-center justify-center rounded-full text-white font-semibold text-sm shrink-0"
+        style={{ backgroundColor: color }}
+      >
+        {initials}
       </div>
+    );
+  }
 
-      {/* Top Locations Section */}
-      <section className="space-y-6">
-        <div className="flex items-center justify-between">
-          <h2 className="text-xl font-semibold flex items-center gap-2">
-            <MapPin className="h-6 w-6 text-primary" />
-            Top Locations
-          </h2>
+  return (
+    <div className="flex flex-row justify-start w-full bg-background">
+      <div className="container max-w-4xl flex-1 mr-auto px-4 py-8 space-y-10">
+        {/* Header */}
+        <div className="space-y-1">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-primary/10 rounded-lg">
+              <TrendingUp className="h-5 w-5 text-primary" />
+            </div>
+            <h1 className="text-2xl md:text-3xl font-bold tracking-tight">Trending</h1>
+          </div>
+          <p className="text-sm text-muted-foreground ml-14">Discover what's popular in your community</p>
         </div>
 
-        {isLoading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {[...Array(10)].map((_, i) => (
-              <Skeleton key={i} className="h-32 rounded-lg" />
-            ))}
+        {/* Top Locations Section */}
+        <section className="space-y-4">
+          <div className="flex items-center gap-2">
+            <MapPin className="h-5 w-5 text-primary" />
+            <h2 className="text-lg font-semibold">Top Locations</h2>
           </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {data?.locations.map((location, index) => (
-              <Link
-                key={location.location_id}
-                href={`/location/${location.location_id}`}
-              >
-                <Card className="hover:shadow-lg transition-all duration-200 hover:border-primary/50 cursor-pointer h-full">
-                  <CardContent className="p-4 ">
-                    <div className="flex items-center justify-between flex-wrap space-y-4">
-                      <div className="flex items-center gap-3 ">
-                        <LocationBadge name={location.name??''} />
-                        <div>
-                          <h3 className="font-semibold text-lg">
-                            {location.name}
-                          </h3>
-                          <span className="text-sm text-muted-foreground">
-                            {location.total_reviews} reviews
-                          </span>
+
+          {isLoading ? (
+            <div className="flex gap-3 overflow-x-scroll pb-2">
+              {[...Array(5)].map((_, i) => (
+                <Skeleton key={i} className="h-24 w-56 rounded-xl flex-shrink-0" />
+              ))}
+            </div>
+          ) : (
+            <div className="flex gap-3 overflow-x-scroll pb-2 scrollbar-hide">
+              {data?.locations.map((location) => (
+                <Link
+                  key={location.location_id}
+                  href={`/location/${location.location_id}`}
+                  className="flex-shrink-0"
+                >
+                  <Card className="hover:shadow-md transition-all duration-200 hover:border-primary/30 cursor-pointer w-56 border-border/40">
+                    <CardContent className="p-4">
+                      <div className="space-y-3">
+                        <div className="flex items-center gap-3">
+                          <LocationBadge name={location.name ?? ''} />
+                          <div className="flex-1 min-w-0">
+                            <h3 className="font-semibold text-sm truncate">
+                              {location.name}
+                            </h3>
+                            <span className="text-xs text-muted-foreground">
+                              {location.total_reviews} reviews
+                            </span>
+                          </div>
+                        </div>
+                        
+                        <div className="flex items-center gap-4">
+                          {location.day_rating !== null && (
+                            <div className="flex items-center gap-1.5 bg-amber-50 dark:bg-amber-950/30 px-2.5 py-1 rounded-full">
+                              <Sun className="h-3.5 w-3.5 text-amber-600 dark:text-amber-400" />
+                              <span className="font-semibold text-xs text-amber-700 dark:text-amber-300">
+                                {location.day_rating}%
+                              </span>
+                            </div>
+                          )}
+                          {location.night_rating !== null && (
+                            <div className="flex items-center gap-1.5 bg-indigo-50 dark:bg-indigo-950/30 px-2.5 py-1 rounded-full">
+                              <Moon className="h-3.5 w-3.5 text-indigo-600 dark:text-indigo-400" />
+                              <span className="font-semibold text-xs text-indigo-700 dark:text-indigo-300">
+                                {location.night_rating}%
+                              </span>
+                            </div>
+                          )}
                         </div>
                       </div>
-                      <div className="flex items-center gap-4">
-                        {location.day_rating !== null && (
-                          <div className="flex items-center gap-2">
-                            <Sun className="h-5 w-5 text-amber-500" />
-                            <span className="font-semibold text-sm">
-                              {location.day_rating}%
-                            </span>
-                          </div>
-                        )}
-                        {location.night_rating !== null && (
-                          <div className="flex items-center gap-2">
-                            <Moon className="h-5 w-5 text-indigo-500" />
-                            <span className="font-semibold text-sm">
-                              {location.night_rating}%
-                            </span>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </Link>
-            ))}
-          </div>
-        )}
-      </section>
+                    </CardContent>
+                  </Card>
+                </Link>
+              ))}
+            </div>
+          )}
+        </section>
 
-      {/* Top Posts Section */}
-      <section className="space-y-6">
+        {/* Top Posts Section */}
+        <section className="space-y-6">
         <div className="flex items-center justify-between">
           <h2 className="text-xl font-semibold flex items-center gap-2">
             <TrendingUp className="h-6 w-6 text-primary" />
@@ -226,15 +225,13 @@ function LocationBadge({ name }: { name: string }) {
           </div>
         )}
       </section>
-    </div>
+      </div>
 
-    <aside className="hidden lg:block w-80 flex-shrink-0 p-4">
+      <aside className="hidden lg:block w-80 flex-shrink-0 p-4">
         <div className="sticky top-4">
           <RightSidebar/>
         </div>
       </aside>
-
-
     </div>
   );
 }
