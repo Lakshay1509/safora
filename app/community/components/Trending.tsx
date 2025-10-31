@@ -152,7 +152,7 @@ export default function TrendingPage() {
                       {/* Profile Section */}
                       <div className="flex flex-row items-center gap-3 md:flex-col md:items-center md:gap-1 md:w-[100px]">
                         <ProfileLogo 
-                          name={post.users?.name} 
+                          name={post.users?.name ?? ''} 
                           url={post.users?.profile_url ?? ''} 
                           color={post.users?.profile_color ?? ''} 
                           size='40' 

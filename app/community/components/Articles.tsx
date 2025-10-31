@@ -69,14 +69,14 @@ const Articles = () => {
                         <div className="flex items-center mb-2">
                             <div className="mr-2">
                             <ProfileLogo
-                            url={post?.users?.profile_url}
-                            name={post?.users?.name}
+                            url={post?.users?.profile_url?? ''}
+                            name={post?.users?.name?? ''}
                             color={post.users?.profile_color ?? ''}
-                            size="30"
+                            size="35"
                           />
                             </div>
                             <span 
-  className="font-medium mx-2 text-[14px]"
+  className="font-medium  text-[14px]"
   style={{
     color: post?.users?.profile_color || '#000000'
   }}
@@ -88,7 +88,7 @@ const Articles = () => {
                                {post.created_at ? format(new Date(post.created_at), "MMM dd, yyyy") : ""}
                             </span>
                         </div>
-                        <h2 className="md:text-xl font-bold text-gray-900 dark:text-white mb-2 break-words">
+                        <h2 className="md:text-lg font-bold text-gray-900 dark:text-white mb-2 break-words">
                             {post.heading}
                         </h2>
                         

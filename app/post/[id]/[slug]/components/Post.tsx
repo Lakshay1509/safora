@@ -78,8 +78,8 @@ const Post = () => {
                 <article className="w-full max-w-3xl mx-4 p-4 bg-white rounded-lg mt-6 lg:mx-10 lg:mr-[22rem] pb-22">
                     <header className="flex space-x-2 items-start mb-2">
                         <ProfileLogo
-                            url={post?.post.users?.profile_url}
-                            name={post?.post.users?.name}
+                            url={post?.post.users?.profile_url ?? ''}
+                            name={post?.post.users?.name ?? ''}
                             color={post?.post.users?.profile_color ?? ''}
                             size="50"
                         />

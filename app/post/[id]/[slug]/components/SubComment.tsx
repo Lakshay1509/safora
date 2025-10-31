@@ -116,8 +116,8 @@ const SubComment = ({ id, postId }: Props) => {
           <div key={reply.id} className="p-2 bg-gray-50 rounded-lg text-sm">
             <div className="flex items-center text-xs text-gray-600 mb-1">
               <span className="mr-2"><ProfileLogo
-                            url={reply?.users?.profile_url}
-                            name={reply?.users?.name}
+                            url={reply?.users?.profile_url ?? ''}
+                            name={reply?.users?.name ?? ''}
                             color={reply.users?.profile_color ?? ''}
                             size="25"/></span>
               <span className="font-medium">{reply.users?.name}</span>
