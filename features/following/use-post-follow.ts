@@ -50,7 +50,7 @@ export const addFollow = ()=>{
         },
         onSettled: (data, error, variables) => {
             queryClient.invalidateQueries({queryKey:["follow", variables.location_id]});
-            queryClient.invalidateQueries({queryKey:["location-stats"]});
+            queryClient.invalidateQueries({queryKey:["location",variables.location_id]});
         }
     })
 }

@@ -3,14 +3,14 @@
 import React from 'react';
 import Avatar from 'react-avatar';
 
-interface Props {
-  url: string | null | undefined;
-  name: string | null | undefined;
-  size?: string;
-  color?: string;
+interface ProfileLogoProps {
+  url: string | null;
+  name: string;
+  color: string;
+  size: string;
 }
 
-const ProfileLogo = ({ url, name, size = "20", color }: Props) => {
+const ProfileLogo: React.FC<ProfileLogoProps> = ({ url, name, color, size }) => {
   const numericSize = parseInt(size, 10);
   
   if (!color) {
@@ -54,4 +54,4 @@ const ProfileLogo = ({ url, name, size = "20", color }: Props) => {
   );
 };
 
-export default ProfileLogo;
+export default React.memo(ProfileLogo);

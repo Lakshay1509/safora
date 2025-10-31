@@ -52,7 +52,7 @@ export const useDeleteFollow = () => {
         },
         onSettled: (data, error, variables) => {
             queryClient.invalidateQueries({ queryKey: ["follow", variables.id] });
-            queryClient.invalidateQueries({queryKey:["location-stats"]});
+            queryClient.invalidateQueries({queryKey:["location",variables.id]});
         }
     });
 };
