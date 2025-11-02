@@ -78,8 +78,8 @@ export async function GET(request: NextRequest) {
           subject: subject,
           react: FeedbackEmailTemplate({
             firstName: user.name,
-            logoUrl: "https://safeornot.space/logo.avif",
-            feedbackLink:"https://safeornot.space/feedback"
+            logoUrl: "https://www.safeornot.space/logo.avif",
+            feedbackLink:"https://www.safeornot.space/feedback"
           }),
         }));
 

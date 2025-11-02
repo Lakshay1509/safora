@@ -98,8 +98,8 @@ export async function GET(request: NextRequest) {
       title: item.heading,
       description: truncateText(item.body),
       link: item.is_article
-        ? `https://safeornot.space/article/${item.id}/${item.slug}`
-        : `https://safeornot.space/post/${item.id}/${item.slug}`,
+        ? `https://www.safeornot.space/article/${item.id}/${item.slug}`
+        : `https://www.safeornot.space/post/${item.id}/${item.slug}`,
       imageUrl: item.image_url || undefined,
     }));
 
@@ -126,7 +126,7 @@ export async function GET(request: NextRequest) {
           subject: subject,
           react: EmailTemplate({
             firstName: user.name,
-            logoUrl: "https://safeornot.space/logo.avif",
+            logoUrl: "https://www.safeornot.space/logo.avif",
             highlights: highlights,
           }),
         }));
