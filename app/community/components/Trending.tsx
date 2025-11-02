@@ -52,7 +52,7 @@ export default function TrendingPage() {
 
   return (
     <div className="flex flex-row justify-start w-full bg-background">
-      <div className="container max-w-4xl flex-1 mr-auto px-4 py-8 space-y-10">
+      <div className="container max-w-4xl flex-1 mr-auto px-4 py-2 space-y-10">
         {/* Header */}
         <div className="space-y-1">
           <div className="flex items-center gap-3">
