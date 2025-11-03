@@ -51,14 +51,13 @@ export async function GET(request: NextRequest) {
           name: true,
           email: true,
         },
-        take:80
       }),
     ]);
 
    
 
     // Subject line for all emails
-    const subject = "We'd love your feedback on SafeOrNot";
+    const subject = "What should we build next?";
 
     // Process users in chunks of 100 (Resend batch limit)
     const userChunks = chunkArray(users, 80);

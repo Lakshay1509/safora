@@ -15,14 +15,24 @@ import {
 } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import { toast } from "sonner";
 import { useState } from "react";
 import { Star } from "lucide-react";
-import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
 
 const feedbackSchema = z.object({
   rating: z.number().int().min(1).max(5, "Please select a rating"),
+  features: z
+    .array(z.string())
+    .min(1, "Please select at least one feature")
+    .max(2, "You can select a maximum of 2 features"),
   feedback: z
     .string()
     .max(1500, "Feedback must be less than 1500 characters"),
@@ -30,8 +40,28 @@ const feedbackSchema = z.object({
 
 type FeedbackFormValues = z.infer<typeof feedbackSchema>;
 
+const FEATURES = [
+  {
+    id: "itinerary",
+    label: "Itinerary Planner",
+    description:
+      "Plan your perfect day with our intelligent itinerary planner. Get personalized recommendations for activities, restaurants, and attractions based on your preferences, location, and schedule. The planner optimizes routes and timing to make the most of your day.",
+  },
+  {
+    id: "friends",
+    label: "Add Friends",
+    description:
+      "Connect with friends and share your experiences together. Notify them if you are unsure about the safety and if you don't reach your destination within a set amount of time , they get a message and your last location",
+  },
+  {
+    id: "assistant",
+    label: "Hyper-Personalized Assistant",
+    description:
+      "Get answers tailored specifically to you. Our AI assistant learns your preferences, travel style, dietary restrictions, and interests to provide highly personalized recommendations. Ask anything and receive context-aware suggestions that match your unique needs.",
+  },
+];
+
 const Page = () => {
- 
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -39,13 +69,12 @@ const Page = () => {
     resolver: zodResolver(feedbackSchema),
     defaultValues: {
       rating: 0,
+      features: [],
       feedback: "",
     },
   });
 
   const onSubmit = async (values: FeedbackFormValues) => {
-   
-
     setIsSubmitting(true);
 
     try {
@@ -77,7 +106,6 @@ const Page = () => {
       setIsSubmitting(false);
     }
   };
-
 
   return (
     <div className="py-12 px-4 sm:px-6 lg:px-8">
@@ -140,6 +168,69 @@ const Page = () => {
                         ))}
                       </RadioGroup>
                     </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {/* Features Selection */}
+              <FormField
+                control={form.control}
+                name="features"
+                render={() => (
+                  <FormItem>
+                    <FormLabel className="text-lg font-semibold">
+                      Which features interest you most?
+                    </FormLabel>
+                    <FormDescription>
+                      Select 1-2 features you'd like to see or try
+                    </FormDescription>
+                    <div className="space-y-4 mt-4">
+                      {FEATURES.map((feature) => (
+                        <div key={feature.id} className="space-y-2">
+                          <FormField
+                            control={form.control}
+                            name="features"
+                            render={({ field }) => (
+                              <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                                <FormControl>
+                                  <Checkbox
+                                    checked={field.value?.includes(feature.id)}
+                                    onCheckedChange={(checked) => {
+                                      const currentValues = field.value || [];
+                                      if (checked) {
+                                        if (currentValues.length < 2) {
+                                          field.onChange([...currentValues, feature.id]);
+                                        } else {
+                                          toast.error("Maximum 2 features allowed");
+                                        }
+                                      } else {
+                                        field.onChange(
+                                          currentValues.filter((value) => value !== feature.id)
+                                        );
+                                      }
+                                    }}
+                                  />
+                                </FormControl>
+                                <FormLabel className="font-normal cursor-pointer">
+                                  {feature.label}
+                                </FormLabel>
+                              </FormItem>
+                            )}
+                          />
+                          <Accordion type="single" collapsible className="ml-7">
+                            <AccordionItem value={feature.id} className="border-none">
+                              <AccordionTrigger className="text-sm text-blue-600 hover:text-blue-800 py-2 ml-2">
+                                Learn more
+                              </AccordionTrigger>
+                              <AccordionContent className="text-sm text-gray-600">
+                                {feature.description}
+                              </AccordionContent>
+                            </AccordionItem>
+                          </Accordion>
+                        </div>
+                      ))}
+                    </div>
                     <FormMessage />
                   </FormItem>
                 )}

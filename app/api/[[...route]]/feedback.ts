@@ -1,5 +1,3 @@
-import { db } from "@/lib/prisma";
-import { createClient } from "@/utils/supabase/server";
 import { zValidator } from "@hono/zod-validator";
 import { Hono } from "hono";
 import z from "zod";
@@ -11,6 +9,10 @@ const app = new Hono().post(
     z.object({
       rating: z.number().int().min(1).max(5),
       feedback: z.string().max(1500),
+      features: z
+          .array(z.string())
+          .min(1, "Please select at least one feature")
+          .max(2, "You can select a maximum of 2 features"),
     })
   ),
   async (ctx) => {
@@ -31,6 +33,7 @@ const app = new Hono().post(
             {
               rating: values.rating,
               feedback: values.feedback,
+              features:values.features,
               timestamp: new Date().toISOString(),
             },
           ],
