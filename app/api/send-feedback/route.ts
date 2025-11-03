@@ -72,7 +72,7 @@ export async function GET(request: NextRequest) {
       try {
         // Prepare batch emails for this chunk
         const batchEmails = chunk.map((user) => ({
-          from: "Lakshay Gupta (Safe or Not) <hello@safeornot.space>",
+          from: "Lakshay Gupta <lakshay@safeornot.space>",
           to: [user.email],
           subject: subject,
           react: FeedbackEmailTemplate({
