@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { LocationTracker } from "./components/LocationTracker";
 import NotFound from "@/app/not-found";
+import MetricsCard from "./components/metrics";
 
 type Props = {
   params: Promise<{ id: string }>;
@@ -101,6 +102,7 @@ const page = async ({ params }: Props) => {
         {/* Top Area Card - Full Width */}
         <AreaCard />
         <ReviewsCard />
+        <MetricsCard/>
 
         {/* Show TabView only if user is logged in */}
         {user ? (
@@ -116,7 +118,7 @@ const page = async ({ params }: Props) => {
                 Sign in to unlock more
               </h3>
               <p className="text-gray-600">
-                Create an account to access detailed safety insights, community discussions, and contribute your own experiences.
+                Create an account to access detailed safety insights (like walkability, lighting quality score, public transport score etc), community discussions, and contribute your own experiences.
               </p>
               <div className="flex gap-3 justify-center">
                 <Link href="/login">

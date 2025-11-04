@@ -4,7 +4,7 @@ import { createClient } from "@/utils/supabase/server";
 import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
 import { randomUUID } from "crypto";
-import { generateTravelerWarnings } from "@/lib/gemini-service";
+import { generateLocationMetrics, generateTravelerWarnings } from "@/lib/gemini-service";
 enum TimeOfDay {
   DAY = "DAY",
   NIGHT = "NIGHT",
@@ -203,7 +203,7 @@ const app = new Hono()
       where: { location_id: id },
     });
 
-    // Check if precautions are older than 7 days (to match the 7-day data window)
+    // Check if precautions are older than 1 days (to match the 1-day data window)
     const sevenDaysAgo = new Date(Date.now() - 1 * 24 * 60 * 60 * 1000);
 
     if (!locationPrecautions || locationPrecautions.created_at < sevenDaysAgo) {
@@ -243,7 +243,7 @@ const app = new Hono()
           },
           update: {
             approved_precautions: generatedData as any,
-            created_at: new Date(),
+            created_at: new Date()
           },
           create: {
             location_id: id,
@@ -278,6 +278,75 @@ const app = new Hono()
       200
     );
   })
+
+  .get('/extra_info/:id',async(ctx)=>{
+
+     const id = ctx.req.param("id");
+    const supabase = await createClient();
+    const {
+      data: { user },
+      error,
+    } = await supabase.auth.getUser();
+
+    if (error || !user) {
+      return ctx.json({ error: "Unauthorized" }, 401);
+    }
+
+    const locationPrecautions = await db.precautions.findUnique({
+      where: { location_id: id },
+    });
+
+    // Check if precautions are older than 1 days (to match the 1-day data window)
+    const sevenDaysAgo = new Date(Date.now() - 1 * 24 * 60 * 60 * 1000);
+
+    const date = locationPrecautions?.extra_info_updated_at ??  new Date(Date.now() - 2 * 24 * 60 * 60 * 1000)
+
+    if (!locationPrecautions || date < sevenDaysAgo) {
+      const location = await db.locations.findUnique({
+        where: { id: id },
+      });
+
+      if (!location) {
+        return ctx.json({ error: "Location not found" }, 404);
+      }
+
+      try{
+        const generatedData = await generateLocationMetrics(
+          location.name,
+          location.city,
+          location.country
+        )
+
+        const createdMetrics = await db.precautions.upsert({
+          where:{
+            location_id:id,
+          },
+          update:{
+            extra_info: generatedData as any,
+            extra_info_updated_at:new Date(),
+          },
+          create:{
+            location_id:id,
+            extra_info:generatedData as any
+          }
+        })
+
+        if(!createdMetrics){
+          return ctx.json({error:"Error getting metrics"},500)
+        }
+
+        return ctx.json(generatedData,200)
+
+      }catch(error){
+        return ctx.json({error:"Error getting data"},500);
+      }
+    }
+
+    return ctx.json(locationPrecautions.extra_info,200)
+
+  })
+
+  
 
   .get("/comments/:id", async (ctx) => {
     const id = ctx.req.param("id");

@@ -58,7 +58,8 @@ export async function generateTravelerWarnings(
   try {
     // Configure Google Search grounding tool
     const groundingTool = {
-      googleSearch: {},
+      googleSearch: {}
+     
     };
 
     // Configure thinking settings
@@ -277,6 +278,134 @@ If limited recent data available, combine:
   } catch (error: any) {
     console.error('Error generating traveler warnings from Gemini:', error);
     throw new Error(`Failed to generate traveler warnings: ${error.message}`);
+  }
+}
+
+export interface LocationMetrics {
+  Walkability: number;
+  Lighting_Quality: number;
+  AQI: number;
+  Temperature_C: number;
+  Availability_of_Public_Transport: number;
+  Network_Connectivity: number;
+}
+
+/**
+ * Generates location metrics scores based on real-time web search data
+ * Returns scores for walkability, lighting, AQI, temperature, transport, and connectivity
+ */
+export async function generateLocationMetrics(
+  locationName: string,
+  city: string | null,
+  country: string
+): Promise<LocationMetrics> {
+  try {
+    // Configure Google Search grounding tool
+    const groundingTool = {
+      googleSearch: {}
+    };
+
+    // Configure thinking settings
+    const thinkingConfig = {
+      thinkingBudget: -1,
+      includeThoughts: false,
+    };
+
+    const locationString = city 
+      ? `${locationName}, ${city}, ${country}` 
+      : `${locationName}, ${country}`;
+
+    const prompt = `**Task:**
+Search the web for recent, reliable information about the following six parameters for the specified location:
+
+1. Walkability
+2. Lighting Quality (streetlight and night safety)
+3. Air Quality Index (AQI)
+4. Temperature (latest average or current)
+5. Availability of Public Transport
+6. Network Connectivity (mobile + internet)
+
+**Location:** ${locationString}
+
+**Instructions:**
+
+* Use up-to-date and location-specific data (latest year or current readings if available).
+* Assign a **score out of 10** for each parameter based on the findings.
+* Use objective reasoning: 10 = excellent, 1 = very poor.
+* For AQI: provide the latest numeric AQI reading (0-500 scale).
+* For Temperature: provide the latest or current temperature (in °C).
+* Return the results **strictly in valid JSON format** with no explanations, commentary, or extra text.
+
+**Example Output Format:**
+
+{
+  "Walkability": 7,
+  "Lighting_Quality": 6,
+  "AQI": 92,
+  "Temperature_C": 28,
+  "Availability_of_Public_Transport": 9,
+  "Network_Connectivity": 8
+}
+
+**Response Format**: Return ONLY the JSON object above, no markdown code blocks, no additional text.`;
+
+    const config = {
+      tools: [groundingTool],
+      thinkingConfig: thinkingConfig,
+    };
+
+    const result = await ai.models.generateContent({
+      model: "gemini-2.5-flash-lite",
+      contents: [{ parts: [{ text: prompt }] }],
+      config: config,
+    });
+
+    const responseText = result.text;
+    
+    // Extract JSON from response
+    let jsonString = '';
+    const markdownMatch = responseText?.match(/```json\s*([\s\S]*?)\s*```/);
+
+    if (markdownMatch && markdownMatch[1]) {
+      jsonString = markdownMatch[1];
+    } else {
+      // Try to find JSON object in response
+      const jsonMatch = responseText?.match(/(\{[\s\S]*?"Walkability"[\sS]*?\})/);
+      if (jsonMatch && jsonMatch[0]) {
+        jsonString = jsonMatch[0];
+      } else {
+        // Last resort: try to parse entire response as JSON
+        jsonString = responseText || '{}';
+      }
+    }
+
+    if (!jsonString) {
+      console.error('No JSON found in response');
+      throw new Error("Invalid JSON response from Gemini");
+    }
+
+    const parsedResponse: LocationMetrics = JSON.parse(jsonString);
+
+    // Validate response structure
+    const requiredFields = [
+      'Walkability', 
+      'Lighting_Quality', 
+      'AQI', 
+      'Temperature_C', 
+      'Availability_of_Public_Transport', 
+      'Network_Connectivity'
+    ];
+
+    for (const field of requiredFields) {
+      if (parsedResponse[field as keyof LocationMetrics] === undefined) {
+        throw new Error(`Invalid response structure: missing ${field}`);
+      }
+    }
+
+    return parsedResponse;
+  } catch (error: any) {
+    console.error('Error generating location metrics from Gemini:', error);
+    throw new Error(`Failed to generate location metrics: ${error.message}`);
   }
 }
 
