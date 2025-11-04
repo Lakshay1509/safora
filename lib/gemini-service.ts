@@ -346,7 +346,7 @@ Search the web for recent, reliable information about the following six paramete
   "Availability_of_Public_Transport": 9,
   "Network_Connectivity": 8
 }
-
+**Double check the format and make sure everything is present before returning**
 **Response Format**: Return ONLY the JSON object above, no markdown code blocks, no additional text.`;
 
     const config = {
