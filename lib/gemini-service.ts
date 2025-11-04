@@ -83,7 +83,7 @@ export async function generateTravelerWarnings(
     const prompt = `**Role**: You are a real-time traveler safety intelligence analyst providing up-to-date warnings.
 
 **Input**: 
-* Location: ${locationString} or the nearest major city
+* Location: ${locationString}
 * Current Date: ${searchDate}
 * Search Window: Last 30 days (${cutoffDateString} - ${searchDate})
 
