@@ -23,7 +23,7 @@ export function SidebarLayout({ children }: SidebarLayoutProps) {
     }
   }, [pathname]); // Re-run this check on path change
 
-  const noSidebarPaths = ["/", "/login", "/privacy-policy"];
+  const noSidebarPaths = ["/", "/login", "/privacy-policy", "/terms-and-conditions"];
   // Show sidebar if it's not a no-sidebar path AND it's not the 404 page
   const showSidebar = !noSidebarPaths.includes(pathname) && !isNotFound;
 

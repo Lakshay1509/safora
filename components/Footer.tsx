@@ -75,7 +75,16 @@ export function Footer({
                 >
                   Privacy Policy
                 </Link>
-              </li>
+                </li>
+                <li>
+                <Link
+                  href="/terms-and-conditions"
+                  className="text-sm text-gray-600 hover:text-gray-900 transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 rounded-sm"
+                >
+                  Terms and conditions
+                </Link>
+                </li>
+              
             </ul>
           </nav>
 
