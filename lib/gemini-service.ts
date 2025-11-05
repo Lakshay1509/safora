@@ -2,11 +2,11 @@
 import { GoogleGenAI } from "@google/genai";
 
 const ai = new GoogleGenAI({
-  apiKey: process.env.GEMINI_API_KEY!
+  apiKey: process.env.GEMINI_API_KEY!,
 });
 
 // Type definitions
-export type WarningCategory = 
+export type WarningCategory =
   | "tourist_scam"
   | "tourist_crime"
   | "women_traveler_safety"
@@ -39,12 +39,12 @@ export interface GeneratedWarnings {
 // Legacy types for backward compatibility
 export type SafetyTip = {
   tip: string;
-}
+};
 
 export type GeneratedPrecautions = {
   [key: string]: any;
   tips: SafetyTip[];
-}
+};
 
 /**
  * Generates real-time traveler safety warnings for a specific location
@@ -58,8 +58,7 @@ export async function generateTravelerWarnings(
   try {
     // Configure Google Search grounding tool
     const groundingTool = {
-      googleSearch: {}
-     
+      googleSearch: {},
     };
 
     // Configure thinking settings
@@ -68,18 +67,18 @@ export async function generateTravelerWarnings(
       includeThoughts: false, // Don't include thoughts for cleaner response
     };
 
-    const locationString = city 
-      ? `${locationName}, ${city}, ${country}` 
+    const locationString = city
+      ? `${locationName}, ${city}, ${country}`
       : `${locationName}, ${country}`;
 
     // Get current date in ISO format
     const currentDate = new Date();
-    const searchDate = currentDate.toISOString().split('T')[0];
-    
+    const searchDate = currentDate.toISOString().split("T")[0];
+
     // Calculate cutoff date (30 days ago for more consistent data)
     const cutoffDate = new Date(currentDate);
     cutoffDate.setDate(cutoffDate.getDate() - 30);
-    const cutoffDateString = cutoffDate.toISOString().split('T')[0];
+    const cutoffDateString = cutoffDate.toISOString().split("T")[0];
 
     const prompt = `**Role**: You are a real-time traveler safety intelligence analyst providing up-to-date warnings.
 
@@ -194,6 +193,10 @@ If limited recent data available, combine:
       thinkingConfig: thinkingConfig,
     };
 
+    const ai = new GoogleGenAI({
+      apiKey: process.env.GEMINI_API_KEY1!,
+    });
+
     const result = await ai.models.generateContent({
       model: "gemini-2.5-flash-lite",
       contents: [{ parts: [{ text: prompt }] }],
@@ -201,26 +204,26 @@ If limited recent data available, combine:
     });
 
     const responseText = result.text;
-    
+
     // Extract JSON from response
-    let jsonString = '';
+    let jsonString = "";
     const markdownMatch = responseText?.match(/```json\s*([\s\S]*?)\s*```/);
 
     if (markdownMatch && markdownMatch[1]) {
       jsonString = markdownMatch[1];
     } else {
       // Try to find JSON object in response
-      const jsonMatch = responseText?.match(/(\{[\s\S]*?"warnings"[\s\S]*?\})/);
+      const jsonMatch = responseText?.match(/(\{[\s\S]*?"warnings"[\sS]*?\})/);
       if (jsonMatch && jsonMatch[0]) {
         jsonString = jsonMatch[0];
       } else {
         // Last resort: try to parse entire response as JSON
-        jsonString = responseText || '{}';
+        jsonString = responseText || "{}";
       }
     }
 
     if (!jsonString) {
-      console.error('No JSON found in response');
+      console.error("No JSON found in response");
       throw new Error("Invalid JSON response from Gemini");
     }
 
@@ -233,17 +236,18 @@ If limited recent data available, combine:
 
     // Ensure we always have warnings (fallback for consistency)
     if (parsedResponse.warnings.length === 0) {
-      console.warn('Empty warnings array received, using fallback');
+      console.warn("Empty warnings array received, using fallback");
       // Return generic fallback warnings
       parsedResponse.warnings = [
         {
           category: "tourist_scam",
           severity: "medium",
           issue: "Be cautious of common tourist scams at airports and stations",
-          details: "Verify official taxi services and avoid unsolicited help with luggage. Use official pre-paid counters.",
+          details:
+            "Verify official taxi services and avoid unsolicited help with luggage. Use official pre-paid counters.",
           lastReported: searchDate,
-          travelerImpact: "All tourists, especially new arrivals"
-        }
+          travelerImpact: "All tourists, especially new arrivals",
+        },
       ];
       parsedResponse.dataRecency = "no_recent_data";
     }
@@ -251,7 +255,7 @@ If limited recent data available, combine:
     if (!parsedResponse.dataRecency) {
       parsedResponse.dataRecency = "last_7_days";
     }
-    
+
     if (!parsedResponse.searchDate) {
       parsedResponse.searchDate = searchDate;
     }
@@ -262,13 +266,22 @@ If limited recent data available, combine:
 
     // Validate each warning has required fields
     parsedResponse.warnings.forEach((warning, index) => {
-      if (!warning.category || !warning.severity || !warning.issue || 
-          !warning.details || !warning.lastReported || !warning.travelerImpact) {
-        console.warn(`Warning at index ${index} missing fields, filling with defaults`);
+      if (
+        !warning.category ||
+        !warning.severity ||
+        !warning.issue ||
+        !warning.details ||
+        !warning.lastReported ||
+        !warning.travelerImpact
+      ) {
+        console.warn(
+          `Warning at index ${index} missing fields, filling with defaults`
+        );
         warning.category = warning.category || "tourist_scam";
         warning.severity = warning.severity || "medium";
         warning.issue = warning.issue || "General safety precaution";
-        warning.details = warning.details || "Exercise caution in tourist areas";
+        warning.details =
+          warning.details || "Exercise caution in tourist areas";
         warning.lastReported = warning.lastReported || searchDate;
         warning.travelerImpact = warning.travelerImpact || "All travelers";
       }
@@ -276,7 +289,7 @@ If limited recent data available, combine:
 
     return parsedResponse;
   } catch (error: any) {
-    console.error('Error generating traveler warnings from Gemini:', error);
+    console.error("Error generating traveler warnings from Gemini:", error);
     throw new Error(`Failed to generate traveler warnings: ${error.message}`);
   }
 }
@@ -302,7 +315,7 @@ export async function generateLocationMetrics(
   try {
     // Configure Google Search grounding tool
     const groundingTool = {
-      googleSearch: {}
+      googleSearch: {},
     };
 
     // Configure thinking settings
@@ -311,33 +324,44 @@ export async function generateLocationMetrics(
       includeThoughts: false,
     };
 
-    const locationString = city 
-      ? `${locationName}, ${city}, ${country}` 
+    const locationString = city
+      ? `${locationName}, ${city}, ${country}`
       : `${locationName}, ${country}`;
 
-    const prompt = `**Task:**
-Search the web for recent, reliable information about the following six parameters for the specified location:
+    const prompt = `**Role**: You are a location data analyst providing structured metrics.
 
-1. Walkability
-2. Lighting Quality (streetlight and night safety)
-3. Air Quality Index (AQI)
-4. Temperature (latest average or current)
-5. Availability of Public Transport
-6. Network Connectivity (mobile + internet)
+**Task**: Search the web for current data on these 6 parameters for: ${locationString}
 
-**Location:** ${locationString}
+**Required Parameters**:
+1. **Walkability** (1-10): Pedestrian infrastructure, sidewalks, crosswalks, walkable distances
+2. **Lighting_Quality** (1-10): Street lighting coverage, night safety perception, dark spots
+3. **AQI**: Current Air Quality Index (numeric value 0-500, not a score)
+4. **Temperature_C**: Current or latest average temperature in Celsius (numeric, can be negative)
+5. **Availability_of_Public_Transport** (1-10): Bus/metro/train coverage, frequency, accessibility
+6. **Network_Connectivity** (1-10): Mobile signal strength, internet availability, coverage quality
 
-**Instructions:**
+**Scoring Guidelines**:
+- **10** = World-class (e.g., Tokyo metro, Copenhagen walkability)
+- **7-9** = Good to excellent
+- **4-6** = Average to adequate
+- **1-3** = Poor to very poor
+- **AQI**: Use actual numeric reading (e.g., 45, 150, 220), NOT a 1-10 score
+- **Temperature_C**: Use actual temperature (e.g., -5, 15, 32), NOT a score
 
-* Use up-to-date and location-specific data (latest year or current readings if available).
-* Assign a **score out of 10** for each parameter based on the findings.
-* Use objective reasoning: 10 = excellent, 1 = very poor.
-* For AQI: provide the latest numeric AQI reading (0-500 scale).
-* For Temperature: provide the latest or current temperature (in °C).
-* Return the results **strictly in valid JSON format** with no explanations, commentary, or extra text.
+**Data Requirements**:
+- Use official sources: government sites, weather APIs, transit authorities
+- Cross-reference multiple sources for consistency
+- For AQI: check IQAir, local environmental agencies
+- For transport: check local transit authority websites
 
-**Example Output Format:**
+**Critical Output Rules**:
+1. Return ONLY a JSON object - no markdown, no backticks, no explanatory text
+2. Use exact field names: Walkability, Lighting_Quality, AQI, Temperature_C, Availability_of_Public_Transport, Network_Connectivity
+3. All values must be numbers (integers or decimals)
+4. No missing fields - all 6 parameters required
+5. No additional fields or metadata
 
+**Valid Output Example**:
 {
   "Walkability": 7,
   "Lighting_Quality": 6,
@@ -346,9 +370,21 @@ Search the web for recent, reliable information about the following six paramete
   "Availability_of_Public_Transport": 9,
   "Network_Connectivity": 8
 }
-**Double check the format and make sure everything is present before returning**
-**Response Format**: Return ONLY the JSON object above, no markdown code blocks, no additional text.`;
 
+**Invalid Examples** (DO NOT return these formats):
+- \`\`\`json { ... } \`\`\` ❌ (no code blocks)
+- { "explanation": "...", "data": {...} } ❌ (no extra fields)
+- { "Walkability": "7/10" } ❌ (numbers only, not strings)
+- Missing any of the 6 fields ❌
+
+**Before Responding**:
+✓ Verify all 6 fields present
+✓ Verify all values are numbers
+✓ Verify no markdown formatting
+✓ Verify AQI is actual index (not 1-10 score)
+✓ Verify Temperature_C is actual temp (not 1-10 score)
+
+**Return Format**: Raw JSON object only - start with { and end with }`;
     const config = {
       tools: [groundingTool],
       thinkingConfig: thinkingConfig,
@@ -361,26 +397,28 @@ Search the web for recent, reliable information about the following six paramete
     });
 
     const responseText = result.text;
-    
+
     // Extract JSON from response
-    let jsonString = '';
+    let jsonString = "";
     const markdownMatch = responseText?.match(/```json\s*([\s\S]*?)\s*```/);
 
     if (markdownMatch && markdownMatch[1]) {
       jsonString = markdownMatch[1];
     } else {
       // Try to find JSON object in response
-      const jsonMatch = responseText?.match(/(\{[\s\S]*?"Walkability"[\sS]*?\})/);
+      const jsonMatch = responseText?.match(
+        /(\{[\s\S]*?"Walkability"[\sS]*?\})/
+      );
       if (jsonMatch && jsonMatch[0]) {
         jsonString = jsonMatch[0];
       } else {
         // Last resort: try to parse entire response as JSON
-        jsonString = responseText || '{}';
+        jsonString = responseText || "{}";
       }
     }
 
     if (!jsonString) {
-      console.error('No JSON found in response');
+      console.error("No JSON found in response");
       throw new Error("Invalid JSON response from Gemini");
     }
 
@@ -388,12 +426,12 @@ Search the web for recent, reliable information about the following six paramete
 
     // Validate response structure
     const requiredFields = [
-      'Walkability', 
-      'Lighting_Quality', 
-      'AQI', 
-      'Temperature_C', 
-      'Availability_of_Public_Transport', 
-      'Network_Connectivity'
+      "Walkability",
+      "Lighting_Quality",
+      "AQI",
+      "Temperature_C",
+      "Availability_of_Public_Transport",
+      "Network_Connectivity",
     ];
 
     for (const field of requiredFields) {
@@ -404,8 +442,7 @@ Search the web for recent, reliable information about the following six paramete
 
     return parsedResponse;
   } catch (error: any) {
-    console.error('Error generating location metrics from Gemini:', error);
+    console.error("Error generating location metrics from Gemini:", error);
     throw new Error(`Failed to generate location metrics: ${error.message}`);
   }
 }
-
