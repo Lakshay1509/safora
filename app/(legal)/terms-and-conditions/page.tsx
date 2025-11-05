@@ -91,7 +91,7 @@ export default function TermsAndConditionsPage() {
           <h2 className="text-2xl font-semibold mb-3">9. Contact</h2>
           <p className="text-gray-700">
             If you have questions about these terms, please contact us through our support channels,
-            <span className="font-bold ml-2">help@safeornot@gmail.com</span>
+            <span className="font-bold ml-2">help.safeornot@gmail.com</span>
           </p>
         </section>
       </div>

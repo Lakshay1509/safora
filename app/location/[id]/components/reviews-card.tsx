@@ -22,6 +22,7 @@ import {
 import { createClient } from "@/utils/supabase/client";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useGetLocation } from "@/features/location/use-get-location";
+import Image from "next/image";
 
 export function ReviewsCard() {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
@@ -104,23 +105,27 @@ export function ReviewsCard() {
     const partialStar = rating % 1 > 0;
 
     return (
-      <div className="flex flex-col items-center">
-        <span className="text-sm font-medium mb-1" style={{ color: "#000000" }}>
+      <div className="flex flex-col items-center min-w-0">
+        <span className="text-sm font-medium mb-1 text-center" style={{ color: "#000000" }}>
           {label}
         </span>
-        <div className="flex items-center">
+        <div className="flex items-center gap-0.5">
           {[...Array(5)].map((_, i) => (
-            <svg
+            <div
               key={i}
               className={`w-5 h-5 ${i < filledStars ? 'text-yellow-400' : (i === filledStars && partialStar ? 'text-yellow-400' : 'text-gray-300')}`}
-              fill="currentColor"
-              viewBox="0 0 20 20"
-              xmlns="http://www.w3.org/2000/svg"
             >
-              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-            </svg>
+              <svg
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                xmlns="http://www.w3.org/2000/svg"
+                className="w-full h-full"
+              >
+                <path d="M9.15316 5.40838C10.4198 3.13613 11.0531 2 12 2C12.9469 2 13.5802 3.13612 14.8468 5.40837L15.1745 5.99623C15.5345 6.64193 15.7144 6.96479 15.9951 7.17781C16.2757 7.39083 16.6251 7.4699 17.3241 7.62805L17.9605 7.77203C20.4201 8.32856 21.65 8.60682 21.9426 9.54773C22.2352 10.4886 21.3968 11.4691 19.7199 13.4299L19.2861 13.9372C18.8096 14.4944 18.5713 14.773 18.4641 15.1177C18.357 15.4624 18.393 15.8341 18.465 16.5776L18.5306 17.2544C18.7841 19.8706 18.9109 21.1787 18.1449 21.7602C17.3788 22.3417 16.2273 21.8115 13.9243 20.7512L13.3285 20.4768C12.6741 20.1755 12.3469 20.0248 12 20.0248C11.6531 20.0248 11.3259 20.1755 10.6715 20.4768L10.0757 20.7512C7.77268 21.8115 6.62118 22.3417 5.85515 21.7602C5.08912 21.1787 5.21588 19.8706 5.4694 17.2544L5.53498 16.5776C5.60703 15.8341 5.64305 15.4624 5.53586 15.1177C5.42868 14.773 5.19043 14.4944 4.71392 13.9372L4.2801 13.4299C2.60325 11.4691 1.76482 10.4886 2.05742 9.54773C2.35002 8.60682 3.57986 8.32856 6.03954 7.77203L6.67589 7.62805C7.37485 7.4699 7.72433 7.39083 8.00494 7.17781C8.28555 6.96479 8.46553 6.64194 8.82547 5.99623L9.15316 5.40838Z" />
+              </svg>
+            </div>
           ))}
-          <span className="ml-2 text-sm font-semibold text-black">{rating?.toFixed(1) || "N/A"}</span>
+          <span className="ml-2 text-sm font-semibold text-black whitespace-nowrap">{rating?.toFixed(1) || "N/A"}</span>
         </div>
       </div>
     );
@@ -233,7 +238,7 @@ export function ReviewsCard() {
               </p>
 
             ) : (
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-6 overflow-visible">
                 <StarRating
                   rating={Number(ratings.overall) || 0}
                   label="Overall Safety"
