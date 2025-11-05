@@ -56,6 +56,7 @@ WORKDIR /app
 
 ENV NODE_ENV=production
 ENV PORT=8080
+ENV HOSTNAME="0.0.0.0" 
 
 # Copy Prisma schema and generated client
 COPY --from=builder /app/prisma ./prisma
