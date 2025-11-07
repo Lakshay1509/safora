@@ -14,7 +14,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { LinkPreview } from "@/components/LinkPreview";
-import { linkDialogPlugin, linkPlugin, MDXEditor } from "@mdxeditor/editor";
+import { headingsPlugin, linkDialogPlugin, linkPlugin, listsPlugin, markdownShortcutPlugin, MDXEditor, quotePlugin, thematicBreakPlugin } from "@mdxeditor/editor";
 import { extractUrls } from "@/lib/url-utils";
 import Image from "next/image";
 import ProfileLogo from "@/components/ProfileLogo";
@@ -50,19 +50,6 @@ export const Posts = () => {
       }
     };
   }, [isLoading, hasNextPage, isFetchingNextPage, fetchNextPage, user]);
-
-  const truncateText = (text: string, isBody: boolean = false) => {
-    if (isBody) {
-      const lines = text.split('\n');
-      if (lines.length > 2) {
-        return lines.slice(0, 2).join('\n') + '...';
-      }
-      if (text.length > 160) {
-        return text.substring(0, 160) + '...';
-      }
-    }
-    return text;
-  };
 
   if (isLoading || authLoading) {
     return (
@@ -154,13 +141,19 @@ export const Posts = () => {
                         href={`/post/${post.id}/${post.slug}`}
                         className="block text-black hover:text-gray-500"
                       >
-                        <h2 className="font-semibold text-lg">
-                          {truncateText(post.heading)}
+                        <h2 className="font-semibold text-lg line-clamp-1">
+                          {post.heading}
                         </h2>
-                        <div className="text-gray-700 mt-2 text-[15px]">
-                          <MDXEditor markdown={truncateText(post.body, true)} readOnly={true} plugins={[
+                        <div className="text-gray-700 mt-2 text-[15px] line-clamp-2">
+                          <MDXEditor markdown={post.body} readOnly={true} plugins={[
+
+                            headingsPlugin(),
+                            listsPlugin(),
+                            quotePlugin(),
+                            thematicBreakPlugin(),
+                            markdownShortcutPlugin(),
                             linkPlugin(),
-                            linkDialogPlugin()
+                            linkDialogPlugin(),
                           ]} />
 
                         </div>

@@ -8,7 +8,7 @@ import PostStatsFeed from "@/components/PostsStatsFeed";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import ProfileLogo from "@/components/ProfileLogo";
-import { linkDialogPlugin, linkPlugin, MDXEditor } from "@mdxeditor/editor";
+import { headingsPlugin, linkDialogPlugin, linkPlugin, listsPlugin, markdownShortcutPlugin, MDXEditor, quotePlugin, thematicBreakPlugin } from "@mdxeditor/editor";
 
 const Posts = () => {
     const params = useParams();
@@ -17,22 +17,6 @@ const Posts = () => {
 
     const { data, isLoading, isError } = useGetLocationPost(location_Id);
 
-    // Function to truncate text to first 2 lines
-    const truncateText = (text: string, isBody: boolean = false) => {
-        if (isBody) {
-            // For body text, limit to first 2 lines
-            const lines = text.split('\n');
-            if (lines.length > 2) {
-                return lines.slice(0, 2).join('\n') + '...';
-            }
-
-            // If no newlines, limit by character length (approx. 2 lines)
-            if (text.length > 160) {
-                return text.substring(0, 160) + '...';
-            }
-        }
-        return text;
-    };
 
     if (isLoading) {
         return <div className="p-4 text-center">Loading posts...</div>;
@@ -87,10 +71,15 @@ const Posts = () => {
                                     className="block text-black hover:text-gray-500 w-full"
                                 >
 
-                                    <h2 className="font-semibold text-lg">{truncateText(post.heading)}</h2>
-                                    <MDXEditor className="text-gray-700 mt-2" markdown={truncateText(post.body, true)} readOnly={true} plugins={[
+                                    <h2 className="font-semibold text-lg line-clamp-1">{post.heading}</h2>
+                                    <MDXEditor className="text-gray-700 mt-2 line-clamp-2" markdown={post.body} readOnly={true} plugins={[
+                                        headingsPlugin(),
+                                        listsPlugin(),
+                                        quotePlugin(),
+                                        thematicBreakPlugin(),
+                                        markdownShortcutPlugin(),
                                         linkPlugin(),
-                                        linkDialogPlugin()
+                                        linkDialogPlugin(),
                                     ]} />
 
                                 </Link>

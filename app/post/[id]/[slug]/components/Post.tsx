@@ -25,7 +25,7 @@ import PostDetailSkeleton from "./PostsSkeleton";
 import ExploreMore from "./ExploreMore";
 import Image from "next/image";
 import { useDominantColor } from "@/lib/useDominantColour";
-import { linkDialogPlugin, linkPlugin, MDXEditor } from "@mdxeditor/editor";
+import { headingsPlugin, linkDialogPlugin, linkPlugin, listsPlugin, markdownShortcutPlugin, MDXEditor, quotePlugin, thematicBreakPlugin } from "@mdxeditor/editor";
 import { extractUrls } from "@/lib/url-utils";
 import { LinkPreview } from "@/components/LinkPreview";
 import ProfileLogo from "@/components/ProfileLogo";
@@ -75,14 +75,17 @@ const Post = () => {
         <>
             <main className="flex justify-center">
 
-                <article className="w-full max-w-3xl mx-4 p-4 bg-white rounded-lg mt-6 lg:mx-10 lg:mr-[22rem] pb-22">
-                    <header className="flex space-x-2 items-start mb-2">
-                        <ProfileLogo
-                            url={post?.post.users?.profile_url ?? ''}
-                            name={post?.post.users?.name ?? ''}
-                            color={post?.post.users?.profile_color ?? ''}
-                            size="50"
-                        />
+                <article className="w-full max-w-3xl mx-4 p-4 bg-white rounded-lg lg:mx-10 lg:mr-[22rem] pb-22">
+                    <header className="flex space-x-3 items-start mb-2">
+                        <div className="mt-1">
+                            <ProfileLogo
+                                url={post?.post.users?.profile_url ?? ''}
+                                name={post?.post.users?.name ?? ''}
+                                color={post?.post.users?.profile_color ?? ''}
+                                size="50"
+
+                            />
+                        </div>
                         <div>
                             <h1 className="text-2xl font-bold">{post?.post.heading}</h1>
                             <div className="flex items-center text-sm text-gray-600 my-1">
@@ -115,10 +118,17 @@ const Post = () => {
                             markdown={post?.post.body ?? ''}
                             readOnly={true}
                             plugins={[
+                                headingsPlugin(),
+                                listsPlugin(),
+                                quotePlugin(),
+                                thematicBreakPlugin(),
+                                markdownShortcutPlugin(),
                                 linkPlugin(),
-                                linkDialogPlugin()
+                                linkDialogPlugin(),
+
                             ]}
                         />
+
 
 
                     </div>
