@@ -141,7 +141,7 @@ export const Posts = () => {
                         href={`/post/${post.id}/${post.slug}`}
                         className="block text-black hover:text-gray-500"
                       >
-                        <h2 className="font-semibold text-lg line-clamp-1">
+                        <h2 className="font-semibold text-lg line-clamp-2">
                           {post.heading}
                         </h2>
                         <div className="text-gray-700 mt-2 text-[15px] line-clamp-2">
