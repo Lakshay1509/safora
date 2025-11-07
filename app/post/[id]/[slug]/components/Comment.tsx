@@ -175,9 +175,14 @@ const Comment = ({ postId }: Props) => {
                                 className="text-sm text-blue-500 flex items-center hover:underline"
                             >
                                 <MessageCircle className="h-4 w-4 mr-1" />
-                                {openReplies.includes(comment.id) ? "Hide replies" : "Reply"}
+                               {openReplies.includes(comment.id)
+  ? "Hide replies"
+  : comment._count.other_posts_comments > 0
+    ? "Replies"
+    : "Reply"}
 
-                                <span className="ml-2">({comment._count.other_posts_comments})</span>
+
+                                {comment._count.other_posts_comments >0 && <span className="ml-2">({comment._count.other_posts_comments})</span>}
                             </button>
                         </div>
 

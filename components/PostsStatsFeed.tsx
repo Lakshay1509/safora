@@ -1,7 +1,7 @@
 "use client"
 
 import { useGetPostStats } from "@/features/post/use-get-stats";
-import { ArrowUp, Check, MessageCircle, Share } from "lucide-react"
+import { ArrowUp, Check, MessageCircle, Share, Share2 } from "lucide-react"
 import { Button } from "./ui/button";
 import { addUpvotetoPost } from "@/features/votes/use-post-upvotes";
 import { useAuth } from "@/contexts/AuthContext";
@@ -91,7 +91,7 @@ const PostStatsFeed = ({ id, upvotes_count, comments, upvoted,slug }: Props) => 
         className="flex items-center gap-2 bg-gray-100 text-gray-700 hover:bg-gray-200 rounded-xl px-3 py-2 shadow-sm transition-all duration-200 relative"
         onClick={handleShare}
       >
-        {copied ? <Check className="w-4 h-4 text-green-500" /> : <Share className="w-4 h-4" />}
+        {copied ? <Check className="w-4 h-4 text-green-500" /> : <Share2 className="w-4 h-4" />}
         {copied && (
           <span className="absolute -top-6 left-1/2 -translate-x-1/2 text-xs bg-black text-white px-2 py-1 rounded-md shadow-md">
             Copied!
