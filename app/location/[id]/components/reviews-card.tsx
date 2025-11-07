@@ -203,7 +203,7 @@ export function ReviewsCard() {
                 className="flex items-center gap-2"
               >
                 <Trash2 className="h-4 w-4" />
-                <span className="hidden sm:inline">Delete</span>
+                
               </Button>
             )}
             <Button
@@ -217,12 +217,12 @@ export function ReviewsCard() {
               {hasUserReview ? (
                 <>
                   <Edit className="h-4 w-4" />
-                  <span className="hidden sm:inline">Edit</span> Review
+                  
                 </>
               ) : (
                 <>
                   <Plus className="h-4 w-4" />
-                  <span className="hidden sm:inline">Add</span> Review
+                 
                 </>
               )}
             </Button>
