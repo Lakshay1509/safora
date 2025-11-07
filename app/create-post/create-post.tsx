@@ -6,7 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { addPost } from "@/features/post/use-add-post";
 import { EditPost} from "@/features/post/use-update-post";
-import { Loader2, Smile, Upload } from "lucide-react";
+import { Loader2, Smile, Upload, X, BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
@@ -19,6 +19,7 @@ import { toast } from "sonner";
 import { useImagePreview } from "@/lib/imagePreview";
 import data from '@emoji-mart/data'
 import Picker from '@emoji-mart/react'
+import RightSidebar from "./RightSidebar";
 
 // Updated schema - no file size validation needed since we upload directly
 const postSchema = z.object({
@@ -49,6 +50,7 @@ const CreatePost = () => {
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
+  const [showMobileRules, setShowMobileRules] = useState(false);
   const emojiPickerRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   
@@ -278,7 +280,22 @@ const CreatePost = () => {
   };
 
   return (
-    <div className="w-full max-w-2xl mx-auto p-6 pb-20">
+    <div className="flex flex-row justify-start w-full relative">
+    <div className="w-full max-w-4xl mr-auto px-6 py-2 pb-20">
+      {/* Mobile Rules Button */}
+      <div className="lg:hidden flex justify-end mb-4">
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          onClick={() => setShowMobileRules(true)}
+          className="flex items-center gap-2 shadow-md bg-white"
+        >
+          <BookOpen className="h-4 w-4" />
+          Rules
+        </Button>
+      </div>
+
       <h1 className="text-2xl font-bold mb-6 text-gray-800 dark:text-gray-100">
         {isEditMode ? 'Edit Post' : 'Create New Post'}
       </h1>
@@ -335,7 +352,6 @@ const CreatePost = () => {
                 onChange={(e) => setCharCount(prev => ({ ...prev, body: e.target.value.length }))}
               />
               
-              {/* Emoji Picker Button */}
               <Button
                 type="button"
                 variant="ghost"
@@ -347,7 +363,6 @@ const CreatePost = () => {
                 <Smile className="h-5 w-5 text-gray-500 hover:text-gray-700" />
               </Button>
               
-              {/* Emoji Picker Popup */}
               {showEmojiPicker && (
                 <div 
                   ref={emojiPickerRef}
@@ -390,7 +405,6 @@ const CreatePost = () => {
                 disabled={isPending}
               />
               
-              {/* Upload Progress */}
               {isUploadingImage && (
                 <div className="space-y-2">
                   <div className="flex items-center gap-2 text-sm text-gray-600">
@@ -459,6 +473,39 @@ const CreatePost = () => {
           </div>
         </form>
       )}
+    </div>
+
+    {/* Mobile Rules Overlay */}
+    {showMobileRules && (
+      <div className="lg:hidden fixed inset-0 z-50 bg-black/50" onClick={() => setShowMobileRules(false)}>
+        <div 
+          className="absolute right-0 top-0 h-full w-full max-w-sm bg-white shadow-2xl overflow-y-auto"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div className="sticky top-0 bg-white border-b border-gray-200 p-4 flex items-center justify-between">
+            <h2 className="text-lg font-semibold text-gray-900">Community Guidelines</h2>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setShowMobileRules(false)}
+              className="h-8 w-8 p-0"
+            >
+              <X className="h-5 w-5" />
+            </Button>
+          </div>
+          <div className="p-6">
+            <RightSidebar />
+          </div>
+        </div>
+      </div>
+    )}
+
+    {/* Desktop Sidebar */}
+    <aside className="hidden lg:block w-80 flex-shrink-0 p-4">
+      <div className="sticky top-4">
+        <RightSidebar/>
+      </div>
+    </aside>
     </div>
   );
 };
