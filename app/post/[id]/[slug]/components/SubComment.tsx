@@ -115,7 +115,7 @@ const SubComment = ({ id, postId }: Props) => {
       <div className="space-y-3">
         {data?.sub_comment.map((reply) => (
           <div key={reply.id} className="p-2 bg-gray-50 rounded-lg text-sm">
-            <div className="flex items-center text-xs text-gray-600 mb-1 space-x-2">
+            <div className="flex items-center text-xs text-gray-600 mb-1 space-x-2 flex-wrap sm:flex-nowrap">
               <div>
                 <ProfileLogo
                   url={reply?.users?.profile_url ?? ''}
@@ -125,19 +125,17 @@ const SubComment = ({ id, postId }: Props) => {
                 />
               </div>
 
-              <div className="font-medium">
-                {reply.users?.name || "Anonymous"}
+              <div className="flex items-center gap-2 flex-shrink-0">
+                <div className="font-medium">
+                  {reply.users?.name || "Anonymous"}
+                </div>
+
+                {reply.users?.verified && (
+                  <Image src="/badge.svg" alt="badge" height={13} width={13} />
+                )}
               </div>
 
-              {reply.users?.verified && (
-                <div>
-                  <Image src="/badge.svg" alt="badge" height={13} width={13} />
-                </div>
-              )}
-
-              <div className="text-gray-400">•</div>
-
-              <div>
+              <div className="text-[10px]">
                 {reply.created_at
                   ? format(new Date(reply.created_at), "MMM d, yyyy")
                   : "Unknown date"}

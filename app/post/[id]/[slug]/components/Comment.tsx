@@ -129,7 +129,7 @@ const Comment = ({ postId }: Props) => {
             <div className="space-y-4">
                 {comments?.post_comments.map((comment) => (
                     <div key={comment.id} className="p-3 bg-gray-50 rounded-lg">
-                        <div className="flex items-center text-sm text-gray-600 mb-2 space-x-2">
+                        <div className="flex items-center text-sm text-gray-600 mb-2 space-x-2 flex-wrap sm:flex-nowrap">
                             {comment.users && (
                                 <ProfileLogo
                                     url={comment?.users?.profile_url}
@@ -139,19 +139,17 @@ const Comment = ({ postId }: Props) => {
                                 />
                             )}
 
-                            <div className="font-medium">
-                                {comment.users?.name || "Anonymous"}
+                            <div className="flex items-center gap-2 flex-shrink-0">
+                                <div className="font-medium">
+                                    {comment.users?.name || "Anonymous"}
+                                </div>
+
+                                {comment.users?.verified && (
+                                    <Image src="/badge.svg" alt="badge" height={13} width={13} />
+                                )}
                             </div>
 
-                            {comment.users?.verified && (
-                                <div>
-                                    <Image src="/badge.svg" alt="badge" height={13} width={13} />
-                                </div>
-                            )}
-
-                            <div className="text-gray-400">•</div>
-
-                            <div>
+                            <div className="text-[10px]">
                                 {comment.created_at
                                     ? format(new Date(comment.created_at), "MMM d, yyyy")
                                     : "Unknown date"}
