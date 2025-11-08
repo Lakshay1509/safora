@@ -394,27 +394,30 @@ model spatial_ref_sys {
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model public_users {
-  id                                           String                  @id @db.Uuid
-  name                                         String
-  email                                        String                  @unique
-  gender                                       gender_t?
-  created_at                                   DateTime                @default(now()) @db.Timestamptz(6)
-  following_locations_count                    Int?                    @default(0)
-  profile_url                                  String?
-  daily_digest                                 Int                     @default(1) @db.SmallInt
-  profile_color                                String?
-  verified                                     Boolean                 @default(false)
-  comments                                     comments[]
-  location_daily_views                         location_daily_views[]
-  notifications_notifications_sender_idTousers notifications[]         @relation("notifications_sender_idTousers")
-  notifications_notifications_user_idTousers   notifications[]         @relation("notifications_user_idTousers")
-  posts                                        posts[]
-  posts_comments                               posts_comments[]
-  reviews                                      reviews[]
-  streak                                       streak?
-  user_location_follows                        user_location_follows[]
-  users                                        auth_users              @relation(fields: [id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  votes                                        votes[]
+  id                                                    String                  @id @db.Uuid
+  name                                                  String
+  email                                                 String                  @unique
+  gender                                                gender_t?
+  created_at                                            DateTime                @default(now()) @db.Timestamptz(6)
+  following_locations_count                             Int?                    @default(0)
+  profile_url                                           String?
+  daily_digest                                          Int                     @default(1) @db.SmallInt
+  profile_color                                         String?
+  verified                                              Boolean                 @default(false)
+  comments                                              comments[]
+  location_daily_views                                  location_daily_views[]
+  notifications_notifications_sender_idTousers          notifications[]         @relation("notifications_sender_idTousers")
+  notifications_notifications_user_idTousers            notifications[]         @relation("notifications_user_idTousers")
+  posts                                                 posts[]
+  posts_comments                                        posts_comments[]
+  referal                                               referal?
+  referal_analytics_referal_analytics_referee_idTousers referal_analytics[]     @relation("referal_analytics_referee_idTousers")
+  referal_analytics_referal_analytics_user_idTousers    referal_analytics?      @relation("referal_analytics_user_idTousers")
+  reviews                                               reviews[]
+  streak                                                streak?
+  user_location_follows                                 user_location_follows[]
+  users                                                 auth_users              @relation(fields: [id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  votes                                                 votes[]
 
   @@map("users")
   @@schema("public")
@@ -618,6 +621,29 @@ model location_daily_views {
   @@index([location_id, view_date])
   @@index([user_id, location_id, view_date])
   @@index([user_id, view_date])
+  @@schema("public")
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model referal {
+  id         BigInt       @id @default(autoincrement())
+  user_id    String       @unique @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  code       String       @unique @db.VarChar
+  created_at DateTime     @default(now()) @db.Timestamptz(6)
+  users      public_users @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@schema("public")
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model referal_analytics {
+  id                                        BigInt       @default(autoincrement())
+  user_id                                   String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  referee_id                                String       @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  created_at                                DateTime     @default(now()) @db.Timestamptz(6)
+  users_referal_analytics_referee_idTousers public_users @relation("referal_analytics_referee_idTousers", fields: [referee_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  users_referal_analytics_user_idTousers    public_users @relation("referal_analytics_user_idTousers", fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
   @@schema("public")
 }
 

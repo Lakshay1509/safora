@@ -3,16 +3,24 @@
 import { Card, CardContent } from "@/components/ui/card"
 import { useGetDefaultUser } from "@/features/user/use-get-default"
 import { useGetUserComments } from "@/features/user/use-get-user-comment";
-import { MapPin, Calendar, Star, Settings } from "lucide-react"
+import { Calendar, Settings, Gift, Plus } from "lucide-react"
 import { format, parseISO } from "date-fns"
 import { useGetUserLocationCount } from "@/features/user/use-get-locationCount";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
-import SelectGender from "@/components/SelectGender";
 import AvatarUpload from "./AvatarUpload";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import SelectGenderProfile from "@/components/SelectGenderProfile";
+import GetCodePopover from "@/components/referral/GetCodePopover";
+import AddCode from "@/components/referral/AddCode";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
 
 
 export function ProfileCard() {
@@ -41,7 +49,8 @@ export function ProfileCard() {
   const {data:UserData,isLoading,isError} =useGetDefaultUser();
   const {data:UserComment} =  useGetUserComments();
   const {data:UserLocationCount} =  useGetUserLocationCount();
-  const [dialogOpen,setIsDialogOpen]= useState<boolean>(false);  
+  const [dialogOpen,setIsDialogOpen] = useState<boolean>(false);
+  const [addCodeDialogOpen, setAddCodeDialogOpen] = useState<boolean>(false);
 
   // Format the date if it exists
   const formatCreatedDate = (dateString: string) => {
@@ -80,7 +89,7 @@ export function ProfileCard() {
         onUploadError={handleUploadError}
         maxSizeInMB={3}
         className="mb-6"
-      />
+        />
 
         {/* Profile Stats */}
         <div className="mt-6 space-y-1">
@@ -133,6 +142,34 @@ export function ProfileCard() {
           onClose={() => setIsDialogOpen(false)}
         />
         </div>)}
+
+
+        {/* Referral Code Buttons */}
+        <div className="mt-6 px-4 flex flex-col justify-center items-center gap-3">
+          {/* Get Referral Code Button */}
+          <GetCodePopover>
+            <Button variant="outline" className="w-full sm:w-auto">
+              <Gift className="w-4 h-4 mr-2" />
+              Get Referral Code
+            </Button>
+          </GetCodePopover>
+
+          {/* Add Referral Code Button */}
+          <Dialog open={addCodeDialogOpen} onOpenChange={setAddCodeDialogOpen}>
+            <DialogTrigger asChild>
+              <Button variant="outline" className="w-full sm:w-auto">
+                <Plus className="w-4 h-4 mr-2" />
+                Add Referral Code
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Add Referral Code</DialogTitle>
+              </DialogHeader>
+              <AddCode onSuccess={() => setAddCodeDialogOpen(false)} />
+            </DialogContent>
+          </Dialog>
+        </div>
       </CardContent>
     </Card>
   )

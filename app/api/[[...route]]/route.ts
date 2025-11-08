@@ -15,6 +15,7 @@ import linkPreview from './link-preview'
 import cron from './cron'
 import achievment from './achievment'
 import upload from './upload'
+import referral from './referral'
 
 export const runtime = "nodejs";
 export const dynamic = 'force-dynamic';
@@ -38,6 +39,7 @@ const routes = app
     .route('/cron',cron)
     .route('/achievment',achievment)
     .route('/upload',upload)
+    .route('/referral',referral)
 
 export const GET = handle(app);
 export const POST = handle(app);
