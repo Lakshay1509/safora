@@ -5,7 +5,7 @@ import Notification from "@/components/Notification";
 import { Metadata } from "next";
 import PostSkeleton from "./components/PostsSkeleton";
 import TrendingPage from "./components/Trending";
-
+import FloatingLeaderboardButton from "./components/FloatingLeaderboardButton";
 
 interface PageProps {
   searchParams: Promise<{ view?: string; page?: string }>
@@ -71,6 +71,8 @@ const Page = async ({ searchParams }: PageProps) => {
           {view === 'trending' && <TrendingPage/>}
         </Suspense>
       </main>
+      
+      <FloatingLeaderboardButton />
     </div>
   );
 }

@@ -162,6 +162,73 @@ const app = new Hono()
         return ctx.json({ error: "Error adding referral" }, 500);
       }
     }
-  );
+  )
+
+  .get("/leaderboard", async (ctx) => {
+    // Get the start and end of the current month
+    const now = new Date();
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999);
+
+    try {
+      // Get referral counts grouped by referee_id for the current month
+      const leaderboard = await db.referal_analytics.groupBy({
+        by: ['referee_id'],
+        where: {
+          created_at: {
+            gte: startOfMonth,
+            lte: endOfMonth,
+          },
+          
+        },
+        _count: {
+          referee_id: true,
+        },
+        orderBy: {
+          _count: {
+            referee_id: 'desc',
+          },
+        },
+        
+        take: 20, // Get top 10 referrers
+      });
+
+      // Get referee details for each entry
+      const leaderboardWithDetails = await Promise.all(
+        leaderboard.map(async (entry) => {
+          const user = await db.public_users.findUnique({
+            where: {
+              id: entry.referee_id,
+            },
+            select: {
+              name: true,
+              profile_url:true
+            },
+          });
+
+          return {
+            user_id: entry.referee_id,
+            name: user?.name || "Unknown User",
+            url : user?.profile_url || '',
+            referral_count: entry._count.referee_id,
+          };
+        })
+      );
+
+      return ctx.json(
+        {
+          data: leaderboardWithDetails,
+          period: {
+            start: startOfMonth.toISOString(),
+            end: endOfMonth.toISOString(),
+          },
+        },
+        200
+      );
+    } catch (error) {
+      console.error("Error fetching leaderboard:", error);
+      return ctx.json({ error: "Error fetching leaderboard" }, 500);
+    }
+  });
 
 export default app;
