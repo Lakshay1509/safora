@@ -3,9 +3,7 @@
 import { useGetPostCommunity } from "@/features/community/use-get-post-community";
 import Link from "next/link";
 import { Tag } from "lucide-react";
-import PostStats from "@/components/PostStats";
 import PostSkeleton from "./PostsSkeleton";
-import AvatarCircle from "@/app/profile/components/AvatarCircle";
 import PostImage from "@/components/PostImage";
 import React, { useRef, useEffect } from "react";
 import { LoaderOne } from "@/components/ui/loader";
@@ -91,36 +89,38 @@ export const Posts = () => {
                       className="p-4 border-b border-gray-200 rounded-lg transition-colors duration-200 hover:bg-gray-50 text-sm"
                     >
                       {/* User and location info */}
-                      <div className="flex items-center text-xs text-gray-500 mb-2">
+                      <div className="flex items-center text-xs text-gray-500 mb-2 space-x-2">
                         {post.users && (
                           <>
                             <ProfileLogo
                               url={post?.users?.profile_url}
                               name={post?.users?.name}
                               color={post.users?.profile_color ?? ''}
-                              size="30"
+                              size="35"
                             />
-
-
                           </>
                         )}
 
-                        <span
-                          className="font-medium mx-2 text-[14px]"
+                        <div
+                          className="font-medium text-[14px]"
                           style={{
                             color: post?.users?.profile_color || '#000000'
                           }}
                         >
                           {post?.users?.name}
-                        </span>
+                        </div>
 
+                        {post?.users?.verified && <div>
+                          <Image src="/badge.svg" alt="badge" height={13} width={13} />
+                        </div>}
 
                         {post.created_at && (
-                          <span>
+                          <div className="text-gray-500 text-xs">
                             • {new Date(post.created_at).toLocaleDateString()}
-                          </span>
+                          </div>
                         )}
                       </div>
+
 
                       <div>
                         <Link

@@ -17,6 +17,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import AvatarCircle from "@/app/profile/components/AvatarCircle";
 import { linkPlugin, MDXEditor, linkDialogPlugin } from "@mdxeditor/editor";
 import ProfileLogo from "@/components/ProfileLogo";
+import Image from "next/image";
 
 
 // Comment schema with validation
@@ -128,24 +129,34 @@ const Comment = ({ postId }: Props) => {
             <div className="space-y-4">
                 {comments?.post_comments.map((comment) => (
                     <div key={comment.id} className="p-3 bg-gray-50 rounded-lg">
-                        <div className="flex items-center text-sm text-gray-600 mb-2">
+                        <div className="flex items-center text-sm text-gray-600 mb-2 space-x-2">
                             {comment.users && (
-                                //  <AvatarCircle url={comment?.users?.profile_url} name={comment?.users?.name} />
                                 <ProfileLogo
                                     url={comment?.users?.profile_url}
                                     name={comment?.users?.name}
                                     color={comment.users?.profile_color ?? ''}
                                     size="30"
-
                                 />
                             )}
-                            <span className="font-medium mx-2">{comment.users?.name || "Anonymous"}</span>
-                            <span className="mx-2">•</span>
-                            <span>
+
+                            <div className="font-medium">
+                                {comment.users?.name || "Anonymous"}
+                            </div>
+
+                            {comment.users?.verified && (
+                                <div>
+                                    <Image src="/badge.svg" alt="badge" height={13} width={13} />
+                                </div>
+                            )}
+
+                            <div className="text-gray-400">•</div>
+
+                            <div>
                                 {comment.created_at
-                                    ? format(new Date(comment.created_at), 'MMM d, yyyy')
+                                    ? format(new Date(comment.created_at), "MMM d, yyyy")
                                     : "Unknown date"}
-                            </span>
+                            </div>
+
                             {user && comment.user_id === user.id && (
                                 <div className="flex gap-2 ml-auto pl-2">
                                     <button
@@ -158,6 +169,7 @@ const Comment = ({ postId }: Props) => {
                                 </div>
                             )}
                         </div>
+
                         <div className="text-gray-800 text-[14px]">
                             <MDXEditor
                                 markdown={comment.text ?? ''}
@@ -175,14 +187,14 @@ const Comment = ({ postId }: Props) => {
                                 className="text-sm text-blue-500 flex items-center hover:underline"
                             >
                                 <MessageCircle className="h-4 w-4 mr-1" />
-                               {openReplies.includes(comment.id)
-  ? "Hide replies"
-  : comment._count.other_posts_comments > 0
-    ? "Replies"
-    : "Reply"}
+                                {openReplies.includes(comment.id)
+                                    ? "Hide replies"
+                                    : comment._count.other_posts_comments > 0
+                                        ? "Replies"
+                                        : "Reply"}
 
 
-                                {comment._count.other_posts_comments >0 && <span className="ml-2">({comment._count.other_posts_comments})</span>}
+                                {comment._count.other_posts_comments > 0 && <span className="ml-2">({comment._count.other_posts_comments})</span>}
                             </button>
                         </div>
 

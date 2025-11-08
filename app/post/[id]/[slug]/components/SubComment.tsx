@@ -14,6 +14,7 @@ import { useDeleteCommentPost } from "@/features/post-comment.ts/use-delete-comm
 import { Trash2 } from "lucide-react";
 import AvatarCircle from "@/app/profile/components/AvatarCircle";
 import ProfileLogo from "@/components/ProfileLogo";
+import Image from "next/image";
 
 // SubComment schema with validation
 const subCommentSchema = z.object({
@@ -31,7 +32,7 @@ const SubComment = ({ id, postId }: Props) => {
   const { user, loading } = useAuth();
   const { data, isLoading, isError } = useGetSubComments(id);
   const mutation = addSubCommenttoPost(postId, id);
-   const deleteCommentMutation = useDeleteCommentPost();
+  const deleteCommentMutation = useDeleteCommentPost();
 
   // Initialize form with React Hook Form and Zod validation
   const form = useForm<SubCommentFormValues>({
@@ -51,10 +52,10 @@ const SubComment = ({ id, postId }: Props) => {
   };
 
   const handleDelete = async (id: string) => {
-        await deleteCommentMutation.mutateAsync({ commentId: id });
-    }
+    await deleteCommentMutation.mutateAsync({ commentId: id });
+  }
 
-    
+
 
   return (
     <div className="pl-6 mt-2 border-l-2 border-gray-200">
@@ -114,31 +115,47 @@ const SubComment = ({ id, postId }: Props) => {
       <div className="space-y-3">
         {data?.sub_comment.map((reply) => (
           <div key={reply.id} className="p-2 bg-gray-50 rounded-lg text-sm">
-            <div className="flex items-center text-xs text-gray-600 mb-1">
-              <span className="mr-2"><ProfileLogo
-                            url={reply?.users?.profile_url ?? ''}
-                            name={reply?.users?.name ?? ''}
-                            color={reply.users?.profile_color ?? ''}
-                            size="25"/></span>
-              <span className="font-medium">{reply.users?.name}</span>
-              <span className="mx-2">•</span>
-              <span>
+            <div className="flex items-center text-xs text-gray-600 mb-1 space-x-2">
+              <div>
+                <ProfileLogo
+                  url={reply?.users?.profile_url ?? ''}
+                  name={reply?.users?.name ?? ''}
+                  color={reply.users?.profile_color ?? ''}
+                  size="25"
+                />
+              </div>
+
+              <div className="font-medium">
+                {reply.users?.name || "Anonymous"}
+              </div>
+
+              {reply.users?.verified && (
+                <div>
+                  <Image src="/badge.svg" alt="badge" height={13} width={13} />
+                </div>
+              )}
+
+              <div className="text-gray-400">•</div>
+
+              <div>
                 {reply.created_at
-                  ? format(new Date(reply.created_at), 'MMM d, yyyy')
+                  ? format(new Date(reply.created_at), "MMM d, yyyy")
                   : "Unknown date"}
-              </span>
+              </div>
+
               {user && reply.user_id === user.id && (
-                                <div className="flex gap-2 ml-auto pl-2">
-                                    <button
-                                        onClick={() => handleDelete(reply.id)}
-                                        disabled={deleteCommentMutation.isPending}
-                                        className="text-red-500 hover:text-red-700 disabled:opacity-50"
-                                    >
-                                        <Trash2 size={14} />
-                                    </button>
-                                </div>
-                            )}
+                <div className="flex gap-2 ml-auto pl-2">
+                  <button
+                    onClick={() => handleDelete(reply.id)}
+                    disabled={deleteCommentMutation.isPending}
+                    className="text-red-500 hover:text-red-700 disabled:opacity-50"
+                  >
+                    <Trash2 size={14} />
+                  </button>
+                </div>
+              )}
             </div>
+
             <p className="text-gray-800">{reply.text}</p>
           </div>
         ))}

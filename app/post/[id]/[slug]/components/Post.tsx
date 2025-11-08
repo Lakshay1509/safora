@@ -88,24 +88,31 @@ const Post = () => {
                         </div>
                         <div>
                             <h1 className="text-2xl font-bold">{post?.post.heading}</h1>
-                            <div className="flex items-center text-sm text-gray-600 my-1">
-                                <span
-                                    className="font-medium  text-[14px]"
+                            <div className="flex items-center text-sm text-gray-600 my-1 space-x-2">
+                                <div
+                                    className="font-medium text-[14px]"
                                     style={{
-                                        color: post?.post.users?.profile_color || '#000000'
+                                        color: post?.post?.users?.profile_color || '#000000',
                                     }}
                                 >
-                                    {post?.post.users?.name}
-                                </span>
-                                <span className="mx-2">•</span>
-                                <span>
-                                    {post?.post.created_at
+                                    {post?.post?.users?.name}
+                                </div>
+
+                                {post?.post?.users?.verified && (
+                                    <div>
+                                        <Image src="/badge.svg" alt="badge" height={13} width={13} />
+                                    </div>
+                                )}
+
+                                <div className="text-gray-400">•</div>
+
+                                <div>
+                                    {post?.post?.created_at
                                         ? format(new Date(post.post.created_at), 'MMM d, yyyy')
-                                        : "Unknown date"}
-                                </span>
-
-
+                                        : 'Unknown date'}
+                                </div>
                             </div>
+
                         </div>
 
 

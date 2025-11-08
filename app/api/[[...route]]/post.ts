@@ -85,7 +85,8 @@ const app = new Hono()
             id: true,
             name: true,
             profile_url:true,
-            profile_color:true
+            profile_color:true,
+            verified:true
           },
         },
         _count:{
@@ -173,7 +174,8 @@ const app = new Hono()
             id: true,
             name: true,
             profile_url:true,
-            profile_color:true
+            profile_color:true,
+            verified:true
           },
         },
         _count: {
