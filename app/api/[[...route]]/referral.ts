@@ -165,32 +165,40 @@ const app = new Hono()
   )
 
   .get("/leaderboard", async (ctx) => {
-    // Get the start and end of the current month
+    // Get the start and end of the current month in UTC
     const now = new Date();
-    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-    const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999);
+
+    // Start of current month in UTC
+    const startOfMonth = new Date(
+      Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1, 0, 0, 0, 0)
+    );
+
+    // End of current month in UTC (day 0 of next month = last day of current month)
+    const endOfMonth = new Date(
+      Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 1, 0, 23, 59, 59, 999)
+    );
+
+  
 
     try {
       // Get referral counts grouped by referee_id for the current month
       const leaderboard = await db.referal_analytics.groupBy({
-        by: ['referee_id'],
+        by: ["referee_id"],
         where: {
           created_at: {
             gte: startOfMonth,
             lte: endOfMonth,
           },
-          
         },
         _count: {
           referee_id: true,
         },
         orderBy: {
           _count: {
-            referee_id: 'desc',
+            referee_id: "desc",
           },
         },
-        
-        take: 20, // Get top 10 referrers
+        take: 20,
       });
 
       // Get referee details for each entry
@@ -202,14 +210,14 @@ const app = new Hono()
             },
             select: {
               name: true,
-              profile_url:true
+              profile_url: true,
             },
           });
 
           return {
             user_id: entry.referee_id,
             name: user?.name || "Unknown User",
-            url : user?.profile_url || '',
+            url: user?.profile_url || "",
             referral_count: entry._count.referee_id,
           };
         })

@@ -32,8 +32,8 @@ const page = () => {
     const formatPeriod = (start: string, end: string) => {
         const startDate = new Date(start);
         const endDate = new Date(end);
-        const startDay = startDate.getDate();
-        const endDay = endDate.getDate();
+        const startDay = startDate.getUTCDate(); 
+    const endDay = endDate.getUTCDate();  
         const month = startDate.toLocaleDateString('en-US', { month: 'short' });
         return `(${startDay} ${month} to ${endDay} ${month})`;
     }
