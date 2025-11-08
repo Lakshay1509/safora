@@ -13,6 +13,7 @@ import {
 
 import ProfileLogo from "@/components/ProfileLogo";
 import Link from "next/link";
+import { Skeleton } from "@/components/ui/skeleton";
 
 
 const page = () => {
@@ -79,7 +80,37 @@ const page = () => {
                 </div>
 
 
-                {isLoading && <p>Loading...</p>}
+                {isLoading && (
+                    <div className="rounded-md border">
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead className="w-[30px] text-center">Rank</TableHead>
+                                    <TableHead className="w-[80px]">Name</TableHead>
+                                    <TableHead className="w-[50px] text-center">Referrals</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {[...Array(5)].map((_, index) => (
+                                    <TableRow key={index}>
+                                        <TableCell className="text-center">
+                                            <Skeleton className="h-8 w-8 mx-auto" />
+                                        </TableCell>
+                                        <TableCell>
+                                            <div className="flex flex-row space-x-2 items-center">
+                                                <Skeleton className="h-[30px] w-[30px] rounded-full" />
+                                                <Skeleton className="h-4 w-[120px]" />
+                                            </div>
+                                        </TableCell>
+                                        <TableCell className="text-center">
+                                            <Skeleton className="h-4 w-8 mx-auto" />
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </div>
+                )}
                 {isError && <p className="text-red-500">Failed to load leaderboard</p>}
 
                 {data && (

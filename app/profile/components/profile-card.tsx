@@ -154,21 +154,33 @@ export function ProfileCard() {
             </Button>
           </GetCodePopover>
 
-          {/* Add Referral Code Button */}
-          <Dialog open={addCodeDialogOpen} onOpenChange={setAddCodeDialogOpen}>
-            <DialogTrigger asChild>
-              <Button variant="outline" className="w-full sm:w-auto">
+          {/* Add Referral Code Button - Conditional rendering */}
+          {(UserLocationCount?.count ?? 0) > 0  ? (
+            <Dialog open={addCodeDialogOpen} onOpenChange={setAddCodeDialogOpen}>
+              <DialogTrigger asChild>
+                <Button variant="outline" className="w-full sm:w-auto">
+                  <Plus className="w-4 h-4 mr-2" />
+                  Add Referral Code
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Add Referral Code</DialogTitle>
+                </DialogHeader>
+                <AddCode onSuccess={() => setAddCodeDialogOpen(false)} />
+              </DialogContent>
+            </Dialog>
+          ) : (
+            <div className="text-center">
+              <Button variant="outline" className="w-full sm:w-auto" disabled>
                 <Plus className="w-4 h-4 mr-2" />
                 Add Referral Code
               </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Add Referral Code</DialogTitle>
-              </DialogHeader>
-              <AddCode onSuccess={() => setAddCodeDialogOpen(false)} />
-            </DialogContent>
-          </Dialog>
+              <p className="text-xs text-muted-foreground mt-1">
+                Please add one review to add a referral code
+              </p>
+            </div>
+          )}
         </div>
       </CardContent>
     </Card>
