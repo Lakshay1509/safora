@@ -56,23 +56,25 @@ const Posts = () => {
 
                     {data.post.map((post) => (
 
-                        <div key={post.id} className="p-2 py-3 lg:p-4 border-b border-gray-200 rounded-lg transition-colors duration-200 hover:bg-gray-50 text-sm">
+                        <div key={post.id} className=" py-3 lg:p-4 border-b border-gray-200 rounded-lg transition-colors duration-200 hover:bg-gray-50 text-sm">
                             <div className="flex items-start gap-3">
-                                {post.users && (
+                                <div className="flex-shrink-0">
                                     <ProfileLogo
-                                        url={post?.users?.profile_url}
-                                        name={post?.users?.name}
+                                        url={post?.users?.profile_url ?? ''}
+                                        name={post?.users?.name ??''}
                                         color={post.users?.profile_color ?? ''}
                                         size="40"
                                     />
-                                )}
+                                </div>
+                                <div className="flex-1 min-w-0">
+
                                 <Link
                                     href={`/post/${post.id}/${post.slug}`}
                                     className="block text-black hover:text-gray-500 w-full"
                                 >
 
-                                    <h2 className="font-semibold text-lg line-clamp-1">{post.heading}</h2>
-                                    <MDXEditor className="text-gray-700 mt-2 line-clamp-2" markdown={post.body} readOnly={true} plugins={[
+                                    <h2 className="font-semibold text-lg line-clamp-2">{post.heading}</h2>
+                                    <MDXEditor className="text-gray-700 mt-2 line-clamp-3" markdown={post.body} readOnly={true} plugins={[
                                         headingsPlugin(),
                                         listsPlugin(),
                                         quotePlugin(),
@@ -83,19 +85,22 @@ const Posts = () => {
                                     ]} />
 
                                 </Link>
+                                </div>
                             </div>
 
                             {/* Social interaction bar */}
-                            <PostStatsFeed
-                                id={post.id}
-                                upvotes_count={post.upvotes}
-                                comments={post._count.posts_comments}
-                                upvoted={post.upvote === 1}
-                                slug={post.slug ?? ''}
-                            />
+                            <div className="ml-[52px]">
+                                <PostStatsFeed
+                                    id={post.id}
+                                    upvotes_count={post.upvotes}
+                                    comments={post._count.posts_comments}
+                                    upvoted={post.upvote === 1}
+                                    slug={post.slug ?? ''}
+                                />
 
-                            <div className="text-xs text-gray-500 mt-2">
-                                {post.created_at && new Date(post.created_at).toLocaleDateString()}
+                                <div className="text-xs text-gray-500 mt-2">
+                                    {post.created_at && new Date(post.created_at).toLocaleDateString()}
+                                </div>
                             </div>
                         </div>
 
