@@ -72,7 +72,7 @@ const Comment = ({ postId }: Props) => {
 
     return (
         <div className="mt-8 border-t pt-6">
-            <h2 className="text-xl font-semibold mb-4">Comments</h2>
+           
 
             {/* Comment form */}
             {user && <div className="mb-6">

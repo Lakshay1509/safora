@@ -11,6 +11,7 @@ import { useGetUserLocationCount } from "@/features/user/use-get-locationCount";
 import Link from "next/link";
 import { toast } from "sonner";
 import { RecentLocations } from "./RecentLocations";
+import ProfileLogo from "./ProfileLogo";
 
 export function Sidebar() {
   const router = useRouter();
@@ -205,10 +206,11 @@ export function Sidebar() {
 
           {/* Profile Avatar */}
           <button onClick={handleClick} className="flex items-center justify-center">
-            <AvatarCircle
-              url={data?.userData.profile_url}
+            <ProfileLogo
+              url={data?.userData.profile_url??''}
               name={data?.userData.name ?? ""}
               size="32"
+              color=""
             />
           </button>
         </div>

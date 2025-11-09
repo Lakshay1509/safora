@@ -1,7 +1,4 @@
-"use client"
-
-import React from 'react';
-import Avatar from 'react-avatar';
+import Avatar from 'boring-avatars';
 
 interface ProfileLogoProps {
   url: string | null;
@@ -10,48 +7,67 @@ interface ProfileLogoProps {
   size: string;
 }
 
-const ProfileLogo: React.FC<ProfileLogoProps> = ({ url, name, color, size }) => {
+const ProfileLogo = ({ url, name, color, size }: ProfileLogoProps) => {
   const numericSize = parseInt(size, 10);
-  
+
+  // If no color ring is needed
   if (!color) {
     return (
-      <div className="inline-block">
-        <Avatar
-          src={url || undefined}
-          name={name || "User"}
-          size={size}
-          round={true}
-        />
+      <div className="inline-block" style={{ position: 'relative', width: numericSize, height: numericSize }}>
+        {url ? (
+          <img
+            src={url}
+            alt={name || "User"}
+            style={{
+              width: numericSize,
+              height: numericSize,
+              borderRadius: '50%',
+              objectFit: 'cover'
+            }}
+          />
+        ) : (
+          <Avatar name={name || "User"} colors={["#0a0310", "#49007e", "#ff005b", "#ff7d10", "#ffb238"]}
+
+            variant="beam" size={size} />
+        )}
       </div>
     );
   }
 
-  const ringThickness = 2; // Thickness of the outer colored ring
-  const whiteGap = 2;      // Thickness of the inner white ring
-
-  // Calculate the size of the avatar itself
+  const ringThickness = 2;
+  const whiteGap = 2;
   const avatarSize = numericSize - (ringThickness + whiteGap) * 2;
 
   return (
-    // This wrapper div applies the border and outline effects.
     <div
       style={{
         display: 'inline-block',
-        // The white ring is a border
         border: `${whiteGap}px solid white`,
-        // The colored ring is an outline. It's drawn outside the border.
         outline: `${ringThickness}px solid ${color}`,
         borderRadius: '50%',
+        overflow: 'hidden'
       }}
     >
-      <Avatar
-        src={url || undefined}
-        name={name || "User"}
-        size={String(avatarSize)}
-        round={true}
-      />
+      {url ? (
+        <img
+          src={url}
+          alt={name || "User"}
+          style={{
+            width: avatarSize,
+            height: avatarSize,
+            borderRadius: '50%',
+            objectFit: 'cover',
+            display: 'block'
+          }}
+        />
+      ) : (
+        <Avatar name={name || "User"} colors={["#0a0310", "#49007e", "#ff005b", "#ff7d10", "#ffb238"]} variant="beam" size={avatarSize} />
+
+
+      )}
+
     </div>
   );
 };
 
-export default React.memo(ProfileLogo);
+export default (ProfileLogo);

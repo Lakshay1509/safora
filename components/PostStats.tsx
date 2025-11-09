@@ -73,7 +73,7 @@ const PostStats = ({ id ,upvotes_count,comments}: Props) => {
   // if (isError) return <div className="mt-6">Error loading stats</div>;
 
   return (
-    <div className="flex mt-6 gap-3">
+    <div className="flex  gap-3">
   <Button
     className={`${upvotes?.upvotes && upvotes?.upvotes.vote_type !== -1
         ? "bg-green-500 text-white hover:bg-green-600"

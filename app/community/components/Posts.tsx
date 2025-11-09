@@ -144,7 +144,7 @@ export const Posts = () => {
                         <h2 className="font-semibold text-lg line-clamp-2">
                           {post.heading}
                         </h2>
-                        <div className="text-gray-700 mt-2 text-[15px] line-clamp-2">
+                        <div className="text-gray-700 mt-2 text-[15px] line-clamp-4">
                           <MDXEditor markdown={post.body} readOnly={true} plugins={[
 
                             headingsPlugin(),
