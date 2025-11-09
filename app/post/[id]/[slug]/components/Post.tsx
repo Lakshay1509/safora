@@ -77,7 +77,7 @@ const Post = () => {
 
                 <article className="w-full max-w-3xl mx-4 p-4 bg-white rounded-lg lg:mx-10 lg:mr-[22rem] pb-22">
                     <header className="flex space-x-3 items-start mb-2">
-                        <div className="mt-1">
+                        <div className="mt-1 flex-shrink-0">
                             <ProfileLogo
                                 url={post?.post.users?.profile_url ?? ''}
                                 name={post?.post.users?.name ?? ''}
@@ -86,33 +86,35 @@ const Post = () => {
 
                             />
                         </div>
-                        <div>
-                            <h1 className="text-2xl font-bold">{post?.post.heading}</h1>
-                            <div className="flex items-center text-sm text-gray-600 my-1 space-x-2">
-                                <div
-                                    className="font-medium text-[14px]"
-                                    style={{
-                                        color: post?.post?.users?.profile_color || '#000000',
-                                    }}
-                                >
-                                    {post?.post?.users?.name}
-                                </div>
-
-                                {post?.post?.users?.verified && (
-                                    <div>
-                                        <Image src="/badge.svg" alt="badge" height={13} width={13} />
+                        <div className="flex-1 min-w-0">
+                            <div>
+                                <h1 className="text-2xl font-bold">{post?.post.heading}</h1>
+                                <div className="flex items-center text-sm text-gray-600 my-1 space-x-2">
+                                    <div
+                                        className="font-medium text-[14px]"
+                                        style={{
+                                            color: post?.post?.users?.profile_color || '#000000',
+                                        }}
+                                    >
+                                        {post?.post?.users?.name}
                                     </div>
-                                )}
 
-                                <div className="text-gray-400">•</div>
+                                    {post?.post?.users?.verified && (
+                                        <div>
+                                            <Image src="/badge.svg" alt="badge" height={13} width={13} />
+                                        </div>
+                                    )}
 
-                                <div>
-                                    {post?.post?.created_at
-                                        ? format(new Date(post.post.created_at), 'MMM d, yyyy')
-                                        : 'Unknown date'}
+                                    <div className="text-gray-400">•</div>
+
+                                    <div>
+                                        {post?.post?.created_at
+                                            ? format(new Date(post.post.created_at), 'MMM d, yyyy')
+                                            : 'Unknown date'}
+                                    </div>
                                 </div>
-                            </div>
 
+                            </div>
                         </div>
 
 
@@ -181,7 +183,7 @@ const Post = () => {
                             </div>
                         </div>
                     )}
-                    <div className="flex flex-row justify-start items-center space-x-2 ">
+                    <div className="flex flex-row justify-start items-center space-x-2 my-6">
                         {isAuthor && (
                             <Button
                                 variant="outline"
@@ -198,7 +200,7 @@ const Post = () => {
                                 variant="outline"
                                 size="sm"
                                 onClick={() => { setIsDeleteDialogOpen(true) }}
-                                className="flex items-center gap-1"
+                                className="flex items-center gap-1 "
                             >
                                 <Trash size={16} />
                                 Delete

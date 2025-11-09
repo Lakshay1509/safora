@@ -134,7 +134,7 @@ const Article = () => {
 
                     {/* Author controls */}
                     {isAuthor && (
-                        <div className="flex gap-2 mt-8 justify-start">
+                        <div className="flex gap-2 my-8 justify-start">
                             <Button
                                 variant="outline"
                                 size="sm"
