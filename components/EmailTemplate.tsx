@@ -72,7 +72,7 @@ export function EmailTemplate({
                     </p>
                     <p style={{ marginTop: '0.25rem' }}>
                        
-                        <a href="https://safeornot.space/profile/settings" style={{ color: '#4f46e5', textDecoration: 'none' }}>
+                        <a href="https://www.safeornot.space/profile/settings" style={{ color: '#4f46e5', textDecoration: 'none' }}>
                             Manage Preferences
                         </a>
                     </p>
