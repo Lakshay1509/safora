@@ -61,7 +61,7 @@ export default function TrendingPage() {
             </div>
             <h1 className="text-2xl md:text-3xl font-bold tracking-tight">Trending</h1>
           </div>
-          <p className="text-sm text-muted-foreground ml-14">Discover what's popular in your community</p>
+          <p className="text-sm text-muted-foreground ml-12">Discover what's popular in your community</p>
         </div>
 
         {/* Top Locations Section */}
