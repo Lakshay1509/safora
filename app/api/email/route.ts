@@ -1,21 +1,13 @@
 import { EmailTemplate } from "@/components/EmailTemplate";
 import { db } from "@/lib/prisma";
-import { Resend } from "resend";
 import { NextRequest } from "next/server";
+import { render } from '@react-email/render';
 
 export const dynamic = 'force-dynamic'
 export const runtime = 'nodejs'
 
-let resendClient: Resend | null = null
-
-function getResend() {
-  const key = process.env.RESEND_API_KEY
-  if (!key) throw new Error('RESEND_API_KEY is missing')
-  if (!resendClient) resendClient = new Resend(key)
-  return resendClient
-}
-
-
+const AUTOSEND_API_KEY = process.env.AUTOSEND_API_KEY;
+const AUTOSEND_API_URL = 'https://api.autosend.com/v1/mails/bulk';
 
 const truncateText = (text: string | null, wordLimit: number = 15): string => {
   if (!text) return "";
@@ -30,12 +22,12 @@ const truncateText = (text: string | null, wordLimit: number = 15): string => {
   return cleanText;
 };
 
-type FaileEmails={
-  user:string,
-  error:string
+type FailedEmails = {
+  user: string,
+  error: string
 }
 
-// Helper function to chunk users into groups of 100
+// Helper function to chunk users into groups (max 100 per Autosend request)
 const chunkArray = <T>(array: T[], size: number): T[][] => {
   const chunks = [];
   for (let i = 0; i < array.length; i += size) {
@@ -51,10 +43,11 @@ export async function GET(request: NextRequest) {
     return Response.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-   const resend = getResend()
+  if (!AUTOSEND_API_KEY) {
+    return Response.json({ error: "AUTOSEND_API_KEY is missing" }, { status: 500 });
+  }
 
   try {
-    // Optimize database queries with Promise.all for parallel execution
     const [posts, articles, users] = await Promise.all([
       db.posts.findMany({
         where: { is_article: 0 },
@@ -80,7 +73,6 @@ export async function GET(request: NextRequest) {
         take: 2,
         orderBy: { created_at: "desc" },
       }),
-      // Remove the limit of 80 users - process all users with digest enabled
       db.public_users.findMany({
         where: { daily_digest: 1 },
         select: {
@@ -88,7 +80,6 @@ export async function GET(request: NextRequest) {
           name: true,
           email: true,
         },
-        take:80
       }),
     ]);
 
@@ -103,64 +94,110 @@ export async function GET(request: NextRequest) {
       imageUrl: item.image_url || undefined,
     }));
 
-    // Subject line for all emails
     const subject = `${allContent[0]?.heading || "SafeOrNot Daily Digest"} | ${
       allContent[0]?.users?.name || "SafeOrNot"
     }`;
 
-    // Process users in chunks of 100 (Resend batch limit)
-    const userChunks = chunkArray(users, 80);
-    const results = [];
-    const failedEmails:FaileEmails[] = [];
+    // Generate single HTML template (same for all users)
+    // Ensure it returns a string, not a React element
+    const htmlContent = await render(
+      EmailTemplate({
+        firstName: "Reader",
+        logoUrl: "https://www.safeornot.space/logo.avif",
+        highlights: highlights,
+      }),
+      {
+        pretty: false,
+      }
+    );
 
-    // console.log(`Processing ${users.length} users in ${userChunks.length} batches`);
+    // Verify HTML is a valid string
+    if (typeof htmlContent !== 'string' || !htmlContent.trim()) {
+      console.error('HTML content is not a valid string:', typeof htmlContent);
+      return Response.json({ 
+        error: "Failed to generate email HTML content" 
+      }, { status: 500 });
+    }
+
+    console.log('Generated HTML length:', htmlContent.length);
+
+    // Process users in chunks of 100 (Autosend's max limit)
+    const userChunks = chunkArray(users, 100);
+    const results = [];
+    const failedEmails: FailedEmails[] = [];
 
     for (let chunkIndex = 0; chunkIndex < userChunks.length; chunkIndex++) {
       const chunk = userChunks[chunkIndex];
       
       try {
-        // Prepare batch emails for this chunk
-        const batchEmails = chunk.map((user) => ({
-          from: "SafeOrNot Daily Digest <noreply@safeornot.space>",
-          to: [user.email],
-          subject: subject,
-          react: EmailTemplate({
-            firstName: user.name,
-            logoUrl: "https://www.safeornot.space/logo.avif",
-            highlights: highlights,
-          }),
+        // Prepare recipients array (only email and name, no individual HTML)
+        const recipients = chunk.map((user) => ({
+          email: user.email,
+          name: user.name || user.email.split('@')[0], // Fallback if name is null/empty
         }));
 
-        // Send batch using Resend's batch API
-        const batchResult = await resend.batch.send(batchEmails);
+        // Prepare request payload
+        const payload = {
+          recipients: recipients,
+          from: {
+            email: "noreply@safeornot.space",
+            name: "SafeOrNot Daily Digest"
+          },
+          subject: subject,
+          html: htmlContent,
+        };
 
-        if (batchResult.error) {
-          console.error(`Batch ${chunkIndex + 1} failed:`, batchResult.error);
-          // Add all users in this batch to failed emails
+        console.log(`Sending batch ${chunkIndex + 1}:`, {
+          recipientCount: recipients.length,
+          subject: subject,
+          htmlLength: htmlContent.length,
+          htmlType: typeof htmlContent,
+          htmlPreview: htmlContent.substring(0, 100),
+          sampleRecipient: recipients[0]
+        });
+
+        // Send bulk email using Autosend API
+        const response = await fetch(AUTOSEND_API_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${AUTOSEND_API_KEY}`
+          },
+          body: JSON.stringify(payload)
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+          console.error(`Batch ${chunkIndex + 1} failed:`, {
+            status: response.status,
+            statusText: response.statusText,
+            error: result,
+            validationDetails: result.error?.details
+          });
+          
           chunk.forEach((user) =>
             failedEmails.push({ 
               user: user.email, 
-              error: batchResult.error?.message || "Batch send failed" 
+              error: JSON.stringify(result.error?.details) || result.message || "Bulk send failed" 
             })
           );
         } else {
-          // All emails in batch succeeded
           console.log(`Batch ${chunkIndex + 1} sent successfully to ${chunk.length} users`);
-          chunk.forEach((user, index) => {
+          chunk.forEach((user) => {
             results.push({
               user: user.email,
-              result: batchResult.data?.[index] || { success: true },
+              result: { success: true },
             });
           });
         }
 
-        // Rate limiting: Wait 1 second between batches (Resend allows 2 requests/second)
+        // Rate limiting: Wait 2 second between batches
         if (chunkIndex < userChunks.length - 1) {
-          await new Promise((resolve) => setTimeout(resolve, 1000));
+          await new Promise((resolve) => setTimeout(resolve, 2000));
         }
       } catch (error) {
         console.error(`Batch ${chunkIndex + 1} failed with exception:`, error);
-        // Add all users in this batch to failed emails
         chunk.forEach((user) =>
           failedEmails.push({
             user: user.email,
@@ -170,9 +207,6 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    // Log detailed results
-    // console.log(`Email digest completed: ${results.length} sent, ${failedEmails.length} failed`);
-    
     if (failedEmails.length > 0) {
       console.error("Failed emails:", failedEmails);
     }
