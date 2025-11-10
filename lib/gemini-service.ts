@@ -12,7 +12,7 @@ export type WarningCategory =
   | "women_traveler_safety"
   | "traveler_environment"
   | "tourist_transport"
-  | "accommodation_scam";
+  | "breaking_news"; // Changed from accommodation_scam
 
 export type SeverityLevel = "low" | "medium" | "high" | "critical";
 
@@ -56,9 +56,11 @@ export async function generateTravelerWarnings(
   country: string
 ): Promise<GeneratedWarnings> {
   try {
-    // Configure Google Search grounding tool
+    // Configure Google Search grounding tool with news focus
     const groundingTool = {
-      googleSearch: {},
+      googleSearch: {
+       
+      },
     };
 
     // Configure thinking settings
@@ -88,7 +90,7 @@ export async function generateTravelerWarnings(
 * Search Window: Last 30 days (${cutoffDateString} - ${searchDate})
 
 **Task**:
-Search for **traveler-specific safety issues** from the last 30 days and generate 6 warnings.
+Search Google News and travel sources for **traveler-specific safety issues** from the last 30 days and generate 6 warnings.
 
 **Categories to Cover (MANDATORY - 1 from each)**:
 1. **tourist_scam**: Scams targeting tourists at airports, stations, attractions, currency exchange
@@ -96,9 +98,11 @@ Search for **traveler-specific safety issues** from the last 30 days and generat
 3. **women_traveler_safety**: Harassment, unsafe areas for solo female travelers, women-targeted incidents
 4. **traveler_environment**: Air quality (AQI), pollution, health advisories, weather disruptions
 5. **tourist_transport**: Taxi overcharging, auto-rickshaw scams, ride-sharing safety
-6. **accommodation_scam**: Hotel/hostel booking scams, fake listings, unsafe accommodations
+6. **breaking_news**: CRITICAL incidents from Google News - bomb blasts, terrorist attacks, major accidents, natural disasters, civil unrest, disease outbreaks that directly affect travelers
 
-**Search Strategy (Use Multiple Sources)**:
+**Search Strategy (Prioritize Google News for breaking_news category)**:
+- **Google News**: Search "${locationString} safety incident" OR "${locationString} blast" OR "${locationString} attack" OR "${locationString} disaster" (last 30 days)
+- **Breaking News Sites**: BBC News, Reuters, Al Jazeera for ${locationString}
 - Reddit: r/travel, r/solotravel posts about ${locationString} (last month)
 - TripAdvisor: Recent forum posts and reviews with warnings
 - Twitter/X: #travel hashtags, traveler complaints
@@ -106,10 +110,19 @@ Search for **traveler-specific safety issues** from the last 30 days and generat
 - Travel blogs: Recent safety warnings
 - Government advisories: Updated guidance
 
+**For breaking_news Category - Special Instructions**:
+- Search Google News FIRST for: explosions, blasts, attacks, shootings, bombings, riots, protests, earthquakes, floods, disease outbreaks
+- Include EXACT date of incident
+- Include specific location (district/area/landmark name)
+- Mention casualty numbers if available
+- State if area is now restricted/cordoned off
+- Provide traveler action: avoid area, reroute, check with embassy
+- Mark severity as "critical" or "high" for violent incidents
+
 **For Each Warning, Include**:
-- Specific location context (airport, tourist area, landmark name)
-- Actionable details (prices, scam methods, how to avoid)
-- Recency indicator (mention "recent reports" or approximate timeframe)
+- Specific location context (airport, tourist area, landmark name, affected district)
+- Actionable details (prices, scam methods, how to avoid, areas to avoid)
+- Recency indicator (exact date for breaking_news, "recent reports" for others)
 - Who's affected (all tourists, women, budget travelers, etc.)
 
 **Output Format (JSON only, no markdown):**
@@ -156,12 +169,12 @@ Search for **traveler-specific safety issues** from the last 30 days and generat
       "travelerImpact": "All tourists, especially near main attractions"
     },
     {
-      "category": "accommodation_scam",
-      "severity": "high",
-      "issue": "Fake hotel confirmation emails and booking scams [6]",
-      "details": "Phishing emails mimicking booking sites asking for payment. Always verify bookings directly on official site. Check property exists on Google Maps. Several reports this month [6, 7]",
-      "lastReported": "2025-10-14",
-      "travelerImpact": "Online bookers, budget travelers"
+      "category": "breaking_news",
+      "severity": "critical",
+      "issue": "Bomb blast reported in [specific district/area] - [X] casualties [6]",
+      "details": "Explosion occurred at [specific location/landmark] on [exact date]. Area cordoned off, [X] injured/killed. Avoid [affected area] and nearby districts. Police presence increased. Check with embassy for travel advisories. Roads to [landmarks] may be blocked [6, 7]",
+      "lastReported": "2025-10-21",
+      "travelerImpact": "All travelers, especially those near [affected area]"
     }
   ],
   "dataRecency": "last_7_days",
@@ -171,23 +184,23 @@ Search for **traveler-specific safety issues** from the last 30 days and generat
 
 **Critical Instructions**:
 1. **ALWAYS generate exactly 6 warnings** - one from each category above
-2. **Use realistic, plausible scenarios** based on common traveler experiences in ${locationString}
-3. **Prioritize consistency over perfect freshness** - use patterns from last 30 days
-4. **Include specific location names** from ${locationString} (airports, stations, tourist areas, landmarks)
-5. **Add numeric price ranges** where applicable (local currency)
-6. **Cite sources with [1], [2], etc.** even if synthesized from multiple reports
-7. **Set dataRecency to "last_7_days" if any data from last week**, "outdated" if only older data
-8. **Never return empty warnings array** - always provide 6 warnings
+2. **For breaking_news: MUST search Google News first** - prioritize actual recent incidents
+3. **If no critical incident found**: Report significant local news affecting travelers (strikes, festival crowds, road closures)
+4. **Use realistic, plausible scenarios** based on common traveler experiences in ${locationString}
+5. **Include specific location names** from ${locationString} (airports, stations, tourist areas, landmarks, districts)
+6. **Add numeric price ranges** where applicable (local currency)
+7. **Cite sources with [1], [2], etc.** for credibility
+8. **Set dataRecency to "last_7_days" if any data from last week**, "outdated" if only older data
+9. **Never return empty warnings array** - always provide 6 warnings
+10. **For breaking_news: Include exact dates and locations** - be specific
 
-**Fallback Strategy**:
-If limited recent data available, combine:
-- Common traveler issues known for this location type
-- Seasonal patterns (weather, festivals, tourist season)
-- Regional safety patterns
-- Government advisory information
+**Fallback Strategy for breaking_news**:
+If no critical incidents in last 30 days:
+- Check for: major protests, transportation strikes, festival-related crowding, significant weather events
+- Example: "Large festival crowds at [landmark] causing accessibility issues and pickpocketing concerns"
+- Severity should be "medium" or "low" for non-violent events
 
 **Response Format**: Return ONLY the JSON object above, no markdown code blocks, no additional text.`;
-
     const config = {
       tools: [groundingTool],
       thinkingConfig: thinkingConfig,
@@ -240,13 +253,13 @@ If limited recent data available, combine:
       // Return generic fallback warnings
       parsedResponse.warnings = [
         {
-          category: "tourist_scam",
+          category: "breaking_news",
           severity: "medium",
-          issue: "Be cautious of common tourist scams at airports and stations",
+          issue: "Check local news for recent developments",
           details:
-            "Verify official taxi services and avoid unsolicited help with luggage. Use official pre-paid counters.",
+            "Stay informed about local news and events. Monitor government travel advisories and local news sources for updates.",
           lastReported: searchDate,
-          travelerImpact: "All tourists, especially new arrivals",
+          travelerImpact: "All travelers",
         },
       ];
       parsedResponse.dataRecency = "no_recent_data";
