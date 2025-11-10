@@ -28,11 +28,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 
   return {
-    title: `${location.name} `,
-    description: `Discover safety insights, reviews, and precautions for ${location.name}. Community-driven safety ratings powered by AI.`,
+    title: `Is ${location.name} Safe? Real Safety Reviews & Ratings 2025`,
+    description: `Is ${location.name} safe or not? Get real traveler safety reviews, crime ratings, and safety tips for ${location.name}. Community-driven insights from travelers who've been there.`,
     openGraph: {
-      title: `${location.name} | Safe or Not`,
-      description: `Check safety reviews and insights for ${location.name}.`,
+      title: `Is ${location.name} Safe? Community Safety Reviews`,
+      description: `Wondering if ${location.name} is safe to visit? Read authentic safety reviews, crime statistics, and travel warnings from real travelers.`,
       url: `https://www.safeornot.space/location/${id}`,
       siteName: "Safe or Not",
       images: [
@@ -47,8 +47,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     },
     twitter: {
       card: "summary_large_image",
-      title: `${location.name} | Safe or Not`,
-      description: `Community insights & safety tips for ${location.name}.`,
+      title: `Is ${location.name} Safe? Travel Safety Guide 2025`,
+      description: `Get real answers about ${location.name} safety. Read community reviews, safety ratings, and tips from travelers.`,
       images: ["/og.webp"],
     },
     alternates:{
@@ -78,17 +78,71 @@ const page = async ({ params }: Props) => {
     )
   }
 
+  const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": `Is ${location.name} safe?`,
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": `Based on community reviews and real traveler experiences, ${location.name} has safety ratings across multiple categories. Check detailed safety reviews, crime statistics, and travel tips from verified travelers on Safe or Not.`
+        }
+      },
+      {
+        "@type": "Question",
+        "name": `Is ${location.name} safe for tourists?`,
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": `Tourist safety in ${location.name} varies by area and time. Read authentic reviews from travelers covering tourist scams, pickpocketing risks, and safe areas to visit in ${location.name}.`
+        }
+      },
+      {
+        "@type": "Question",
+        "name": `Is ${location.name} safe for women travelers?`,
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": `Women's safety ratings for ${location.name} are based on real female traveler experiences. Check specific safety scores, harassment reports, and tips from solo female travelers.`
+        }
+      },
+      {
+        "@type": "Question",
+        "name": `Is ${location.name} safe at night?`,
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": `Night safety in ${location.name} depends on the neighborhood. Read community reviews about safe and unsafe areas after dark, public transit safety, and late-night precautions.`
+        }
+      }
+    ]
+  };
+
   return (
     <div className="min-h-screen bg-white px-4 pb-20 md:px-6 lg:px-8">
       {/* Hidden semantic content for SEO */}
+      <script 
+        type="application/ld+json" 
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+      />
+      
+      {/* Enhanced semantic content for SEO */}
       <article className="sr-only" aria-hidden="true">
-        <h1>{location.name}</h1>
+        <h1>Is {location.name} Safe? Safety Reviews & Ratings</h1>
+        <h2>Is {location.name} safe to visit?</h2>
         <p>
-          Explore safety insights, traveler reviews, and community experiences about {location.name}.
-          Get real-time updates, AI-powered safety scores, and helpful local precautions shared by verified users.
+          Wondering if {location.name} is safe or not? Get authentic safety insights from real travelers.
+          Explore safety reviews, crime ratings, and community experiences about {location.name}.
+          Safe or Not provides AI-powered safety scores based on verified user reports.
         </p>
+        <h2>Safety Ratings for {location.name}</h2>
         <p>
-          Safe or Not empowers travelers with community-driven data — helping you decide whether {location.name} is safe to visit.
+          Check overall safety, women's safety, night safety, and neighborhood ratings for {location.name}.
+          Real-time updates and traveler-reported incidents help you make informed decisions.
+        </p>
+        <h2>Is {location.name} safe for tourists?</h2>
+        <p>
+          Tourist safety in {location.name} includes scam warnings, pickpocketing risks, and safe areas.
+          Read reviews from travelers who recently visited {location.name}.
         </p>
       </article>
 

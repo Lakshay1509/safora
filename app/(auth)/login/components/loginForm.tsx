@@ -22,11 +22,12 @@ export function LoginForm() {
       <div className="hidden md:flex flex-1 bg-[#F8F4FF] items-center justify-center md:rounded-l-xl">
   <div className="text-center p-4">
     <Image
-      src="/logo.png"
+      src="/logo.avif"
       alt="Safe or Not"
       width={250}
       height={80}
       className="max-w-full h-auto"
+      unoptimized
     />
   </div>
 </div>
