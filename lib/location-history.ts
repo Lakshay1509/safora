@@ -11,7 +11,7 @@ interface LocationHistory {
 }
 
 const DAILY_VIEWS_COOKIE = "daily_location_views";
-const MAX_DAILY_VIEWS = 50; // Limit total entries
+const MAX_DAILY_VIEWS = 30; // Limit total entries
 
 interface DailyView {
   location_id: string;
@@ -150,4 +150,55 @@ async function syncViewsToDatabase(views: DailyView[]) {
   } catch (error) {
     console.error("Failed to sync daily views:", error);
   }
+}
+
+const ANONYMOUS_VIEWS_COOKIE = "anonymous_precaution_views";
+const MAX_ANONYMOUS_VIEWS = 4;
+
+interface AnonymousView {
+  location_id: string;
+  viewed_at: string;
+}
+
+export async function trackAnonymousPrecautionView(locationId: string): Promise<{ allowed: boolean; viewCount: number }> {
+  "use server";
+  
+  const cookieStore = await cookies();
+  const existingData = cookieStore.get(ANONYMOUS_VIEWS_COOKIE)?.value;
+  let views: AnonymousView[] = existingData ? JSON.parse(existingData) : [];
+  
+  // Check if this location was already viewed
+  const alreadyViewed = views.some(v => v.location_id === locationId);
+  
+  if (!alreadyViewed) {
+    // Check if limit reached
+    if (views.length >= MAX_ANONYMOUS_VIEWS) {
+      return { allowed: false, viewCount: views.length };
+    }
+    
+    // Add new view
+    views.push({
+      location_id: locationId,
+      viewed_at: new Date().toISOString(),
+    });
+    
+    // Save to cookie
+    cookieStore.set(ANONYMOUS_VIEWS_COOKIE, JSON.stringify(views), {
+      maxAge: 30 * 24 * 60 * 60, // 30 days
+      path: "/",
+      sameSite: "lax",
+    });
+  }
+  
+  return { allowed: true, viewCount: views.length };
+}
+
+export async function getAnonymousViewCount(): Promise<number> {
+  "use server";
+  
+  const cookieStore = await cookies();
+  const existingData = cookieStore.get(ANONYMOUS_VIEWS_COOKIE)?.value;
+  const views: AnonymousView[] = existingData ? JSON.parse(existingData) : [];
+  
+  return views.length;
 }

@@ -3,8 +3,8 @@ import { db } from "@/lib/prisma";
 import { createClient } from "@/utils/supabase/server";
 import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
-import { randomUUID } from "crypto";
 import { generateLocationMetrics, generateTravelerWarnings } from "@/lib/gemini-service";
+import { trackAnonymousPrecautionView } from "@/lib/location-history";
 enum TimeOfDay {
   DAY = "DAY",
   NIGHT = "NIGHT",
@@ -189,15 +189,26 @@ const app = new Hono()
 
   .get("/precautions/:id", async (ctx) => {
     const id = ctx.req.param("id");
-    // const supabase = await createClient();
-    // const {
-    //   data: { user },
-    //   error,
-    // } = await supabase.auth.getUser();
+    const supabase = await createClient();
+    const {
+      data: { user },
+      error,
+    } = await supabase.auth.getUser();
 
-    // if (error || !user) {
-    //   return ctx.json({ error: "Unauthorized" }, 401);
-    // }
+    // Handle anonymous users
+    if (error || !user) {
+      const { allowed, viewCount } = await trackAnonymousPrecautionView(id);
+      
+      if (!allowed) {
+        return ctx.json({ 
+          error: "View limit reached. Please sign in to view more locations.",
+          viewCount,
+          maxViews: 3
+        }, 403);
+      }
+      
+      // Continue with the rest of the logic for anonymous users
+    }
 
     const locationPrecautions = await db.precautions.findUnique({
       where: { location_id: id },
@@ -222,7 +233,7 @@ const app = new Hono()
           location.country
         );
 
-        // // Check if no recent data was found
+        // Check if no recent data was found
         if (generatedData.dataRecency === "no_recent_data" || generatedData.warnings.length === 0) {
           return ctx.json(
             {
@@ -288,8 +299,18 @@ const app = new Hono()
       error,
     } = await supabase.auth.getUser();
 
-    if (error || !user) {
-      return ctx.json({ error: "Unauthorized" }, 401);
+   if (error || !user) {
+      const { allowed, viewCount } = await trackAnonymousPrecautionView(id);
+      
+      if (!allowed) {
+        return ctx.json({ 
+          error: "View limit reached. Please sign in to view more locations.",
+          viewCount,
+          maxViews: 3
+        }, 403);
+      }
+      
+      
     }
 
     const locationPrecautions = await db.precautions.findUnique({
@@ -351,14 +372,23 @@ const app = new Hono()
   .get("/comments/:id", async (ctx) => {
     const id = ctx.req.param("id");
     const supabase = await createClient();
-    // const {
-    //   data: { user },
-    //   error,
-    // } = await supabase.auth.getUser();
-
-    // if (error || !user) {
-    //   return ctx.json({ error: "Unauthorized" }, 401);
-    // }
+    const {
+      data: { user },
+      error,
+    } = await supabase.auth.getUser();
+    if (error || !user) {
+      const { allowed, viewCount } = await trackAnonymousPrecautionView(id);
+      
+      if (!allowed) {
+        return ctx.json({ 
+          error: "View limit reached. Please sign in to view more locations.",
+          viewCount,
+          maxViews: 3
+        }, 403);
+      }
+      
+      // Continue with the rest of the logic for anonymous users
+    }
 
     const locationComments = await db.comments.findMany({
       where: { location_id: id },

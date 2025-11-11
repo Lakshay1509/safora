@@ -1,12 +1,12 @@
 import {useQuery} from "@tanstack/react-query";
 import {client} from "@/lib/hono"
-import { useAuth } from "@/contexts/AuthContext";
+
 
 
 export const useGetLocationMetrics = (id:string)=>{
-     const {user} = useAuth();
+    
     const query = useQuery({
-        enabled :!!id && !!user ,
+        enabled :!!id  ,
         queryKey: ["locationMetrics",id],
         queryFn: async ()=>{
             const response = await client.api.location.extra_info[":id"].$get({

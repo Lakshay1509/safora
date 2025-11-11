@@ -10,6 +10,7 @@ import Link from "next/link";
 import { LocationTracker } from "./components/LocationTracker";
 import NotFound from "@/app/not-found";
 import MetricsCard from "./components/metrics";
+import { getAnonymousViewCount } from "@/lib/location-history";
 
 type Props = {
   params: Promise<{ id: string }>;
@@ -63,6 +64,9 @@ const page = async ({ params }: Props) => {
   // Check if user is authenticated (server-side)
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
+
+  // Get anonymous view count for non-logged-in users
+  const anonymousViewCount = !user ? await getAnonymousViewCount() : 0;
 
   // Get location details for tracking
   const location = await db.locations.findUnique({
@@ -146,33 +150,67 @@ const page = async ({ params }: Props) => {
         </p>
       </article>
 
-
       {/* Add LocationTracker here - it renders nothing but tracks the visit */}
       {location && (
         <LocationTracker locationId={id} locationName={location.name} />
       )}
 
       <div className="max-w-7xl mx-auto space-y-6">
+        {/* Show banner for anonymous users who haven't reached limit yet */}
+        {!user && anonymousViewCount <= 3 && (
+          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-4 text-center">
+            <div className="max-w-2xl mx-auto space-y-2">
+              <p className="text-sm text-gray-700">
+                📍 You've viewed <span className="font-bold">{anonymousViewCount} of 3</span> free locations
+              </p>
+              <p className="text-sm text-gray-600">
+                Sign in to unlock unlimited access to safety insights, community discussions, and more.
+              </p>
+              <div className="flex gap-3 justify-center mt-3">
+                <Link href="/login">
+                  <Button size="sm" className="bg-blue-600 hover:bg-blue-700">
+                    Sign In
+                  </Button>
+                </Link>
+                <Link href="/login">
+                  <Button size="sm" variant="outline">
+                    Create Account
+                  </Button>
+                </Link>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Top Area Card - Full Width */}
         <AreaCard />
         <ReviewsCard />
-        <MetricsCard/>
 
-        {/* Show TabView only if user is logged in */}
+        {/* Show content based on authentication and view limit */}
         {user ? (
+          // Authenticated users: Show everything
           <>
-
+            <MetricsCard />
+            <PrecautionCard />
+            <TabView />
+          </>
+        ) : anonymousViewCount <= 3 ? (
+          // Anonymous users within limit: Show everything
+          <>
+            <MetricsCard />
             <PrecautionCard />
             <TabView />
           </>
         ) : (
-          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-8 text-center">
+          // Anonymous users over limit: Show lock screen
+          <div className="bg-gradient-to-r from-red-50 to-orange-50 border border-red-200 rounded-lg p-8 text-center">
             <div className="max-w-md mx-auto space-y-4">
+              <div className="text-5xl mb-4">🔒</div>
               <h3 className="text-2xl font-bold text-gray-900">
-                Sign in to unlock more
+                Free limit reached
               </h3>
               <p className="text-gray-600">
-                Create an account to access detailed safety insights (like walkability, lighting quality score, public transport score etc), community discussions, and contribute your own experiences.
+                You've viewed 3 locations. Create a free account to access unlimited safety insights, detailed metrics, community discussions, and contribute your own experiences.
               </p>
               <div className="flex gap-3 justify-center">
                 <Link href="/login">

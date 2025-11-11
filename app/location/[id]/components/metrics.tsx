@@ -69,22 +69,7 @@ const MetricsCard = () => {
         );
     }
 
-    if (!user) {
-        return (
-            <div className="relative">
-                {/* Blurred Content */}
-                <div className="blur-sm pointer-events-none select-none">
-                    <img src="/log_in_metrics.png" alt="Stats" className="hidden md:block"/>
-                    <img src="/log_in_metrics_phone.png" alt="Stats" className="block md:hidden" />
-                </div>
-
-                {/* Login Prompt Overlay */}
-                <div className="absolute inset-0 flex items-center justify-center bg-black/5 backdrop-blur-xs rounded-2xl">
-                    
-                </div>
-            </div>
-        );
-    }
+    
 
     if (!data) {
         return <div className="text-center py-8 text-gray-500">No metrics data available.</div>;

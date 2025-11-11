@@ -4,6 +4,7 @@ import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
 import { createClient } from "@/utils/supabase/server";
 import { generateSlug } from "@/utils/slug";
+import { trackAnonymousPrecautionView } from "@/lib/location-history";
 
 
 const app = new Hono()
@@ -108,8 +109,22 @@ const app = new Hono()
 
     const supabase = await createClient();
     const {
-      data: { user },
+      data: { user },error
     } = await supabase.auth.getUser();
+
+    if (error || !user) {
+      const { allowed, viewCount } = await trackAnonymousPrecautionView(id);
+      
+      if (!allowed) {
+        return ctx.json({ 
+          error: "View limit reached. Please sign in to view more locations.",
+          viewCount,
+          maxViews: 3
+        }, 403);
+      }
+      
+      // Continue with the rest of the logic for anonymous users
+    }
 
     const posts = await db.posts.findMany({
       where: { location_id: id },
