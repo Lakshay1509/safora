@@ -183,8 +183,8 @@ const Post = () => {
                             </div>
                         </div>
                     )}
-                    <div className="flex flex-row justify-start items-center space-x-2 my-6">
-                        {isAuthor && (
+                      {isAuthor && (<div className="flex flex-row justify-start items-center space-x-2 my-6">
+                      
                             <Button
                                 variant="outline"
                                 size="sm"
@@ -194,8 +194,8 @@ const Post = () => {
                                 <PenIcon size={16} />
                                 Edit
                             </Button>
-                        )}
-                        {isAuthor && (
+                        
+                        
                             <Button
                                 variant="outline"
                                 size="sm"
@@ -205,8 +205,8 @@ const Post = () => {
                                 <Trash size={16} />
                                 Delete
                             </Button>
-                        )}
-                    </div>
+                        
+                    </div> )}
 
                     <PostStats id={postId} upvotes_count={post?.post.upvotes} comments={post?.post._count.posts_comments} />
 
