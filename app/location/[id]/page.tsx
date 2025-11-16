@@ -38,7 +38,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       siteName: "Safe or Not",
       images: [
         {
-          url: "/og.webp",
+          url: "https://safeornot.space/og.webp",
           width: 1200,
           height: 630,
           alt: `${location.name} - Safe or Not`,
@@ -50,7 +50,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       card: "summary_large_image",
       title: `Is ${location.name} Safe? Travel Safety Guide 2025`,
       description: `Get real answers about ${location.name} safety. Read community reviews, safety ratings, and tips from travelers.`,
-      images: ["/og.webp"],
+      images: "https://safeornot.space/og.webp",
     },
     alternates:{
       canonical: `/location/${id}`

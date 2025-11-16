@@ -71,7 +71,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       siteName: "Safe or Not",
       images: [
         {
-          url: post.image_url ?? "/og.webp",
+          url: post.image_url ?? "https://safeornot.space/og.webp",
           width: 1200,
           height: 630,
           alt: trimText(`${post.heading} - Safe or Not`, 100),
@@ -83,7 +83,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       card: "summary_large_image",
       title: `${trimText(post.heading, 55)} | Safe or Not`,
       description: twitterDescription,
-      images: [post.image_url ?? "/og.webp"],
+      images: [post.image_url ?? "https://safeornot.space/og.webp"],
     },
     alternates: {
       canonical: `https://www.safeornot.space/post/${id}/${post.slug}`,

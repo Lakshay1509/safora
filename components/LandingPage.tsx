@@ -247,7 +247,7 @@ export default async function LandingPage() {
             {/* Image Content */}
             <div className="flex-1 max-w-2xl">
               <Image
-                src="/og.webp"
+                src="https://safeornot.space/og.webp"
                 alt="SafeOrNot community members sharing travel safety experiences and location reviews"
                 width={1000}
                 height={1000}

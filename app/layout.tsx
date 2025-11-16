@@ -75,7 +75,7 @@ export const metadata: Metadata = {
     siteName: "Safe or Not",
     images: [
       {
-        url: "/og.webp",
+        url: "https://safeornot.space/og.webp",
         width: 1200,
         height: 630,
         alt: "Safe or Not - Community-Driven Safety Insights",
@@ -89,7 +89,7 @@ export const metadata: Metadata = {
     title: "Safe or Not | Community-Driven Safety Insights",
     description:
       "Check subtle safety insights powered by real experiences before you travel or explore.",
-    images: ["/og.webp"],
+    images: ["https://safeornot.space/og.webp"],
   },
 };
 
