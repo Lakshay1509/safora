@@ -1,9 +1,37 @@
 import { Metadata } from "next";
 import Post from "./components/Post"
 import { db } from "@/lib/prisma";
+import { dehydrate, HydrationBoundary, QueryClient } from "@tanstack/react-query";
 
 type Props = {
   params: Promise<{ id: string }>;
+};
+
+// Define the post data type
+type PostData = {
+  post: {
+    id: string;
+    heading: string;
+    body: string;
+    created_at: Date | null;
+    image_url: string | null;
+    user_id: string;
+    location_id: string | null;
+    slug: string;
+    upvotes: number;
+    users: {
+      name: string;
+      profile_url: string | null;
+      profile_color: string | null;
+      verified: boolean;
+    } | null;
+    locations: {
+      name: string;
+    } | null;
+    _count: {
+      posts_comments: number;
+    };
+  };
 };
 
 // Helper function to trim text to specified length
@@ -31,6 +59,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: title,
     description: description,
+    keywords: `${post.heading}, safety, travel, community reviews`,
+    robots: {
+      index: true,
+      follow: true,
+    },
     openGraph: {
       title: `${trimText(post.heading, 55)} | Safe or Not`,
       description: ogDescription,
@@ -53,55 +86,78 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       images: [post.image_url ?? "/og.webp"],
     },
     alternates: {
-    canonical: `https://www.safeornot.space/post/${id}/${post.slug}`,
-  },
+      canonical: `https://www.safeornot.space/post/${id}/${post.slug}`,
+    },
   };
-
 }
 
 const page = async ({ params }: Props) => {
   const { id } = await params;
 
-  // Fetch post data server-side
-  const post = await db.posts.findUnique({
-    where: { id: id },
-    select: {
-      heading: true,
-      body: true,
-      created_at: true,
-      image_url: true,
-      users: { select: { name: true } },
-      locations: { select: { name: true } }
+  // Create a new QueryClient for this request
+  const queryClient = new QueryClient();
+
+  // Prefetch the post data for TanStack Query
+  await queryClient.prefetchQuery({
+    queryKey: ['post', id],
+    queryFn: async () => {
+      const post = await db.posts.findUnique({
+        where: { id: id },
+        select: {
+          id: true,
+          heading: true,
+          body: true,
+          created_at: true,
+          image_url: true,
+          user_id: true,
+          location_id: true,
+          slug: true,
+          upvotes: true,
+          users: { 
+            select: { 
+              name: true,
+              profile_url: true,
+              profile_color: true,
+              verified: true,
+            } 
+          },
+          locations: { select: { name: true } },
+          _count: {
+            select: {
+              posts_comments: true,
+            },
+          },
+        },
+      });
+      
+      if (!post) throw new Error('Post not found');
+      
+      return { post };
     },
   });
 
-  if (!post) {
-    return <div>Post not found</div>;
-  }
+  const dehydratedState = dehydrate(queryClient);
+  
+  // Get the post data with proper typing
+  const postData = queryClient.getQueryData<PostData>(['post', id]);
 
   return (
-    <div>
-      <article className="sr-only" aria-hidden="true">
-        <h1>{post.heading}</h1>
-        <p>{post.body.slice(0, 300)}</p>
-        <p>
-          Author: {post.users?.name ?? "Anonymous"}
-          Published: {post.created_at?.toISOString().split("T")[0]}
-          {post.locations?.name && `Location: ${post.locations.name}`}
-        </p>
-      </article>
+    <HydrationBoundary state={dehydratedState}>
+      {/* Enhanced JSON-LD for SEO */}
       <script type="application/ld+json" dangerouslySetInnerHTML={{
         __html: JSON.stringify({
           "@context": "https://schema.org",
           "@type": "BlogPosting",
-          headline: post.heading,
-          articleBody: post.body.slice(0, 500),
+          headline: postData?.post.heading,
+          articleBody: postData?.post.body,
+          description: postData?.post.body.slice(0, 160),
           author: {
             "@type": "Person",
-            name: post.users?.name ?? "Unknown",
+            name: postData?.post.users?.name ?? "Anonymous",
           },
-          datePublished: post.created_at?.toISOString(),
-          image: post.image_url ?? "https://www.safeornot.space/og.webp",
+          datePublished: postData?.post.created_at?.toISOString(),
+          dateModified: postData?.post.created_at?.toISOString(),
+          image: postData?.post.image_url ?? "https://www.safeornot.space/og.webp",
           publisher: {
             "@type": "Organization",
             name: "Safe or Not",
@@ -110,12 +166,17 @@ const page = async ({ params }: Props) => {
               url: "https://www.safeornot.space/logo.avif",
             },
           },
+          mainEntityOfPage: {
+            "@type": "WebPage",
+            "@id": `https://www.safeornot.space/post/${id}/${postData?.post.slug}`,
+          },
         }),
       }} />
 
+      {/* The Post component will render with hydrated data - fully visible to Google */}
       <Post />
-    </div>
+    </HydrationBoundary>
   );
 }
 
-export default page
+export default page;
