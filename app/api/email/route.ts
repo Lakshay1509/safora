@@ -1,4 +1,4 @@
-import { EmailTemplate } from "@/components/EmailTemplate";
+import { EmailTemplate } from "@/components/email/EmailTemplate";
 import { db } from "@/lib/prisma";
 import { NextRequest } from "next/server";
 import { render } from '@react-email/render';
