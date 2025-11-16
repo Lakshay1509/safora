@@ -16,7 +16,7 @@ export default async function LandingPage() {
             "@context": "https://schema.org",
             "@type": "WebSite",
             name: "SafeOrNot",
-            url: "https://safeornot.space",
+            url: "https://www.safeornot.space/",
             description:
               "Community-driven and real-time safety tips.",
           }),
@@ -29,7 +29,7 @@ export default async function LandingPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{
           __html: JSON.stringify({
-            "@context": "https://schema.org",
+            "@context": "https://www.schema.org",
             "@type": "FAQPage",
             "mainEntity": [
               {
@@ -50,10 +50,10 @@ export default async function LandingPage() {
               },
               {
                 "@type": "Question",
-                "name": "Is SafeOrNot free to use?",
+                "name": "Is Safe or Not free to use?",
                 "acceptedAnswer": {
                   "@type": "Answer",
-                  "text": "Yes, SafeOrNot is completely free for all travelers. Browse locations, read reviews, and contribute your own experiences at no cost."
+                  "text": "Yes, Safe or Not is completely free for all travelers. Browse locations, read reviews, and contribute your own experiences at no cost."
                 }
               },
               {
@@ -93,7 +93,7 @@ export default async function LandingPage() {
         aria-labelledby="why-safeornot"
         className="w-full max-w-4xl text-center px-4 sm:px-6 lg:px-8"
       >
-        <h2 id="why-safeornot" className="sr-only">Why Choose SafeOrNot</h2>
+        <h2 id="why-safeornot" className="sr-only">Why Choose Safe or Not</h2>
         <p className="mt-2 text-sm sm:text-base md:text-lg text-neutral-500 mx-auto py-2 sm:py-3 md:py-4">
           Get community-driven street safety analysis and real-time tips for safer
           decisions wherever you go. Comprehensive urban safety insights for travelers exploring new cities.
@@ -188,7 +188,7 @@ export default async function LandingPage() {
       >
         <div className="text-center mb-12">
           <h2 id="how-it-works-heading" className="text-2xl md:text-3xl font-bold text-black mb-4">
-            How SafeOrNot Works
+            How Safe or Not Works
           </h2>
           <p className="text-base md:text-lg text-neutral-600 max-w-3xl mx-auto">
             Our platform connects travelers worldwide to share authentic safety experiences.
@@ -294,7 +294,7 @@ export default async function LandingPage() {
 
           <details className="group border border-neutral-200 rounded-lg p-6">
             <summary className="font-semibold text-lg cursor-pointer">
-              Is SafeOrNot free to use?
+              Is Safe or Not free to use?
             </summary>
             <p className="mt-3 text-neutral-600">
               Yes, SafeOrNot is completely free for all travelers. Browse locations,

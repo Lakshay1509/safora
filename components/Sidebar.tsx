@@ -150,7 +150,7 @@ export function Sidebar() {
           <div className="flex flex-wrap gap-2 justify-center">
             <a href="/privacy-policy" className="hover:underline">Privacy Policy </a>
              <a href="/terms-and-conditions" className="hover:underline">Terms & Conditions</a>
-            <p>© 2025 SafeOrNot, Inc.</p>
+            <p>© 2025 Safe or Not, Inc.</p>
           </div>
         </div>
       </div>

@@ -72,14 +72,12 @@ export default function EmailSettings() {
                 to receive and their frequency.
             </p>
 
-            {/* Emails from Medium */}
-            <h2 className="text-lg font-semibold mb-2">Emails from Safe or Not</h2>
 
             {/* Medium Digest */}
             <div className="mb-6">
                 <h3 className="font-medium">Safe or Not Digest</h3>
                 <p className="text-sm text-gray-600 mb-3">
-                    The daily stories on Safe or Not personalized based on your interests, as
+                    The weekly stories on Safe or Not personalized based on your interests, as
                     well as outstanding stories selected by our editors
                 </p>
 
@@ -93,7 +91,7 @@ export default function EmailSettings() {
                                 : "bg-white text-gray-700 border-gray-300"}
                             disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-200 disabled:text-gray-400 disabled:border-gray-200`}
                     >
-                        Daily
+                        Weekly
                     </button>
 
                     <button
