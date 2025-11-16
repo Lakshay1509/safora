@@ -1,7 +1,7 @@
 import { Hono } from "hono";
 import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
-import { JSDOM } from "jsdom";
+import * as cheerio from "cheerio";
 
 const app = new Hono()
   .post(
@@ -18,7 +18,13 @@ const app = new Hono()
       try {
         const response = await fetch(url, {
           headers: {
-            'User-Agent': 'Mozilla/5.0 (compatible; LinkPreviewBot/1.0)',
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+            'Accept-Language': 'en-US,en;q=0.9',
+            'Accept-Encoding': 'gzip, deflate, br',
+            'DNT': '1',
+            'Connection': 'keep-alive',
+            'Upgrade-Insecure-Requests': '1',
           },
         });
 
@@ -27,19 +33,19 @@ const app = new Hono()
         }
 
         const html = await response.text();
-        const dom = new JSDOM(html);
-        const document = dom.window.document;
+        const $ = cheerio.load(html);
 
         // Extract Open Graph metadata
         const getMetaContent = (property: string) => {
-          const element = document.querySelector(
-            `meta[property="${property}"], meta[name="${property}"]`
+          return (
+            $(`meta[property="${property}"]`).attr("content") ||
+            $(`meta[name="${property}"]`).attr("content") ||
+            null
           );
-          return element?.getAttribute("content") || null;
         };
 
         const metadata = {
-          title: getMetaContent("og:title") || document.title || null,
+          title: getMetaContent("og:title") || $("title").text() || null,
           description: getMetaContent("og:description") || getMetaContent("description") || null,
           image: getMetaContent("og:image") || null,
           url: getMetaContent("og:url") || url,
