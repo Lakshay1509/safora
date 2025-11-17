@@ -157,7 +157,24 @@ const page = async ({ params }: Props) => {
 
       <div className="max-w-7xl mx-auto space-y-6">
        
-        
+        {/* Anonymous User Banner - Only show if not logged in and within limit */}
+        {!user && anonymousViewCount <= 3 && (
+          <div className="bg-gradient-to-r from-blue-50 via-purple-50 to-pink-50 border border-blue-200 rounded-lg p-4 flex items-center justify-between shadow-sm">
+            <div className="flex items-center gap-3">
+              
+              <p className="text-sm text-gray-700">
+                <span className="font-semibold text-gray-900">{anonymousViewCount}/3 free views used.</span> Sign up for unlimited access to safety insights & community reviews!
+              </p>
+            </div>
+            <div className="flex gap-2">
+              <Link href="/login">
+                <Button size="sm" className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-md text-sm">
+                  Sign Up Free
+                </Button>
+              </Link>
+            </div>
+          </div>
+        )}
 
         {/* Top Area Card - Full Width */}
         <AreaCard />
