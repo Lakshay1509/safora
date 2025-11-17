@@ -156,31 +156,8 @@ const page = async ({ params }: Props) => {
       )}
 
       <div className="max-w-7xl mx-auto space-y-6">
-        {/* Show banner for anonymous users who haven't reached limit yet */}
-        {!user && anonymousViewCount <= 3 && (
-          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-4 text-center">
-            <div className="max-w-2xl mx-auto space-y-2">
-              <p className="text-sm text-gray-700">
-                📍 You've viewed <span className="font-bold">{anonymousViewCount} of 3</span> free locations
-              </p>
-              <p className="text-sm text-gray-600">
-                Sign in to unlock unlimited access to safety insights, community discussions, and more.
-              </p>
-              <div className="flex gap-3 justify-center mt-3">
-                <Link href="/login">
-                  <Button size="sm" className="bg-blue-600 hover:bg-blue-700">
-                    Sign In
-                  </Button>
-                </Link>
-                <Link href="/login">
-                  <Button size="sm" variant="outline">
-                    Create Account
-                  </Button>
-                </Link>
-              </div>
-            </div>
-          </div>
-        )}
+       
+        
 
         {/* Top Area Card - Full Width */}
         <AreaCard />
