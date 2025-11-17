@@ -135,7 +135,6 @@ export default async function LandingPage() {
             <a
               href="https://startupfa.me/s/safeornot?utm_source=safeornot.space"
               target="_blank"
-              rel="noopener noreferrer"
             >
               <img
                 src="/startup_fame.webp"
@@ -145,6 +144,7 @@ export default async function LandingPage() {
                 className="w-auto h-auto max-w-[140px] sm:max-w-[171px]"
               />
             </a>
+
 
             <a
               href="https://peerpush.net/p/safe-or-not"
