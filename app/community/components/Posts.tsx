@@ -29,22 +29,28 @@ export const Posts = () => {
     isFetchingNextPage,
   } = useGetPostCommunity();
 
-  const lastPostRef = useRef<HTMLDivElement>(null);
+  const observerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!lastPostRef.current) return;
+    if (!observerRef.current) return;
 
-    const observer = new IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage && user) {
-        fetchNextPage();
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage && user) {
+          fetchNextPage();
+        }
+      },
+      {
+        // Trigger when element is 600px away from viewport
+        rootMargin: '600px',
       }
-    });
+    );
 
-    observer.observe(lastPostRef.current);
+    observer.observe(observerRef.current);
 
     return () => {
-      if (lastPostRef.current) {
-        observer.unobserve(lastPostRef.current);
+      if (observerRef.current) {
+        observer.unobserve(observerRef.current);
       }
     };
   }, [isLoading, hasNextPage, isFetchingNextPage, fetchNextPage, user]);
@@ -80,12 +86,15 @@ export const Posts = () => {
           <div className="flex flex-col gap-4">
             {data.pages.map((page, i) => (
               <React.Fragment key={i}>
-                {page.data.map((post) => {
+                {page.data.map((post, index) => {
                   const urls = extractUrls(post.body);
+                  const isLastPage = i === data.pages.length - 1;
+                  const isNearEnd = index === page.data.length - 5; // 5th from last post
 
                   return (
                     <div
                       key={post.id}
+                      ref={isLastPage && isNearEnd ? observerRef : null}
                       className="p-4 border-b border-gray-200 rounded-lg transition-colors duration-200 hover:bg-gray-50 text-sm"
                     >
                       {/* User and location info */}
@@ -218,12 +227,9 @@ export const Posts = () => {
           )}
 
           {user && (
-            <>
-              <div ref={lastPostRef} />
-              <div className="flex justify-center my-4 w-full">
-                {isFetchingNextPage && <LoaderOne />}
-              </div>
-            </>
+            <div className="flex justify-center my-4 w-full">
+              {isFetchingNextPage && <LoaderOne />}
+            </div>
           )}
         </div>
       </div>

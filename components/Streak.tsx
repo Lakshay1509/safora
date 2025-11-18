@@ -25,7 +25,7 @@ export default function StreakCounter() {
     
 
     return (
-        <Link href="/achievments" className="flex items-center space-x-1 bg-white border border-gray-200 shadow-sm rounded-full px-3 py-1 hover:bg-gray-50 transition-colors cursor-pointer">
+        <Link href="/achievments" className="flex items-center justify-center space-x-1 bg-white border border-gray-200 shadow-sm rounded-full px-2 py-1 hover:bg-gray-50 transition-colors cursor-pointer">
             {streak?.active_today &&<Image
                 src="/flame.gif"
                 alt="streak"
@@ -43,7 +43,7 @@ export default function StreakCounter() {
             />
 
             }
-            <p className="text-[16px] mt-1 font-semibold text-gray-800">{streak?.count ?? 0}</p>
+            <p className="text-[16px]  font-semibold text-gray-800">{streak?.count ?? 0}</p>
         </Link>
 
     );
