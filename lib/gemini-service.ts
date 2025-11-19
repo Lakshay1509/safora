@@ -1,9 +1,7 @@
 // lib/gemini-service.ts
 import { GoogleGenAI } from "@google/genai";
 
-const ai = new GoogleGenAI({
-  apiKey: process.env.GEMINI_API_KEY!,
-});
+
 
 // Type definitions
 export type WarningCategory =
@@ -403,6 +401,9 @@ export async function generateLocationMetrics(
       thinkingConfig: thinkingConfig,
     };
 
+    const ai = new GoogleGenAI({
+  apiKey: process.env.GEMINI_API_KEY!,
+});
     const result = await ai.models.generateContent({
       model: "gemini-2.5-flash-lite",
       contents: [{ parts: [{ text: prompt }] }],

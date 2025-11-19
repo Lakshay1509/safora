@@ -52,7 +52,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       description: `Get real answers about ${location.name} safety. Read community reviews, safety ratings, and tips from travelers.`,
       images: "https://safeornot.space/og.webp",
     },
-    alternates:{
+    alternates: {
       canonical: `/location/${id}`
     }
   };
@@ -124,11 +124,11 @@ const page = async ({ params }: Props) => {
   return (
     <div className="min-h-screen bg-white px-4 pb-20 md:px-6 lg:px-8">
       {/* Hidden semantic content for SEO */}
-      <script 
-        type="application/ld+json" 
+      <script
+        type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
       />
-      
+
       {/* Enhanced semantic content for SEO */}
       <article className="sr-only" aria-hidden="true">
         <h1>Is {location.name} Safe? Safety Reviews & Ratings</h1>
@@ -156,12 +156,12 @@ const page = async ({ params }: Props) => {
       )}
 
       <div className="max-w-7xl mx-auto space-y-6">
-       
+
         {/* Anonymous User Banner - Only show if not logged in and within limit */}
         {!user && anonymousViewCount <= 3 && (
           <div className="bg-gradient-to-r from-blue-50 via-purple-50 to-pink-50 border border-blue-200 rounded-lg p-4 flex items-center justify-between shadow-sm">
             <div className="flex items-center gap-3">
-              
+
               <p className="text-sm text-gray-700">
                 <span className="font-semibold text-gray-900">{anonymousViewCount}/3 free views used.</span> Sign up for unlimited access to safety insights & community reviews!
               </p>
@@ -178,20 +178,30 @@ const page = async ({ params }: Props) => {
 
         {/* Top Area Card - Full Width */}
         <AreaCard />
-        <ReviewsCard />
+        <div className="flex flex-col lg:flex-row space-x-6 space-y-4 lg:space-y-0">
+          <div className="w-full lg:w-[50%]">
+          <ReviewsCard />
+          </div>
+          {(user || anonymousViewCount<=3) &&(
+            <div className="w-full lg:w-[50%]">
+            <MetricsCard/>
+            </div>
+          )}
+        </div>
 
         {/* Show content based on authentication and view limit */}
         {user ? (
           // Authenticated users: Show everything
           <>
-            <MetricsCard />
+
+        
             <PrecautionCard />
             <TabView />
           </>
         ) : anonymousViewCount <= 3 ? (
           // Anonymous users within limit: Show everything
           <>
-            <MetricsCard />
+            
             <PrecautionCard />
             <TabView />
           </>

@@ -12,19 +12,24 @@ type MetricItemProps = {
     value: number | string;
     unit?: string;
     colorClass: string;
+    maxValue?: number;
 };
 
-const MetricItem = ({ icon: Icon, title, value, unit, colorClass }: MetricItemProps) => (
-    <div className="bg-white dark:bg-gray-900/50 p-3 rounded-xl shadow-sm flex items-center space-x-3">
-        <div className={`p-1.5 rounded-lg ${colorClass}`}>
-            <Icon className="h-4 w-4 text-white" />
+const MetricItem = ({ icon: Icon, title, value, unit, colorClass, maxValue = 10 }: MetricItemProps) => {
+    return (
+        <div className="flex items-center justify-between gap-4 py-3 mr-3">
+            <div className="flex items-center gap-3">
+                <div className={`p-1.5 rounded-lg ${colorClass} flex-shrink-0`}>
+                    <Icon className="h-5 w-5 text-white" />
+                </div>
+                <p className="text-[14px]  text-gray-700 dark:text-gray-300">{title} -</p>
+            </div>
+            <span className=" text-[14px]  text-gray-800 dark:text-gray-100">
+                {value}{unit}
+            </span>
         </div>
-        <div>
-            <p className="text-xs text-gray-500 dark:text-gray-400">{title}</p>
-            <p className="text-base lg:text-xl font-semibold text-gray-800 dark:text-gray-100">{value}{unit && <span className="text-base">{unit}</span>}</p>
-        </div>
-    </div>
-);
+    );
+};
 
 const getAqiColor = (aqi: number) => {
     if (aqi <= 50) return 'bg-green-500';
@@ -57,11 +62,11 @@ const MetricsCard = () => {
                     </h2>
                 </div>
 
-                <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 w-full">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 w-full">
                     {Array.from({ length: 6 }).map((_, i) => (
                         <div
                             key={i}
-                            className="bg-gray-200 dark:bg-gray-800 p-3 rounded-xl h-12 animate-pulse"
+                            className="bg-gray-200 dark:bg-gray-800 p-3 rounded-xl h-16 animate-pulse"
                         />
                     ))}
                 </div>
@@ -78,23 +83,25 @@ const MetricsCard = () => {
     const metrics = data;
 
     const metricsData: MetricItemProps[] = [
-        { icon: Wind, title: "Air Quality Index ", value: metrics.AQI, colorClass: getAqiColor(metrics.AQI) },
-        { icon: Thermometer, title: "Temp (Avg)", value: metrics.Temperature_C, unit: "°C", colorClass: "bg-blue-500" },
-        { icon: Footprints, title: "Walkability", value: `${metrics.Walkability}/10`, colorClass: getScoreColor(metrics.Walkability) },
-        { icon: Bus, title: "Public Transport", value: `${metrics.Availability_of_Public_Transport}/10`, colorClass: getScoreColor(metrics.Availability_of_Public_Transport) },
-        { icon: Lightbulb, title: "Lighting Quality", value: `${metrics.Lighting_Quality}/10`, colorClass: getScoreColor(metrics.Lighting_Quality) },
-        { icon: Wifi, title: "Network", value: `${metrics.Network_Connectivity}/10`, colorClass: getScoreColor(metrics.Network_Connectivity) },
+        { icon: Wind, title: "Air Quality Index", value: metrics.AQI, colorClass: getAqiColor(metrics.AQI), maxValue: 500 },
+        { icon: Thermometer, title: "Temp (Avg)", value: metrics.Temperature_C, unit: "°C", colorClass: "bg-blue-500", maxValue: 50 },
+        { icon: Footprints, title: "Walkability", value: metrics.Walkability, unit: "/10", colorClass: getScoreColor(metrics.Walkability), maxValue: 10 },
+        { icon: Bus, title: "Public Transport", value: metrics.Availability_of_Public_Transport, unit: "/10", colorClass: getScoreColor(metrics.Availability_of_Public_Transport), maxValue: 10 },
+        { icon: Lightbulb, title: "Street Lighting ", value: metrics.Lighting_Quality, unit: "/10", colorClass: getScoreColor(metrics.Lighting_Quality), maxValue: 10 },
+        { icon: Wifi, title: "Network", value: metrics.Network_Connectivity, unit: "/10", colorClass: getScoreColor(metrics.Network_Connectivity), maxValue: 10 },
     ];
 
     return (
         <>
-
-
-            <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
-
-                {metricsData.map(metric => (
-                    <MetricItem key={metric.title} {...metric} />
-                ))}
+            <div className="bg-white dark:bg-gray-900/50 p-6 rounded-xl shadow-sm min-h-75">
+                <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-4">
+                    Additional Information
+                </h3>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 divide-y  dark:divide-gray-800">
+                    {metricsData.map(metric => (
+                        <MetricItem key={metric.title} {...metric} />
+                    ))}
+                </div>
             </div>
         </>
     )
