@@ -172,8 +172,8 @@ export async function trackAnonymousPrecautionView(locationId: string): Promise<
   
   if (!alreadyViewed) {
     // Check if limit reached
-    if (views.length >= MAX_ANONYMOUS_VIEWS) {
-      return { allowed: false, viewCount: views.length };
+    if (views.length+1 >= MAX_ANONYMOUS_VIEWS) {
+      return { allowed: false, viewCount: views.length+1 };
     }
     
     // Add new view
@@ -190,7 +190,7 @@ export async function trackAnonymousPrecautionView(locationId: string): Promise<
     });
   }
   
-  return { allowed: true, viewCount: views.length };
+  return { allowed: true, viewCount: views.length+1 };
 }
 
 export async function getAnonymousViewCount(): Promise<number> {
@@ -200,5 +200,5 @@ export async function getAnonymousViewCount(): Promise<number> {
   const existingData = cookieStore.get(ANONYMOUS_VIEWS_COOKIE)?.value;
   const views: AnonymousView[] = existingData ? JSON.parse(existingData) : [];
   
-  return views.length;
+  return views.length+1;
 }
