@@ -158,12 +158,12 @@ const page = async ({ params }: Props) => {
       <div className="max-w-7xl mx-auto space-y-6">
 
         {/* Anonymous User Banner - Only show if not logged in and within limit */}
-        {!user && anonymousViewCount <= 3 && (
+        {!user && anonymousViewCount <= 1 && (
           <div className="bg-gradient-to-r from-blue-50 via-purple-50 to-pink-50 border border-blue-200 rounded-lg p-4 flex items-center justify-between shadow-sm">
             <div className="flex items-center gap-3">
 
               <p className="text-sm text-gray-700">
-                <span className="font-semibold text-gray-900">{anonymousViewCount}/3 free views used.</span> Sign up for unlimited access to safety insights & community reviews!
+                <span className="font-semibold text-gray-900">{anonymousViewCount}/1 free views used.</span> Sign up for unlimited access to safety insights & community reviews!
               </p>
             </div>
             <div className="flex gap-2">
@@ -182,7 +182,7 @@ const page = async ({ params }: Props) => {
           <div className="w-full lg:w-[50%]">
           <ReviewsCard />
           </div>
-          {(user || anonymousViewCount<=3) &&(
+          {(user || anonymousViewCount<=1) &&(
             <div className="w-full lg:w-[50%]">
             <MetricsCard/>
             </div>
@@ -198,7 +198,7 @@ const page = async ({ params }: Props) => {
             <PrecautionCard />
             <TabView />
           </>
-        ) : anonymousViewCount <= 3 ? (
+        ) : anonymousViewCount <= 1 ? (
           // Anonymous users within limit: Show everything
           <>
             
@@ -214,7 +214,7 @@ const page = async ({ params }: Props) => {
                 Free limit reached
               </h3>
               <p className="text-gray-600">
-                You've viewed 3 locations. Create a free account to access unlimited safety insights, detailed metrics, community discussions, and contribute your own experiences.
+                You've viewed 1 location. Create a free account to access unlimited safety insights, detailed metrics, community discussions, and contribute your own experiences.
               </p>
               <div className="flex gap-3 justify-center">
                 <Link href="/login">

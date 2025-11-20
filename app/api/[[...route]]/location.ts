@@ -203,7 +203,7 @@ const app = new Hono()
         return ctx.json({ 
           error: "View limit reached. Please sign in to view more locations.",
           viewCount,
-          maxViews: 3
+          maxViews: 1
         }, 403);
       }
       
@@ -306,7 +306,7 @@ const app = new Hono()
         return ctx.json({ 
           error: "View limit reached. Please sign in to view more locations.",
           viewCount,
-          maxViews: 3
+          maxViews: 1
         }, 403);
       }
       
@@ -383,7 +383,7 @@ const app = new Hono()
         return ctx.json({ 
           error: "View limit reached. Please sign in to view more locations.",
           viewCount,
-          maxViews: 3
+          maxViews: 1
         }, 403);
       }
       

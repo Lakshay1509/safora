@@ -153,7 +153,7 @@ async function syncViewsToDatabase(views: DailyView[]) {
 }
 
 const ANONYMOUS_VIEWS_COOKIE = "anonymous_precaution_views";
-const MAX_ANONYMOUS_VIEWS = 4;
+const MAX_ANONYMOUS_VIEWS = 2;
 
 interface AnonymousView {
   location_id: string;
