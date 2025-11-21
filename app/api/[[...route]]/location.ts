@@ -4,7 +4,6 @@ import { createClient } from "@/utils/supabase/server";
 import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
 import { generateLocationMetrics, generateTravelerWarnings } from "@/lib/gemini-service";
-import { trackAnonymousPrecautionView } from "@/lib/location-history";
 enum TimeOfDay {
   DAY = "DAY",
   NIGHT = "NIGHT",
@@ -197,17 +196,9 @@ const app = new Hono()
 
     // Handle anonymous users
     if (error || !user) {
-      const { allowed, viewCount } = await trackAnonymousPrecautionView(id);
       
-      if (!allowed) {
-        return ctx.json({ 
-          error: "View limit reached. Please sign in to view more locations.",
-          viewCount,
-          maxViews: 1
-        }, 403);
-      }
       
-      // Continue with the rest of the logic for anonymous users
+      return ctx.json({error:"Unauthorized"},401)
     }
 
     const locationPrecautions = await db.precautions.findUnique({
@@ -300,17 +291,7 @@ const app = new Hono()
     } = await supabase.auth.getUser();
 
    if (error || !user) {
-      const { allowed, viewCount } = await trackAnonymousPrecautionView(id);
-      
-      if (!allowed) {
-        return ctx.json({ 
-          error: "View limit reached. Please sign in to view more locations.",
-          viewCount,
-          maxViews: 1
-        }, 403);
-      }
-      
-      
+      return ctx.json({ error: "Unauthorized" }, 401);
     }
 
     const locationPrecautions = await db.precautions.findUnique({
@@ -377,17 +358,7 @@ const app = new Hono()
       error,
     } = await supabase.auth.getUser();
     if (error || !user) {
-      const { allowed, viewCount } = await trackAnonymousPrecautionView(id);
-      
-      if (!allowed) {
-        return ctx.json({ 
-          error: "View limit reached. Please sign in to view more locations.",
-          viewCount,
-          maxViews: 1
-        }, 403);
-      }
-      
-      // Continue with the rest of the logic for anonymous users
+      return ctx.json({ error: "Unauthorized" }, 401);
     }
 
     const locationComments = await db.comments.findMany({
