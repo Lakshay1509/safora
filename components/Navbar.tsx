@@ -3,8 +3,10 @@
 import { Search, User, Menu, X, Users } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import LoginButton from "./LoginLogoutButton"
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
+import { GeocoderAutocomplete } from "@geoapify/geocoder-autocomplete"
 import { useRouter, usePathname } from "next/navigation";
+import "@geoapify/geocoder-autocomplete/styles/minimal.css"
 import { useGetLocationByCoord } from "@/features/location/use-get-location-coord"
 import { addLocationByCoord } from "@/features/location/use-add-location-coord"
 import { useAuth } from "@/contexts/AuthContext"
@@ -12,7 +14,7 @@ import Link from "next/link"
 import Image from "next/image"
 import { NotificationBell } from "./NotificationBell"
 import StreakCounter from "./Streak"
-import { SearchBar } from "./SearchBar"
+
 
 interface LocationResult {
   formatted: string
@@ -37,6 +39,10 @@ export function Navbar() {
   const [loadingLocation, setLoadingLocation] = useState(false)
   const [selectedCoords, setSelectedCoords] = useState<{ lat: number, lon: number } | null>(null)
   const [selectedLocation, setSelectedLocation] = useState<LocationFormatted>()
+  const autocompleteDesktopRef = useRef<HTMLDivElement>(null)
+  const autocompleteMobileRef = useRef<HTMLDivElement>(null)
+  const geocoderDesktopRef = useRef<GeocoderAutocomplete | null>(null)
+  const geocoderMobileRef = useRef<GeocoderAutocomplete | null>(null)
   const router = useRouter();
   const pathname = usePathname();
   const LocationMutation = addLocationByCoord();
@@ -82,6 +88,104 @@ export function Navbar() {
       postLocation();
     }
   }, [isSuccess, data, isError, selectedLocation, LocationMutation, router]);
+
+  const GEOAPIFY_API_KEY = process.env.NEXT_PUBLIC_GEOAPIFY_API_KEY || "YOUR_API_KEY_HERE"
+
+  useEffect(() => {
+    // Initialize desktop geocoder
+    if (autocompleteDesktopRef.current && !geocoderDesktopRef.current) {
+      geocoderDesktopRef.current = new GeocoderAutocomplete(
+        autocompleteDesktopRef.current,
+        GEOAPIFY_API_KEY,
+        {
+          placeholder: "Search locations...",
+          debounceDelay: 300,
+          limit: 3,
+          skipIcons: false,
+          lang: "en",
+        }
+      )
+
+      // Handle location selection for desktop
+      geocoderDesktopRef.current.on('select', (location: GeoJSON.Feature) => {
+        if (location?.properties) {
+          const locationData: LocationResult = {
+            formatted: location.properties.formatted || '',
+            lat: location.geometry?.type === 'Point' ? location.geometry.coordinates[1] : 0,
+            lon: location.geometry?.type === 'Point' ? location.geometry.coordinates[0] : 0,
+            place_id: location.properties.place_id || '',
+            address_line1: location.properties.address_line1,
+            address_line2: location.properties.address_line2,
+            city: location.properties.city,
+            country: location.properties.country
+          }
+
+          handleLocationSelect(locationData)
+        }
+      })
+    }
+
+    return () => {
+      // Cleanup desktop
+      if (geocoderDesktopRef.current) {
+        geocoderDesktopRef.current.off('select')
+        geocoderDesktopRef.current.off('suggestions')
+        geocoderDesktopRef.current.off('input')
+        geocoderDesktopRef.current.off('open')
+        geocoderDesktopRef.current.off('close')
+      }
+    }
+  }, [GEOAPIFY_API_KEY])
+
+  // Separate effect for mobile geocoder to prevent conflicts
+  useEffect(() => {
+    // Initialize mobile geocoder when search bar is open
+    if (searchBarOpen && autocompleteMobileRef.current && !geocoderMobileRef.current) {
+      geocoderMobileRef.current = new GeocoderAutocomplete(
+        autocompleteMobileRef.current,
+        GEOAPIFY_API_KEY,
+        {
+          placeholder: "Search locations...",
+          debounceDelay: 300,
+          limit: 3,
+          skipIcons: false,
+          lang: "en",
+        }
+      )
+
+      // Handle location selection for mobile
+      geocoderMobileRef.current.on('select', (location: GeoJSON.Feature) => {
+        if (location?.properties) {
+          const locationData: LocationResult = {
+            formatted: location.properties.formatted || '',
+            lat: location.geometry?.type === 'Point' ? location.geometry.coordinates[1] : 0,
+            lon: location.geometry?.type === 'Point' ? location.geometry.coordinates[0] : 0,
+            place_id: location.properties.place_id || '',
+            address_line1: location.properties.address_line1,
+            address_line2: location.properties.address_line2,
+            city: location.properties.city,
+            country: location.properties.country
+          }
+
+          handleLocationSelect(locationData)
+          // Close search dialog after selection
+          setSearchBarOpen(false)
+        }
+      })
+    }
+
+    // Clean up mobile geocoder when search bar closes
+    return () => {
+      if (!searchBarOpen && geocoderMobileRef.current) {
+        geocoderMobileRef.current.off('select')
+        geocoderMobileRef.current.off('suggestions')
+        geocoderMobileRef.current.off('input')
+        geocoderMobileRef.current.off('open')
+        geocoderMobileRef.current.off('close')
+        geocoderMobileRef.current = null
+      }
+    }
+  }, [searchBarOpen, GEOAPIFY_API_KEY])
 
   const handleLocationSelect = (location: LocationResult) => {
     console.log('Selected location:', location)
@@ -145,8 +249,20 @@ export function Navbar() {
             </div>
 
             
-            <div className="hidden flex-1 max-w-md  md:flex">
-              <SearchBar onLocationSelect={handleLocationSelect} />
+             <div className="hidden flex-1 max-w-md mx-8 md:flex">
+              <div className="relative w-full">
+                <Search
+                  className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 z-10 text-black"
+                />
+
+                {/* Geoapify Autocomplete Container for Desktop */}
+                <div
+                  ref={autocompleteDesktopRef}
+                  className="relative w-full geoapify-autocomplete-container ml-10 bg-white text-black"
+                >
+                  {/* The autocomplete will inject its input here */}
+                </div>
+              </div>
             </div>
 
             {/* Mobile Icons */}
@@ -194,11 +310,24 @@ export function Navbar() {
           {searchBarOpen && (
             <div className="md:hidden px-2 pb-4 pt-2 transition-all duration-300 ease-in-out">
               <div className="bg-white rounded-lg shadow-md p-3">
-                <SearchBar 
-                  onLocationSelect={handleLocationSelect} 
-                  isMobile={true}
-                  onClose={() => setSearchBarOpen(false)}
-                />
+                <div className="flex justify-between items-center">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="p-1 h-auto"
+                    onClick={() => setSearchBarOpen(false)}
+                  >
+                  </Button>
+
+                </div>
+
+                {/* Geoapify Autocomplete Container for Mobile */}
+                <div
+                  ref={autocompleteMobileRef}
+                  className="relative w-full geoapify-autocomplete-container bg-white text-black"
+                >
+                  {/* The autocomplete will inject its input here */}
+                </div>
               </div>
             </div>
           )}
