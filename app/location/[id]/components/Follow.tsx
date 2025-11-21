@@ -12,7 +12,7 @@ interface Props {
   following: boolean;
 }
 
-const Follow = ({ id, following }: Props) => {
+const Follow = ({ id, following, className }: Props & { className?: string }) => {
   const deleteFollowMutation = useDeleteFollow();
   const addFollowMutation = addFollow();
   const { user } = useAuth();
@@ -31,24 +31,18 @@ const Follow = ({ id, following }: Props) => {
   };
 
   return (
-    <div className="mb-4 w-full flex justify-start lg:justify-end lg:px-8 px-6">
-      <Button
-        onClick={handleFollowToggle}
-        disabled={deleteFollowMutation.isPending || addFollowMutation.isPending}
-        className={`flex items-center gap-1 rounded-md text-sm font-medium transition-all duration-200
-          ${following
-            ? "bg-red-500 hover:bg-red-600 text-white"
-            : "bg-white border border-gray-300 text-gray-700 hover:bg-gray-100"
-          } px-3 py-1.5`}
-      >
-        <PlusIcon size={14} className={`${following ? "hidden" : "block"}`} />
-        {deleteFollowMutation.isPending || addFollowMutation.isPending
-          ? "Loading..."
-          : following
-          ? "Unfollow"
-          : "Follow"}
-      </Button>
-    </div>
+    <Button
+      onClick={handleFollowToggle}
+      disabled={deleteFollowMutation.isPending || addFollowMutation.isPending}
+      className={`flex items-center gap-1 rounded-md text-sm font-medium transition-all duration-200 border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 px-3 py-1.5 ${className}`}
+    >
+      {!following && <PlusIcon size={14} />}
+      {deleteFollowMutation.isPending || addFollowMutation.isPending
+        ? "Loading..."
+        : following
+        ? "Following"
+        : "Follow"}
+    </Button>
   );
 };
 
