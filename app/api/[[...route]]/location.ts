@@ -284,15 +284,15 @@ const app = new Hono()
   .get('/extra_info/:id',async(ctx)=>{
 
      const id = ctx.req.param("id");
-    const supabase = await createClient();
-    const {
-      data: { user },
-      error,
-    } = await supabase.auth.getUser();
+  //   const supabase = await createClient();
+  //   const {
+  //     data: { user },
+  //     error,
+  //   } = await supabase.auth.getUser();
 
-   if (error || !user) {
-      return ctx.json({ error: "Unauthorized" }, 401);
-    }
+  //  if (error || !user) {
+  //     return ctx.json({ error: "Unauthorized" }, 401);
+  //   }
 
     const locationPrecautions = await db.precautions.findUnique({
       where: { location_id: id },

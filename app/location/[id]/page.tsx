@@ -160,21 +160,13 @@ const page = async ({ params }: Props) => {
           <div className="w-full lg:w-[50%]">
             <ReviewsCard />
           </div>
-          {user && (
+          
             <div className="w-full lg:w-[50%]">
               <MetricsCard />
             </div>
-          )}
+          
 
-          {!user && (
-
-            <Image
-              src='/login_metric.webp'
-              width={600}
-              height={500}
-              alt="no-login"
-            />
-          )}
+         
         </div>
 
         {/* Show content based on authentication */}
