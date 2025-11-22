@@ -75,6 +75,11 @@ const app = new Hono()
 
   .get("/by-ID/:id", async (ctx) => {
     const id = ctx.req.param("id");
+    
+    const supabase = await createClient();
+    const {
+      data: { user },error
+    } = await supabase.auth.getUser();
 
     const post = await db.posts.findUnique({
       where: { id: id },
@@ -100,7 +105,26 @@ const app = new Hono()
       return ctx.json({ error: "Error getting post" }, 500);
     }
 
-    return ctx.json({ post }, 200);
+    // Fetch user's vote for this post only if user is authenticated
+    let userVote = null;
+    if (user) {
+      userVote = await db.votes.findFirst({
+        where: {
+          user_id: user.id,
+          post_id: id,
+        },
+        select: { vote_type: true },
+      });
+    }
+
+    const data = {
+      ...post,
+      upvote: userVote?.vote_type ?? -1, 
+    };
+
+   
+
+    return ctx.json({ post: data }, 200);
   })
 
   .get("/by-locationId/:id", async (ctx) => {

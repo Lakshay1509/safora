@@ -29,6 +29,7 @@ import { headingsPlugin, linkDialogPlugin, linkPlugin, listsPlugin, markdownShor
 import { extractUrls } from "@/lib/url-utils";
 import { LinkPreview } from "@/components/LinkPreview";
 import ProfileLogo from "@/components/ProfileLogo";
+import PostStatsFeed from "@/components/PostsStatsFeed";
 
 
 const Post = () => {
@@ -39,7 +40,6 @@ const Post = () => {
     const postId = params.id as string;
 
     const { data: post, isLoading, error } = useGetPost(postId);
-
     const { dominantColor, isLoading: colour_loading } = useDominantColor(post?.post.image_url ?? '');
 
 
@@ -208,7 +208,7 @@ const Post = () => {
                         
                     </div> )}
 
-                    <PostStats id={postId} upvotes_count={post?.post.upvotes} comments={post?.post._count.posts_comments} />
+                    <PostStatsFeed id={postId} upvotes_count={post?.post.upvotes} comments={post?.post._count.posts_comments} upvoted={post?.post.upvote===1 ? true :false} slug={post?.post.slug ?? ''} />
 
                     <ExploreMore id={post?.post.location_id ? post.post.location_id : ''} />
 

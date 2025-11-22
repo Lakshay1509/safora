@@ -428,8 +428,8 @@ model precautions {
   approved_precautions  Json?
   created_at            DateTime  @default(now()) @db.Timestamptz(6)
   extra_info            Json?
-  extra_info_updated_at DateTime? @db.Timestamptz(6)
-  locations             locations @relation(fields: [location_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  extra_info_updated_at DateTime? @default(now()) @db.Timestamptz(6)
+  locations             locations @relation(fields: [location_id], references: [id], onDelete: Cascade)
 
   @@schema("public")
 }
@@ -615,8 +615,8 @@ model location_daily_views {
   view_date   DateTime     @db.Date
   created_at  DateTime     @default(now()) @db.Timestamptz(6)
   updated_at  DateTime     @default(now()) @db.Timestamptz(6)
-  locations   locations    @relation(fields: [location_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  users       public_users @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  locations   locations    @relation(fields: [location_id], references: [id], onDelete: Cascade)
+  users       public_users @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
   @@index([location_id, view_date])
   @@index([user_id, location_id, view_date])

@@ -16,9 +16,10 @@ interface Props {
   id: string,
   upvotes_count?:number,
   comments?:number,
+  upvoted ?: boolean
 }
 
-const PostStats = ({ id ,upvotes_count,comments}: Props) => {
+const PostStats = ({ id ,upvotes_count,comments, upvoted}: Props) => {
 
 
 
@@ -29,6 +30,7 @@ const PostStats = ({ id ,upvotes_count,comments}: Props) => {
 
   const [copied, setCopied] = useState(false);
   const [optimisticUpvotes, setOptimisticUpvotes] = useState(upvotes_count || 0);
+  const [isUpvoted, setIsUpvoted] = useState(upvoted || false);
 
   useEffect(() => {
     setOptimisticUpvotes(upvotes_count || 0);
@@ -51,10 +53,10 @@ const PostStats = ({ id ,upvotes_count,comments}: Props) => {
       return;
     }
 
-    const isUpvoted = upvotes?.upvotes && upvotes.upvotes.vote_type !== -1;
     const newVoteType = isUpvoted ? -1 : 1;
 
     setOptimisticUpvotes(prev => prev + newVoteType);
+    setIsUpvoted(!isUpvoted);
 
     mutation.mutate({
       post_id: id,
@@ -63,6 +65,7 @@ const PostStats = ({ id ,upvotes_count,comments}: Props) => {
       onError: () => {
         // Revert optimistic update on error
         setOptimisticUpvotes(prev => prev - newVoteType);
+        setIsUpvoted(!isUpvoted);
       }
     });
 
@@ -75,7 +78,7 @@ const PostStats = ({ id ,upvotes_count,comments}: Props) => {
   return (
     <div className="flex  gap-3">
   <Button
-    className={`${upvotes?.upvotes && upvotes?.upvotes.vote_type !== -1
+    className={`${isUpvoted
         ? "bg-green-500 text-white hover:bg-green-600"
         : "bg-gray-100 text-gray-700 hover:bg-gray-200"
       } flex items-center gap-2 rounded-xl px-3 py-2 shadow-sm transition-all duration-200`}

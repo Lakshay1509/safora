@@ -2,6 +2,7 @@ import { Metadata } from "next";
 import Post from "./components/Post"
 import { db } from "@/lib/prisma";
 import { dehydrate, HydrationBoundary, QueryClient } from "@tanstack/react-query";
+import { createClient } from "@/utils/supabase/server";
 
 type Props = {
   params: Promise<{ id: string }>;
@@ -19,7 +20,9 @@ type PostData = {
     location_id: string | null;
     slug: string;
     upvotes: number;
+    upvote: number; // Add this field
     users: {
+      id: string;
       name: string;
       profile_url: string | null;
       profile_color: string | null;
@@ -97,6 +100,10 @@ const page = async ({ params }: Props) => {
   // Create a new QueryClient for this request
   const queryClient = new QueryClient();
 
+  // Get the authenticated user
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
   // Prefetch the post data for TanStack Query
   await queryClient.prefetchQuery({
     queryKey: ['post', id],
@@ -115,6 +122,7 @@ const page = async ({ params }: Props) => {
           upvotes: true,
           users: { 
             select: { 
+              id: true,
               name: true,
               profile_url: true,
               profile_color: true,
@@ -132,7 +140,24 @@ const page = async ({ params }: Props) => {
       
       if (!post) throw new Error('Post not found');
       
-      return { post };
+      // Fetch user's vote for this post only if user is authenticated
+      let userVote = null;
+      if (user) {
+        userVote = await db.votes.findFirst({
+          where: {
+            user_id: user.id,
+            post_id: id,
+          },
+          select: { vote_type: true },
+        });
+      }
+
+      const data = {
+        ...post,
+        upvote: userVote?.vote_type ?? -1, 
+      };
+      
+      return { post: data };
     },
   });
 
